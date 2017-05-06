@@ -1,0 +1,12 @@
+{
+  "name": "triforce-robot",
+  "version": "0.1.0",
+  "bin": "./source",
+  "private": true,
+  "description": "Control software for Triforce robot.",
+  "author": "Cameron A. Craig, Euan Mutch",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "mbed-drivers": "^1.5.0"
+  }
+}
