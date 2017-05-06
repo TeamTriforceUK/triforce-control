@@ -31,3 +31,9 @@
 # Debug files
 *.dSYM/
 *.su
+
+# Ignore python .pyc files
+*.pyc
+
+# Ignore build folder
+BUILD/
