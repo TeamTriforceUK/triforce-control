@@ -1,0 +1,23 @@
+language: python
+python:
+    - "2.7"
+
+# Cache PlatformIO packages using Travis CI container-based infrastructure
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
+
+env:
+    - PLATFORMIO_CI_SRC=main.cpp
+
+install:
+    - pip install -U platformio
+    #
+    # Libraries from PlatformIO Library Registry:
+    #
+    # http://platformio.org/lib/show/962/mbed-drivers
+    - platformio lib -g install 962
+
+script:
+    - platformio ci --board=lpc1768
