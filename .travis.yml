@@ -9,7 +9,7 @@ cache:
         - "~/.platformio"
 
 env:
-    - PLATFORMIO_CI_SRC=main.cpp
+    - PLATFORMIO_CI_SRC=main.cpp triforce.h tmath.h bno055.h
 
 install:
     - pip install -U platformio
