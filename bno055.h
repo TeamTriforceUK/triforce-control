@@ -1,5 +1,5 @@
 /* Copyright (c) 2015 Simon Scott (https://developer.mbed.org/users/simonscott/code/BNO055_Example/), MIT License
- *               2017 Euan W. Mutch, MIT License
+ *               2017 Euan W. Mutch, Cameron A. Craig, MIT License
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -16,6 +16,17 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+/**
+* @file bno055.h
+* @author Simon Scott, Euan W. Mutch, Cameron A. Craig
+* @date 13 May 2017
+* @copyright 2015 Simon Scott, 2017 Euan W. Mutch, Cameron A. Craig
+* @brief Interfaces with BNO055 via mbed I2C.
+*/
+
+#ifndef TC_BNO055_H
+#define TC_BNO055_H
 
 #include "mbed.h"
 I2C i2c(p9, p10);
@@ -172,3 +183,5 @@ Euler getEulerAngles()
 
     return e;
 }
+
+#endif //TC_BNO055_H

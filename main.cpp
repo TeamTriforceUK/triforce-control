@@ -16,6 +16,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+* @file main.cpp
+* @author Euan W. Mutch, Cameron A. Craig
+* @date 13 May 2017
+* @copyright 2017 Euan W. Mutch, Cameron A. Craig
+* @brief Drives ESCs for Triforce fighting robot based on PWM signals from receiver.
+*/
+
 /* Includes */
 #include "bno055.h"
 #include "esc.h"

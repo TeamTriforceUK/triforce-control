@@ -1,0 +1,8 @@
+PROJECT_NAME           = "Triforce Control"
+PROJECT_BRIEF          = "Controls Triforce fighting robot."
+OUTPUT_DIRECTORY       = "docs/_build"
+INPUT                  = .
+FILE_PATTERNS          = *.cpp *.h
+RECURSIVE              = NO
+INPUT_FILTER           =
+FILTER_SOURCE_FILES    = NO
