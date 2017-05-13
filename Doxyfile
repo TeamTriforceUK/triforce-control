@@ -1,4 +1,5 @@
 PROJECT_NAME           = "Triforce Control"
+XML_OUTPUT       = doxyxml
 PROJECT_BRIEF          = "Controls Triforce fighting robot."
 OUTPUT_DIRECTORY       = "docs/_build"
 INPUT                  = .
@@ -7,3 +8,9 @@ RECURSIVE              = NO
 INPUT_FILTER           =
 FILTER_SOURCE_FILES    = NO
 GENERATE_LATEX         = NO
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+GENERATE_HTML          = NO
+GENERATE_XML           = YES
+CASE_SENSE_NAMES       = NO
+JAVADOC_AUTOBRIEF = YES

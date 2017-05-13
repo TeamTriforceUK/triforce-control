@@ -21,6 +21,9 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+# Run doxygen in root directory to generate documentation
+import subprocess
+subprocess.call('cd .. ; doxygen', shell=True)
 
 # -- General configuration ------------------------------------------------
 
@@ -31,7 +34,13 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    'breathe'
+]
+
+# Breathe extension variables
+breathe_projects = { "triforce-control": "doxyxml/" }
+breathe_default_project = "triforce-control"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -83,7 +92,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'default'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -152,12 +161,3 @@ texinfo_documents = [
      author, 'triforce-control', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-# Build doxygen files from source
-import subprocess
-subprocess.call('cd .. ; doxygen', shell=True)
-# A hack to replace Sphinx index page with doxygen index page
-# Not sure whey we need to do it twice
-subprocess.call('cd .. ; doxygen', shell=True)
-
-html_extra_path = ['./_build/html']
