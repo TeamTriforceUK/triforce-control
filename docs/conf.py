@@ -156,5 +156,8 @@ texinfo_documents = [
 # Build doxygen files from source
 import subprocess
 subprocess.call('cd .. ; doxygen', shell=True)
+# A hack to replace Sphinx index page with doxygen index page
+# Not sure whey we need to do it twice
+subprocess.call('cd .. ; doxygen', shell=True)
 
 html_extra_path = ['./_build/html']
