@@ -6,3 +6,4 @@ FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = NO
 INPUT_FILTER           =
 FILTER_SOURCE_FILES    = NO
+GENERATE_LATEX         = NO
