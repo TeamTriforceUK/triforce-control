@@ -5,7 +5,7 @@ sudo: required
 before_script:
   - wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update -O arm-gcc.tar.bz2
   - tar -jxf arm-gcc.tar.bz2
-  - mbed config -G GCC_PATH $TRAVIS_BUILD_DIR/gcc-arm-none-eabi-6-2017-q1-update/bin"
+  - mbed config -G GCC_PATH "$TRAVIS_BUILD_DIR/gcc-arm-none-eabi-6-2017-q1-update/bin"
   - mbed deploy
 script:
 - mbed compile -t GCC_ARM -m lpc1768
