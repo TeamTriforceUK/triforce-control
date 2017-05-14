@@ -8,5 +8,6 @@ before_script:
   - sudo pip install mbed-cli
   - mbed config -G GCC_PATH "$TRAVIS_BUILD_DIR/gcc-arm-none-eabi-6-2017-q1-update/bin"
   - mbed deploy
+  - sudo pip install -r mbed-os/requirements.txt
 script:
 - mbed compile -t GCC_ARM -m lpc1768
