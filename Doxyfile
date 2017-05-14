@@ -1,0 +1,13 @@
+PROJECT_NAME           = "Triforce Control"
+PROJECT_BRIEF          = "Controls Triforce fighting robot."
+INPUT                  = .
+FILE_PATTERNS          = *.cpp *.h
+RECURSIVE              = NO
+INPUT_FILTER           =
+FILTER_SOURCE_FILES    = NO
+GENERATE_LATEX         = YES
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+GENERATE_HTML          = YES
+GENERATE_XML           = NO
+CASE_SENSE_NAMES       = NO
