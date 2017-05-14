@@ -1,23 +1,11 @@
-language: python
-python:
-    - "2.7"
+language: C++
 
-# Cache PlatformIO packages using Travis CI container-based infrastructure
-sudo: false
-cache:
-    directories:
-        - "~/.platformio"
+sudo: required
 
-env:
-    - PLATFORMIO_CI_SRC=main.cpp triforce.h tmath.h bno055.h
-
-install:
-    - pip install -U platformio
-    #
-    # Libraries from PlatformIO Library Registry:
-    #
-    # http://platformio.org/lib/show/962/mbed-drivers
-    - platformio lib -g install 962
-
+before_script:
+  - wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update -O arm-gcc.tar.bz2
+  - tar -jxf arm-gcc.tar.bz2
+  - mbed config -G GCC_PATH $TRAVIS_BUILD_DIR/gcc-arm-none-eabi-6-2017-q1-update/bin"
+  - mbed deploy
 script:
-    - platformio ci --board=lpc1768
+- mbed compile -t GCC_ARM -m lpc1768
