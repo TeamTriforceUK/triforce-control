@@ -16,6 +16,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+* @file main.cpp
+* @author Euan W. Mutch, Cameron A. Craig
+* @date 13 May 2017
+* @copyright 2017 Euan W. Mutch, Cameron A. Craig
+* @brief Drives ESCs for Triforce fighting robot based on PWM signals from receiver.
+* @mainpage Triforce Control
+  @section intro_sec Introduction
+  This documentation has been generated from the Doxygen comments within the source
+  code of this project. This is a useful developers reference.
+
+  @section install_sec Installation
+     @code{.unparsed}
+      git clone https://github.com/TeamTriforceUK/triforce-control.git
+      cd triforce-control
+      mbed deploy
+      mbed compile -t GCC_ARM -m lpc1768
+     @endcode
+*/
+
 /* Includes */
 #include "bno055.h"
 #include "esc.h"

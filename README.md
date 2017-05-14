@@ -1,5 +1,7 @@
 # triforce-control
 
+[![Documentation](https://codedocs.xyz/TeamTriforceUK/triforce-control.svg)](https://codedocs.xyz/TeamTriforceUK/triforce-control/)
+
 ## Introduction
 This software is used on the Triforce robot to translate trasnsmitter PPM signals to ESC PWM signals.
 The translation involves determining the speeds of the three drive motors so that the robot moves in the direction of the transmitter joystick.

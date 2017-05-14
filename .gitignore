@@ -37,3 +37,7 @@
 
 # Ignore build folder
 BUILD/
+mbed-os
+triforce-esc
+triforce-ppm
+docs/_build

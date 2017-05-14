@@ -16,6 +16,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+* @file triforce.h
+* @author Euan W. Mutch, Cameron A. Craig
+* @date 13 May 2017
+* @copyright 2017 Euan W. Mutch, Cameron A. Craig
+* @brief Defines constants structs and globals.
+*/
+
 #ifndef TRIFORCE_H
 #define TRIFORCE_H
 
