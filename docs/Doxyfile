@@ -1,8 +1,7 @@
 PROJECT_NAME           = "Triforce Control"
-XML_OUTPUT       = doxyxml
+XML_OUTPUT             = doxyxml
 PROJECT_BRIEF          = "Controls Triforce fighting robot."
-OUTPUT_DIRECTORY       = "docs/_build"
-INPUT                  = .
+INPUT                  = ../
 FILE_PATTERNS          = *.cpp *.h
 RECURSIVE              = NO
 INPUT_FILTER           =

@@ -23,7 +23,7 @@
 
 # Run doxygen in root directory to generate documentation
 import subprocess
-subprocess.call('cd .. ; doxygen', shell=True)
+subprocess.call('doxygen', shell=True)
 
 # -- General configuration ------------------------------------------------
 
