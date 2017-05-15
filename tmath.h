@@ -24,36 +24,69 @@
 * @brief Math helper functions.
 */
 
-#ifndef MATH_H
-#define MATH_H
-
-/******************************************************************************/
-
-float map(float in, float inMin, float inMax, float outMin, float outMax) {
-  // check it's within the range
-  if (inMin<inMax) {
-    if (in <= inMin)
-      return outMin;
-    if (in >= inMax)
-      return outMax;
-  } else {  // cope with input range being backwards.
-    if (in >= inMin)
-      return outMin;
-    if (in <= inMax)
-      return outMax;
-  }
-  // calculate how far into the range we are
-  float scale = (in-inMin)/(inMax-inMin);
-  // calculate the output.
-  return outMin + scale*(outMax-outMin);
-}
-
-float clamp(float d, float min, float max) {
-  const float t = d < min ? min : d;
-  return t > max ? max : t;
-}
+#ifndef TC_MATH_H
+#define TC_MATH_H
 
 #define BETWEEN(value, min, max) (value < max && value > min)
-/******************************************************************************/
 
-#endif
+float map(float in, float inMin, float inMax, float outMin, float outMax);
+
+float clamp(float d, float min, float max);
+
+// void calculate_heading_correction(){
+//     if(heading_lock_enabled){
+//
+//         /* Normalize headings */
+//         float n_current_heading = normalize(orientation.heading);
+//         float n_heading_lock = normalize(heading_lock);
+//
+//         #if defined (PC_DEBUGGING) && defined (DEBUG_HEADING_LOCK)
+//         pc.printf("Current heading: %f \t Desired Heading: %f \r\n", n_current_heading, n_heading_lock);
+//         #endif
+//
+//         /* Calculate error */
+//         float error = n_current_heading - n_heading_lock;
+//
+//         /* Normalize error */
+//         error = normalize(error);
+//
+//         /* Figure out which way to turn */
+//         if(abs(error) > heading_lock_deadband){
+//
+//             /* Speed is 0 -> 100
+//              * error is -180 -> 180
+//              * output is 0 -> 100
+//              */
+//             //error = error * (heading_lock_speed / 100.0);
+//             #if defined (PC_DEBUGGING) && defined (DEBUG_HEADING_LOCK)
+//             pc.printf("ERROR: %7.2f", error);
+//             #endif
+//             error = map(error, -180, 180, 1.0, -1.0);
+//
+//
+//             float amount = error * 50;
+//
+//             amount *= heading_lock_speed / 100.0;
+//
+//             direction.rotation += amount;
+//
+//         }else{
+//
+//             /* In deadband so do nothing */
+//             direction.rotation = 50;
+//         }
+//         #if defined (PC_DEBUGGING) && defined (DEBUG_HEADING_LOCK)
+//         pc.printf("Heading error: (%7.2f) \t Rotation: (%7.2f) \t Speed: (%7.2f) \r\n", error, direction.rotation, heading_lock_speed);
+//         #endif
+//
+//     }
+// }
+
+
+
+/* Convert from pulsewidth in seconds, to % */
+int convert_pulsewidth(float pulsewidth);
+
+float normalize(float heading);
+
+#endif //TC_MATH_H
