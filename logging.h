@@ -1,5 +1,10 @@
-#define SERIAL_LOG(type, targs, args...) \
+#ifndef TC_LOGGING_H
+#define TC_LOGGING_H
 
-#define SERIAL_LOG_INFO(rate, targs, args...) \
-targs->serial->printf(type);
-      targs->serial->printf(args); \
+extern Serial serial;
+
+#define LOG( args...) \
+  serial.printf(args); \
+
+
+#endif //TC_LOGGING_H

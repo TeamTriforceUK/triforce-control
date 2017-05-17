@@ -32,33 +32,75 @@
 #include "triforce.h"
 #include "tmath.h"
 #include "states.h"
+#include "logging.h"
+#include "commands.h"
+
+void task_serial_commands_in(const void *targs){
+  thread_args_t * args = (thread_args_t *) targs;
+
+  char buffer[100];
+  int pos = 0;
+  LOG( "$");
+
+  while(args->active){
+    buffer[pos] = args->serial->getc();
+
+    // If ENTER key is pressed, execute command
+    if(buffer[pos] == '\r'){
+      buffer[pos+1] = NULL;
+      LOG( "\r\n");
+      command_t command;
+      //Generate a command structure for the command given
+      if(!command_generate(&command, buffer)){
+        LOG( "Command not recognised!\r\n");
+      } else {
+        LOG("Queueing %s\r\n", command.name);
+      };
+      // LOG( "Found %s\r\n", command.name);
+
+      pos = -1;
+    }
+    if(buffer[pos] == '\b'){
+      buffer[pos] = NULL;
+      pos--;
+    }
+    buffer[pos+1] = NULL;
+    LOG("\r$ %s", buffer);
+    pos++;
+  }
+}
 
 
 
 void task_state_leds(const void *targs){
   thread_args_t * args = (thread_args_t *) targs;
+  static state_t previous_state = args->state;
   while(args->active){
-    switch(args->state){
-      case STATE_DISARMED:
-        args->leds[0]->write(false);
-        args->leds[1]->write(false);
-        args->leds[2]->write(false);
-        args->leds[3]->write(false);
-        break;
-      case STATE_DRIVE_ONLY:
-        args->leds[0]->write(true);
-        args->leds[1]->write(true);
-        args->leds[2]->write(false);
-        args->leds[3]->write(false);
-        break;
-      case STATE_FULLY_ARMED:
-        args->leds[0]->write(true);
-        args->leds[1]->write(true);
-        args->leds[2]->write(true);
-        args->leds[3]->write(true);
-        break;
+    if (args->state != previous_state){
+      LOG( "state change: %s --> %s\r\n", state_to_str(previous_state), state_to_str(args->state));
+      switch(args->state){
+        case STATE_DISARMED:
+          args->leds[0]->write(false);
+          args->leds[1]->write(false);
+          args->leds[2]->write(false);
+          args->leds[3]->write(false);
+          break;
+        case STATE_DRIVE_ONLY:
+          args->leds[0]->write(true);
+          args->leds[1]->write(true);
+          args->leds[2]->write(false);
+          args->leds[3]->write(false);
+          break;
+        case STATE_FULLY_ARMED:
+          args->leds[0]->write(true);
+          args->leds[1]->write(true);
+          args->leds[2]->write(true);
+          args->leds[3]->write(true);
+          break;
       }
     }
+  }
+  previous_state = args->state;
 }
  /** Read control positions from RC receiver
  *

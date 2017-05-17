@@ -16,6 +16,7 @@
 #include "esc.h"
 #include "PwmIn.h"
 #include "states.h"
+#include "bno055.h"
 
 typedef struct {
 
@@ -62,6 +63,8 @@ typedef struct {
   int heading_lock_deadband; // degrees / 2
 
 } thread_args_t;
+
+void thread_args_init(thread_args_t *args);
 
 
 #endif //TC_THREAD_ARGS_H

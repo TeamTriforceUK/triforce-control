@@ -33,4 +33,6 @@ enum state_t {
   STATE_FULLY_ARMED
 };
 
+const char * state_to_str(state_t state);
+
 #endif //TC_STATES_T

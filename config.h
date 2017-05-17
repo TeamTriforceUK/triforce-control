@@ -6,6 +6,8 @@
 * @brief Configure pins and other parameters.
 */
 
+#define VERSION "0.2.0"
+
 #ifndef TC_CONFIG_H
 #define TC_CONFIG_H
 

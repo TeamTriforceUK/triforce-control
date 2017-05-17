@@ -27,6 +27,8 @@
 #ifndef TC_TASKS_H
 #define TC_TASKS_H
 
+void task_serial_commands_in(const void *targs);
+void task_state_leds(const void *targs);
 void task_read_receiver(const void *targs);
 void task_set_escs(const void *targs);
 void task_calc_escs(const void *targs);

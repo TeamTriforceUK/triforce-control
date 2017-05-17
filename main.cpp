@@ -48,6 +48,8 @@
 #include "config.h"
 #include "tasks.h"
 
+Serial serial(USBTX, USBRX);
+
 
 /** Init
  *
@@ -83,8 +85,9 @@ int main() {
     thread_args_t targs;
     memset(&targs, 0x00, sizeof(thread_args_t));
 
+    thread_args_init(&targs);
+
     /* USB */
-    Serial serial(USBTX, USBRX);
     targs.serial = &serial;
 
     /* 8 Channel RC input */
@@ -130,26 +133,44 @@ int main() {
 
     /* LEDs */
     DigitalOut led1(LED1);
+    targs.leds[0] = &led1;
+
+    DigitalOut led2(LED2);
+    targs.leds[1] = &led2;
+
+    DigitalOut led3(LED3);
+    targs.leds[2] = &led3;
+
+    DigitalOut led4(LED4);
+    targs.leds[3] = &led4;
+
 
     #ifdef PC_DEBUGGING
     targs.serial->baud(115200);
-    targs.serial->printf("Triforce Control System \r\n");
+    targs.serial->printf("Triforce Control System v%s \r\n", VERSION);
     #endif
 
-    init();
+    //init();
+
+    Thread thread_serial_commands_in;
+    thread_serial_commands_in.start(callback(task_serial_commands_in, (void *) &targs));
+
+    Thread thread_state_leds;
+    thread_state_leds.start(callback(task_state_leds, (void *) &targs));
 
     Thread thread_read_receiver;
     thread_read_receiver.start(callback(task_read_receiver, (void *) &targs));
 
     Thread thread_set_escs;
-    thread_read_receiver.start(callback(task_set_escs, (void *) &targs));
+    thread_set_escs.start(callback(task_set_escs, (void *) &targs));
 
     // Thread thread_calc_escs;
     // thread_read_receiver.start(callback(task_calc_escs, (void *) &targs));
 
     Thread thread_calc_orientation;
-    thread_read_receiver.start(callback(task_calc_orientation, (void *) &targs));
+    thread_calc_orientation.start(callback(task_calc_orientation, (void *) &targs));
 
+    thread_state_leds.join();
     thread_read_receiver.join();
     thread_set_escs.join();
     // thread_calc_escs.join();
