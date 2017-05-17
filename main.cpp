@@ -38,6 +38,7 @@
 
 /* Includes */
 #include "mbed.h"
+#include "rtos.h"
 #include "esc.h"
 #include "PwmIn.h"
 
@@ -150,30 +151,42 @@ int main() {
     targs.serial->printf("Triforce Control System v%s \r\n", VERSION);
     #endif
 
+    Mail<command_t, COMMAND_QUEUE_LEN> command_queue;
+    targs.command_queue = &command_queue;
+
     //init();
 
     Thread thread_serial_commands_in;
+    thread_serial_commands_in.set_priority(osPriorityRealtime);
     thread_serial_commands_in.start(callback(task_serial_commands_in, (void *) &targs));
+
+    Thread thread_process_commands;
+    thread_process_commands.set_priority(osPriorityHigh);
+    thread_process_commands.start(callback(task_process_commands, (void *) &targs));
+
 
     Thread thread_state_leds;
     thread_state_leds.start(callback(task_state_leds, (void *) &targs));
 
-    Thread thread_read_receiver;
-    thread_read_receiver.start(callback(task_read_receiver, (void *) &targs));
-
-    Thread thread_set_escs;
-    thread_set_escs.start(callback(task_set_escs, (void *) &targs));
+    // Thread thread_read_receiver;
+    // thread_read_receiver.start(callback(task_read_receiver, (void *) &targs));
+    //
+    // Thread thread_set_escs;
+    // thread_set_escs.start(callback(task_set_escs, (void *) &targs));
 
     // Thread thread_calc_escs;
     // thread_read_receiver.start(callback(task_calc_escs, (void *) &targs));
 
-    Thread thread_calc_orientation;
-    thread_calc_orientation.start(callback(task_calc_orientation, (void *) &targs));
+    // Thread thread_calc_orientation;
+    // thread_calc_orientation.start(callback(task_calc_orientation, (void *) &targs));
 
+
+    thread_serial_commands_in.join();
+    thread_process_commands.join();
     thread_state_leds.join();
-    thread_read_receiver.join();
-    thread_set_escs.join();
+    // thread_read_receiver.join();
+    // thread_set_escs.join();
     // thread_calc_escs.join();
-    thread_calc_orientation.join();
+    // thread_calc_orientation.join();
 
 }

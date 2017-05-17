@@ -34,8 +34,29 @@
 #include "states.h"
 #include "logging.h"
 #include "commands.h"
+#include "return_codes.h"
+
+void task_process_commands(const void *targs){
+  LOG("Command processing task started\r\n");
+  thread_args_t * args = (thread_args_t *) targs;
+  while(args->active){
+    osEvent evt;
+    while((evt = args->command_queue->get(1)).status == osEventMail){
+        command_t *command_q = (command_t*)evt.value.p;
+        int err;
+        if((err = command_execute(command_q, args)) != RET_OK){
+          LOG("\rError: %s\r\n", err_to_str(err));
+        } else{
+          LOG("\rCommand succesful\r\n");
+        }
+        args->command_queue->free(command_q);
+    }
+  }
+  LOG("Command processing task ended\r\n");
+}
 
 void task_serial_commands_in(const void *targs){
+  LOG("Serial in task started \r\n");
   thread_args_t * args = (thread_args_t *) targs;
 
   char buffer[100];
@@ -43,40 +64,46 @@ void task_serial_commands_in(const void *targs){
   LOG( "$");
 
   while(args->active){
-    buffer[pos] = args->serial->getc();
+    if(args->serial->readable()){
+      buffer[pos] = args->serial->getc();
 
-    // If ENTER key is pressed, execute command
-    if(buffer[pos] == '\r'){
+      // If ENTER key is pressed, execute command
+      if(buffer[pos] == '\r'){
+        buffer[pos+1] = NULL;
+        LOG( "\r\n");
+        command_t command;
+        //Generate a command structure for the command given
+        if(!command_generate(&command, buffer)){
+          LOG("\rCommand not recognised!\r\n");
+        } else {
+          command_t *command_q = args->command_queue->alloc();
+          memcpy(command_q, &command, sizeof(command_t));
+          args->command_queue->put(command_q);
+        };
+
+        pos = -1;
+      }
+      if(buffer[pos] == '\b'){
+        buffer[pos] = NULL;
+        pos--;
+      }
       buffer[pos+1] = NULL;
-      LOG( "\r\n");
-      command_t command;
-      //Generate a command structure for the command given
-      if(!command_generate(&command, buffer)){
-        LOG( "Command not recognised!\r\n");
-      } else {
-        LOG("Queueing %s\r\n", command.name);
-      };
-      // LOG( "Found %s\r\n", command.name);
-
-      pos = -1;
+      LOG("\r$ %s", buffer);
+      pos++;
     }
-    if(buffer[pos] == '\b'){
-      buffer[pos] = NULL;
-      pos--;
-    }
-    buffer[pos+1] = NULL;
-    LOG("\r$ %s", buffer);
-    pos++;
   }
+  LOG("Serial in task ended\r\n");
 }
 
 
 
 void task_state_leds(const void *targs){
+  LOG("LED task started\r\n");
   thread_args_t * args = (thread_args_t *) targs;
   static state_t previous_state = args->state;
+  bool first_time = true;
   while(args->active){
-    if (args->state != previous_state){
+    if (args->state != previous_state || first_time){
       LOG( "state change: %s --> %s\r\n", state_to_str(previous_state), state_to_str(args->state));
       switch(args->state){
         case STATE_DISARMED:
@@ -99,8 +126,11 @@ void task_state_leds(const void *targs){
           break;
       }
     }
+    previous_state = args->state;
+    first_time = false;
+    Thread::wait(100);
   }
-  previous_state = args->state;
+  LOG("LED task ended\r\n");
 }
  /** Read control positions from RC receiver
  *

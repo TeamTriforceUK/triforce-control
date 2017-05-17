@@ -17,10 +17,14 @@
 #include "PwmIn.h"
 #include "states.h"
 #include "bno055.h"
+#include "command.h"
 
 typedef struct {
 
   state_t state;
+
+  //Mail queue for commands from serial comms or RF RX
+  Mail<command_t, COMMAND_QUEUE_LEN> *command_queue;
 
 
   bool active;

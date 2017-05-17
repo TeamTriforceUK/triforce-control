@@ -2,6 +2,9 @@
 #include "commands.h"
 #include "logging.h"
 #include "utils.h"
+#include "states.h"
+#include "return_codes.h"
+#include "thread_args.h"
 
 const char * command_get_str(command_id_t id){
   switch(id){
@@ -13,6 +16,8 @@ const char * command_get_str(command_id_t id){
       return available_commands[2].name;
     case FULLY_ARM:
       return available_commands[3].name;
+    default:
+      return "INVALID COMMAND";
   }
 }
 
@@ -53,10 +58,69 @@ int command_generate(command_t *command, char *buffer){
       command->name = available_commands[i].name;
       //TODO: Set command parameters for parameterised commands
       //return true if matching command is found
-      return 1;
+      return RET_OK;
     }
   }
 
   //Return false (0) if no match is found
-  return 0;
+  return RET_ERROR;
+}
+
+int command_execute(command_t *command, thread_args_t *targs){
+  switch(command->id){
+    case FULLY_DISARM:
+      return command_fully_disarm(command, targs);
+    case PARTIAL_DISARM:
+      return command_partial_disarm(command, targs);
+    case PARTIAL_ARM:
+      return command_partial_arm(command, targs);
+    case FULLY_ARM:
+      return command_fully_arm(command, targs);
+    default:
+      return RET_ERROR;
+  }
+}
+
+int command_fully_disarm(command_t *command, thread_args_t *targs){
+  if(targs->state == STATE_DISARMED){
+    return RET_ALREADY_DISARMED;
+  }
+  targs->state = STATE_DISARMED;
+  return RET_OK;
+}
+
+int command_partial_disarm(command_t *command, thread_args_t *targs){
+  switch(targs->state){
+    case STATE_DISARMED:
+      return RET_ALREADY_DISARMED;
+    case STATE_DRIVE_ONLY:
+      targs->state = STATE_DISARMED;
+      return RET_OK;
+    case STATE_FULLY_ARMED:
+      targs->state = STATE_DRIVE_ONLY;
+      return RET_OK;
+    default:
+      return RET_ERROR;
+  }
+}
+int command_partial_arm(command_t *command, thread_args_t *targs){
+  switch(targs->state){
+    case STATE_DISARMED:
+      targs->state = STATE_DRIVE_ONLY;
+      return RET_OK;
+    case STATE_DRIVE_ONLY:
+      targs->state = STATE_FULLY_ARMED;
+      return RET_OK;
+    case STATE_FULLY_ARMED:
+      return RET_ALREADY_ARMED;
+    default:
+      return RET_ERROR;
+  }
+}
+int command_fully_arm(command_t *command, thread_args_t *targs){
+  if(targs->state == STATE_FULLY_ARMED){
+    return RET_ALREADY_ARMED;
+  }
+  targs->state = STATE_FULLY_ARMED;
+  return RET_OK;
 }

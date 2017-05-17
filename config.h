@@ -44,5 +44,9 @@
 #define RC_OFF_THRES 30 // OFF threshold for switches
 #define RC_FAILSAFE_THRES 150 // FAILSAFE threshold
 
+#define COMMAND_QUEUE_LEN 100
+
+#define MAIL_TIMEOUT_MS 1
+
 
 #endif //TC_CONFIG_H
