@@ -43,6 +43,7 @@
 #define RC_ON_THRES 70 // ON threshold for switches
 #define RC_OFF_THRES 30 // OFF threshold for switches
 #define RC_FAILSAFE_THRES 150 // FAILSAFE threshold
+#define RC_SWITCH_MIDPOINT 50
 
 #define COMMAND_QUEUE_LEN 100
 
