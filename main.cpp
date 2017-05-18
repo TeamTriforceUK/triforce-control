@@ -43,7 +43,6 @@
 #include "PwmIn.h"
 
 #include "bno055.h"
-#include "triforce.h"
 #include "tmath.h"
 #include "thread_args.h"
 #include "config.h"

@@ -29,7 +29,6 @@
 #include "bno055.h"
 #include "types.h"
 #include "thread_args.h"
-#include "triforce.h"
 #include "tmath.h"
 #include "states.h"
 #include "logging.h"
