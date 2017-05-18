@@ -66,6 +66,8 @@ typedef struct {
     ESC *weapon[2];
   } escs;
 
+  orientation_t orientation_detected;
+  orientation_t orientation_override;
   euler_t orientation;
 
   struct {

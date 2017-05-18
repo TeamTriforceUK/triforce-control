@@ -47,6 +47,7 @@
 #include "thread_args.h"
 #include "config.h"
 #include "tasks.h"
+#include "logging.h"
 
 Serial serial(USBTX, USBRX);
 
@@ -144,11 +145,8 @@ int main() {
     DigitalOut led4(LED4);
     targs.leds[3] = &led4;
 
-
-    #ifdef PC_DEBUGGING
     targs.serial->baud(115200);
-    targs.serial->printf("Triforce Control System v%s \r\n", VERSION);
-    #endif
+    LOG("Triforce Control System v%s \r\n", VERSION);
 
     Mail<command_t, COMMAND_QUEUE_LEN> command_queue;
     targs.command_queue = &command_queue;

@@ -32,7 +32,8 @@ enum command_id_t {
   FULLY_DISARM = 0,
   PARTIAL_DISARM,
   PARTIAL_ARM,
-  FULLY_ARM
+  FULLY_ARM,
+  STATUS
 };
 
 typedef struct {

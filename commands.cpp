@@ -32,6 +32,7 @@
 #include "states.h"
 #include "return_codes.h"
 #include "thread_args.h"
+#include "types.h"
 
 const char * command_get_str(command_id_t id){
   switch(id){
@@ -43,6 +44,8 @@ const char * command_get_str(command_id_t id){
       return available_commands[2].name;
     case FULLY_ARM:
       return available_commands[3].name;
+    case STATUS:
+      return available_commands[4].name;
     default:
       return "INVALID COMMAND";
   }
@@ -103,6 +106,8 @@ int command_execute(command_t *command, thread_args_t *targs){
       return command_partial_arm(command, targs);
     case FULLY_ARM:
       return command_fully_arm(command, targs);
+    case STATUS:
+      return command_status(command, targs);
     default:
       return RET_ERROR;
   }
@@ -149,5 +154,24 @@ int command_fully_arm(command_t *command, thread_args_t *targs){
     return RET_ALREADY_ARMED;
   }
   targs->state = STATE_FULLY_ARMED;
+  return RET_OK;
+}
+
+int command_status(command_t *command, thread_args_t *targs){
+  LOG("\rStatus: %s\r\n", state_to_str(targs->state));
+  // LOG("\r(ESCS) D1: %d, D2: %d, D3: %d, W1: %d, W2: %d\r\n",
+  //   targs->outputs.wheel_1,
+  //   targs->outputs.wheel_2,
+  //   targs->outputs.wheel_3,
+  //   targs->outputs.weapon_motor_1,
+  //   targs->outputs.weapon_motor_2,
+  // );
+  // TODO: RPMs
+  // LOG("\r(RPMS) W1: W2: D1: \r\n");
+  LOG("\r(Orientation) detected: %s, overidden: %s\r\n",
+    orientation_to_str(targs->orientation_detected),
+    orientation_to_str(targs->orientation_override)
+  );
+  LOG("\r              heading: %d, pitch: %d, roll: %d\r\n", targs->orientation.heading, targs->orientation.pitch, targs->orientation.roll);
   return RET_OK;
 }

@@ -70,4 +70,12 @@ struct distance_sensor{
     float range;
 };
 
+enum orientation_t {
+  UPRIGHT = 0,
+  INVERTED
+};
+
+
+ const char * orientation_to_str(orientation_t orientation);
+
 #endif //TC_TYPES_H
