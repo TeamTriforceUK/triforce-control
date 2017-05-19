@@ -32,6 +32,8 @@ const char * state_to_str(state_t state){
       return "DISARMED";
     case STATE_DRIVE_ONLY:
       return "DRIVE ONLY";
+    case STATE_WEAPON_ONLY:
+      return "WEAPON ONLY";
     case STATE_FULLY_ARMED:
       return "FULLY ARMED";
   }

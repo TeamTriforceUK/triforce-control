@@ -112,6 +112,8 @@ void task_state_leds(const void *targs){
   thread_args_t * args = (thread_args_t *) targs;
   static state_t previous_state = args->state;
   bool first_time = true;
+  bool weapon_only_ripple[4] = {true, false, false, false};
+  bool tmp_ripple;
   while(args->active){
     if (args->state != previous_state || first_time){
       LOG( "state change: %s --> %s\r\n", state_to_str(previous_state), state_to_str(args->state));
@@ -128,6 +130,8 @@ void task_state_leds(const void *targs){
           args->leds[2]->write(false);
           args->leds[3]->write(false);
           break;
+        case STATE_WEAPON_ONLY:
+          break;
         case STATE_FULLY_ARMED:
           args->leds[0]->write(true);
           args->leds[1]->write(true);
@@ -136,6 +140,23 @@ void task_state_leds(const void *targs){
           break;
       }
     }
+
+    /* The weapon only state is a special case where fancy LED strobing is used
+       We need to do this outside the above switch statement, as we require a
+       LED change every loop, rather than just on a state change.
+    */
+    if(args->state == STATE_WEAPON_ONLY){
+      args->leds[0]->write(weapon_only_ripple[0]);
+      args->leds[1]->write(weapon_only_ripple[1]);
+      args->leds[2]->write(weapon_only_ripple[2]);
+      args->leds[3]->write(weapon_only_ripple[3]);
+
+      //Move LED along by one
+      tmp_ripple = weapon_only_ripple[3];
+      memmove(&weapon_only_ripple[1], &weapon_only_ripple[0], sizeof(bool)*3);
+      weapon_only_ripple[0] = tmp_ripple;
+    }
+
     previous_state = args->state;
     first_time = false;
     Thread::wait(100);
@@ -149,49 +170,105 @@ void task_state_leds(const void *targs){
 void task_read_receiver(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   while(args->active){
-    args->controls.channel_1 = convert_pulsewidth(args->rc_channel[0]->pulsewidth());
-    args->controls.channel_2 = convert_pulsewidth(args->rc_channel[1]->pulsewidth());
-    args->controls.channel_3 = convert_pulsewidth(args->rc_channel[2]->pulsewidth());
-    args->controls.channel_4 = convert_pulsewidth(args->rc_channel[3]->pulsewidth());
-    args->controls.channel_5 = convert_pulsewidth(args->rc_channel[4]->pulsewidth());
-    args->controls.channel_6 = convert_pulsewidth(args->rc_channel[5]->pulsewidth());
-    args->controls.channel_7 = convert_pulsewidth(args->rc_channel[6]->pulsewidth());
-    args->controls.channel_8 = convert_pulsewidth(args->rc_channel[7]->pulsewidth());
+    int controller, channel;
+    for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++){
+      for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++){
+        args->controls[controller].channel[channel] = convert_pulsewidth(args->receiver[controller].channel[channel]->pulsewidth());
+      }
+    }
   }
 }
+
 /**
 * @brief Change the arming state based on the arming switch.
 * @param [in/out] targs Thread arguments.
 */
 void task_arming(const void *targs){
   thread_args_t * args = (thread_args_t *) targs;
+  bool drive_switch, weapon_switch, drive_arm, weapon_arm;
+
   while(args->active){
+    drive_switch = (args->controls[0].channel[3] > RC_SWITCH_MIDPOINT);
+    weapon_switch = (args->controls[1].channel[3] > RC_SWITCH_MIDPOINT);
+
+    drive_arm = drive_switch &&
+      BETWEEN(args->controls[0].channel[0], 45, 55) &&
+      BETWEEN(args->controls[0].channel[1], 45, 55) &&
+      (args->controls[0].channel[2] < RC_ARM_CHANNEL_3) &&
+      BETWEEN(args->controls[0].channel[3], 45, 55);
+
+    weapon_arm = weapon_switch &&
+      BETWEEN(args->controls[1].channel[0], 45, 55) &&
+      BETWEEN(args->controls[1].channel[1], 45, 55) &&
+      (args->controls[1].channel[2] < RC_ARM_CHANNEL_3) &&
+      BETWEEN(args->controls[1].channel[3], 45, 55);
+
     switch(args->state){
+      /* From the fully armed state we can only decrease the arm state,
+      so we don't need to be concerned with the stick positions. */
       case STATE_FULLY_ARMED:
-      case STATE_DRIVE_ONLY:
-      case STATE_DISARMED:
-        //Channel 4 should be configured on the transmitter as the front right switch
-        //This switch is used for arming
-        if(args->controls.channel_4 > RC_SWITCH_MIDPOINT){
-          args->state = STATE_FULLY_ARMED;
-        } else {
+        if(!drive_switch && !weapon_switch){
           args->state = STATE_DISARMED;
+        } else if(drive_switch && !weapon_switch){
+          args->state = STATE_DRIVE_ONLY;
+        } else if(!drive_switch && weapon_switch){
+          args->state = STATE_WEAPON_ONLY;
         }
         break;
+      case STATE_DRIVE_ONLY:
+        if(!drive_switch){
+          args->state = STATE_DISARMED;
+        } else if(weapon_arm){
+          args->state = STATE_FULLY_ARMED;
+        }
+        break;
+      case STATE_WEAPON_ONLY:
+        if(!weapon_switch){
+          args->state = STATE_DISARMED;
+        } else if(drive_arm){
+          args->state = STATE_FULLY_ARMED;
+        }
+        break;
+      case STATE_DISARMED:
+        if(drive_arm && weapon_arm){
+          args->state = STATE_FULLY_ARMED;
+        } else if(drive_arm){
+          args->state = STATE_DRIVE_ONLY;
+        } else if(weapon_arm){
+          args->state = STATE_WEAPON_ONLY;
+        }
     }
   }
 }
 
 void task_failsafe(const void *targs){
   thread_args_t * args = (thread_args_t *) targs;
+  bool drive_inactive, weapon_inactive;
   while(args->active){
-    switch(args->state)
+    drive_inactive = args->receiver[0].channel[0]->stallTimer.read_ms() > 200;
+    weapon_inactive = args->receiver[1].channel[0]->stallTimer.read_ms() > 200;
+
+    switch(args->state){
       case STATE_FULLY_ARMED:
-      case STATE_DISARMED:
-        if(args->rc_channel[0]->stallTimer.read_ms() > 200){
+        if(drive_inactive && weapon_inactive){
+          args->state = STATE_DISARMED;
+        } else if(drive_inactive && !weapon_inactive){
+          args->state = STATE_WEAPON_ONLY;
+        } else if(!drive_inactive && weapon_inactive){
+          args->state = STATE_DRIVE_ONLY;
+        }
+        break;
+      case STATE_DRIVE_ONLY:
+        if(drive_inactive){
           args->state = STATE_DISARMED;
         }
         break;
+      case STATE_WEAPON_ONLY:
+        if(weapon_inactive){
+          args->state = STATE_DISARMED;
+        }
+        break;
+    }
   }
 }
 

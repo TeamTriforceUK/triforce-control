@@ -29,14 +29,20 @@
 #ifndef TC_CONFIG_H
 #define TC_CONFIG_H
 
-#define RECV_CHAN_1_PIN p5
-#define RECV_CHAN_2_PIN p6
-#define RECV_CHAN_3_PIN p7
-#define RECV_CHAN_4_PIN p8
-#define RECV_CHAN_5_PIN p11
-#define RECV_CHAN_6_PIN p12
-#define RECV_CHAN_7_PIN p13
-#define RECV_CHAN_8_PIN p14
+/* Pin Assignments */
+#define RECV_D_CHAN_1_PIN p5
+#define RECV_D_CHAN_2_PIN p6
+#define RECV_D_CHAN_3_PIN p7
+#define RECV_D_CHAN_4_PIN p8
+#define RECV_D_CHAN_5_PIN p11
+#define RECV_D_CHAN_6_PIN p12
+
+#define RECV_W_CHAN_1_PIN p13
+#define RECV_W_CHAN_2_PIN p14
+#define RECV_W_CHAN_3_PIN p15
+#define RECV_W_CHAN_4_PIN p16
+#define RECV_W_CHAN_5_PIN p17
+#define RECV_W_CHAN_6_PIN p18
 
 #define DRIVE_ESC_OUT_1_PIN p21
 #define DRIVE_ESC_OUT_2_PIN p22
@@ -45,7 +51,10 @@
 #define WEAPON_ESC_OUT_1_PIN p24
 #define WEAPON_ESC_OUT_2_PIN p25
 
-#define RC_NUMBER_CHANNELS 8
+/* End of Pin Assignments */
+
+#define RC_NUMBER_CHANNELS 6
+#define RC_NUMBER_CONTROLLERS 2
 
 // 150ms increments
 #define NO_SIGNAL_TIMEOUT 70
@@ -63,9 +72,12 @@
 #define RC_FAILSAFE_THRES 150 // FAILSAFE threshold
 #define RC_SWITCH_MIDPOINT 50
 
+
 #define COMMAND_QUEUE_LEN 100
 
 #define MAIL_TIMEOUT_MS 1
+
+#define NUM_SURFACE_LEDS 4
 
 
 #endif //TC_CONFIG_H

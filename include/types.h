@@ -1,17 +1,17 @@
 #ifndef TC_TYPES_H
 #define TC_TYPES_H
 
+#include "PwmIn.h"
+#include "config.h"
+
 /* Positions of controls */
-struct rc_controls{
-    int channel_1;
-    int channel_2;
-    int channel_3;
-    int channel_4;
-    int channel_5;
-    int channel_6;
-    int channel_7;
-    int channel_8;
-};
+typedef struct {
+    int channel[RC_NUMBER_CHANNELS];
+} rc_controls_t;
+
+typedef struct {
+  PwmIn *channel[RC_NUMBER_CHANNELS];
+} rc_receiver_t;
 
 /* Current movement command */
 struct direction_vector{
@@ -76,6 +76,6 @@ enum orientation_t {
 };
 
 
- const char * orientation_to_str(orientation_t orientation);
+const char * orientation_to_str(orientation_t orientation);
 
 #endif //TC_TYPES_H

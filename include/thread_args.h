@@ -41,21 +41,23 @@ typedef struct {
 
   state_t state;
 
-  //Mail queue for commands from serial comms or RF RX
+  /*! Channel values for multiple controllers. */
+  rc_controls_t controls[RC_NUMBER_CONTROLLERS];
+
+  /*! Receiver inputs. */
+  rc_receiver_t receiver[RC_NUMBER_CONTROLLERS];
+
+  /*! Mail queue for commands from serial comms or RF RX */
   Mail<command_t, COMMAND_QUEUE_LEN> *command_queue;
 
+  /*! USB serial port */
+  Serial *serial;
 
   bool active;
   bool armed;
   bool just_armed;
   bool failsafe;
   bool inverted;
-
-  PwmIn *rc_channel[RC_NUMBER_CHANNELS];
-
-  Serial *serial;
-
-  struct rc_controls controls;
 
   struct rc_outputs outputs;
 

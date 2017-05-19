@@ -91,30 +91,30 @@ int main() {
     /* USB */
     targs.serial = &serial;
 
-    /* 8 Channel RC input */
-    PwmIn rc_channel_1(RECV_CHAN_1_PIN); // Roll
-    targs.rc_channel[0] = &rc_channel_1;
+    /* RC inputs from two reveiver units */
+    PwmIn rx_drive[RC_NUMBER_CHANNELS] = {
+      RECV_D_CHAN_1_PIN,
+      RECV_D_CHAN_2_PIN,
+      RECV_D_CHAN_3_PIN,
+      RECV_D_CHAN_4_PIN,
+      RECV_D_CHAN_5_PIN,
+      RECV_D_CHAN_6_PIN
+    };
 
-    PwmIn rc_channel_2(RECV_CHAN_2_PIN); // Pitch
-    targs.rc_channel[1] = &rc_channel_2;
+    PwmIn rx_weapon[RC_NUMBER_CHANNELS] = {
+      RECV_W_CHAN_1_PIN,
+      RECV_W_CHAN_2_PIN,
+      RECV_W_CHAN_3_PIN,
+      RECV_W_CHAN_4_PIN,
+      RECV_W_CHAN_5_PIN,
+      RECV_W_CHAN_6_PIN
+    };
 
-    PwmIn rc_channel_3(RECV_CHAN_3_PIN); // Throttle
-    targs.rc_channel[2] = &rc_channel_3;
-
-    PwmIn rc_channel_4(RECV_CHAN_4_PIN); // Yaw
-    targs.rc_channel[3] = &rc_channel_4;
-
-    PwmIn rc_channel_5(RECV_CHAN_5_PIN); // Switch R front
-    targs.rc_channel[4] = &rc_channel_5;
-
-    PwmIn rc_channel_6(RECV_CHAN_6_PIN); // Dial R
-    targs.rc_channel[5] = &rc_channel_6;
-
-    PwmIn rc_channel_7(RECV_CHAN_7_PIN); // Dial L
-    targs.rc_channel[6] = &rc_channel_7;
-
-    PwmIn rc_channel_8(RECV_CHAN_8_PIN); // Switch L Back
-    targs.rc_channel[7] = &rc_channel_8;
+    int chan;
+    for(chan= 0; chan < RC_NUMBER_CHANNELS; chan++){
+      targs.receiver[0].channel[chan] = &rx_drive[chan];
+      targs.receiver[1].channel[chan] = &rx_weapon[chan];
+    }
 
     /* 5 channel ESC output */
     ESC esc_omni_1(DRIVE_ESC_OUT_1_PIN, 20, 1500);
@@ -133,17 +133,17 @@ int main() {
     targs.escs.weapon[1] = &esc_weapon_2;
 
     /* LEDs */
-    DigitalOut led1(LED1);
-    targs.leds[0] = &led1;
+    DigitalOut led[NUM_SURFACE_LEDS] = {
+      LED1,
+      LED2,
+      LED3,
+      LED4
+    };
 
-    DigitalOut led2(LED2);
-    targs.leds[1] = &led2;
-
-    DigitalOut led3(LED3);
-    targs.leds[2] = &led3;
-
-    DigitalOut led4(LED4);
-    targs.leds[3] = &led4;
+    int l;
+    for(l = 0; l < NUM_SURFACE_LEDS; l++){
+      targs.leds[l] = &led[l];
+    }
 
     targs.serial->baud(115200);
     LOG("Triforce Control System v%s \r\n", VERSION);

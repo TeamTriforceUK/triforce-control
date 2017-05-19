@@ -128,8 +128,11 @@ int command_partial_disarm(command_t *command, thread_args_t *targs){
     case STATE_DRIVE_ONLY:
       targs->state = STATE_DISARMED;
       return RET_OK;
-    case STATE_FULLY_ARMED:
+    case STATE_WEAPON_ONLY:
       targs->state = STATE_DRIVE_ONLY;
+      return RET_OK;
+    case STATE_FULLY_ARMED:
+      targs->state = STATE_WEAPON_ONLY;
       return RET_OK;
     default:
       return RET_ERROR;
@@ -141,6 +144,9 @@ int command_partial_arm(command_t *command, thread_args_t *targs){
       targs->state = STATE_DRIVE_ONLY;
       return RET_OK;
     case STATE_DRIVE_ONLY:
+      targs->state = STATE_WEAPON_ONLY;
+      return RET_OK;
+    case STATE_WEAPON_ONLY:
       targs->state = STATE_FULLY_ARMED;
       return RET_OK;
     case STATE_FULLY_ARMED:
