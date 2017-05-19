@@ -7,11 +7,21 @@ before_install:
   - test -n $CXX && unset CXX
 
 before_script:
+  # Make a directory to contain the ARM GCC binaries. This directory is outside the scope of the linker to prevent conflicts
+  - mkdir ../gcc-arm
+  # Download the ARM GCC embedded toolchain to TRAVIS_BUILD_DIR
   - wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update -O arm-gcc.tar.bz2
+  # Extract the downloaded tarball
   - tar -jxf arm-gcc.tar.bz2
+  # Move the GCC ARM folder to the ../gcc-arm/ directory
+  - mv gcc-arm-none-eabi-6-2017-q1-update/ ../gcc-arm/
+  # Install mbed-cli tool
   - sudo pip install mbed-cli
-  - mbed config -G GCC_ARM_PATH "$TRAVIS_BUILD_DIR/gcc-arm-none-eabi-6-2017-q1-update/bin"
+  # Configure compiler
+  - mbed config -G GCC_ARM_PATH "$TRAVIS_BUILD_DIR/../gcc-arm/gcc-arm-none-eabi-6-2017-q1-update/bin"
+  # Download dependencies
   - mbed deploy
   - sudo pip install -r mbed-os/requirements.txt
 script:
-- mbed compile -t GCC_ARM -m lpc1768
+  # Compile project
+  - mbed compile -t GCC_ARM -m lpc1768
