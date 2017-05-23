@@ -27,7 +27,7 @@
 
 #include "mbed.h"
 #include "commands.h"
-#include "logging.h"
+#include "utilc-logging.h"
 #include "utils.h"
 #include "states.h"
 #include "return_codes.h"

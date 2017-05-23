@@ -31,7 +31,7 @@
 #include "thread_args.h"
 #include "tmath.h"
 #include "states.h"
-#include "logging.h"
+#include "utilc-logging.h"
 #include "commands.h"
 #include "return_codes.h"
 

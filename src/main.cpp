@@ -47,10 +47,13 @@
 #include "thread_args.h"
 #include "config.h"
 #include "tasks.h"
-#include "logging.h"
+#include "utilc-logging.h"
 
+
+/* Set up logging */
+LocalFileSystem local("local");
+struct ucl_s ucl;
 Serial serial(USBTX, USBRX);
-
 
 /** Init
  *
@@ -83,13 +86,23 @@ void init(){
  * Main Loop
  */
 int main() {
+    // Initialise thread arguments structure
     thread_args_t targs;
     memset(&targs, 0x00, sizeof(thread_args_t));
-
     thread_args_init(&targs);
 
-    /* USB */
+    //Set baud rate for USB serial
     targs.serial = &serial;
+    targs.serial->baud(115200);
+
+    ucl_init(&ucl);
+    //ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_FILE, "/local/log.txt");
+    ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_STDOUT);
+
+    // Print initial messsage inidicating start of new process
+    ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
+    LOG("Triforce Control System v%s \r\n", VERSION);
+    //ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
 
     /* RC inputs from two reveiver units */
     PwmIn rx_drive[RC_NUMBER_CHANNELS] = {
@@ -145,9 +158,6 @@ int main() {
       targs.leds[l] = &led[l];
     }
 
-    targs.serial->baud(115200);
-    LOG("Triforce Control System v%s \r\n", VERSION);
-
     Mail<command_t, COMMAND_QUEUE_LEN> command_queue;
     targs.command_queue = &command_queue;
 
@@ -185,5 +195,7 @@ int main() {
     // thread_set_escs.join();
     // thread_calc_escs.join();
     // thread_calc_orientation.join();
+
+    ucl_free(&ucl);
 
 }
