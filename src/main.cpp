@@ -48,7 +48,6 @@
 #include "config.h"
 #include "tasks.h"
 #include "utilc-logging.h"
-#include "mbed_memory_status.h"
 
 
 /* Set up logging */
@@ -160,14 +159,13 @@ int main() {
     Thread thread_process_commands;
     thread_process_commands.set_priority(osPriorityHigh);
     thread_process_commands.start(callback(task_process_commands, (void *) &targs));
-    //
-    //
+
     Thread thread_state_leds;
     thread_state_leds.start(callback(task_state_leds, (void *) &targs));
 
     // Thread thread_read_receiver;
     // thread_read_receiver.start(callback(task_read_receiver, (void *) &targs));
-    //
+
     // Thread thread_set_escs;
     // thread_set_escs.start(callback(task_set_escs, (void *) &targs));
 
