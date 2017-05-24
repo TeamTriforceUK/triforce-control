@@ -95,12 +95,7 @@ int main() {
     targs.serial = &serial;
     targs.serial->baud(115200);
 
-    ucl_init(&ucl);
-    //ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_FILE, "/local/log.txt");
-    ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_STDOUT);
-
     // Print initial messsage inidicating start of new process
-    ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
     LOG("Triforce Control System v%s \r\n", VERSION);
     //ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
 
@@ -195,7 +190,5 @@ int main() {
     // thread_set_escs.join();
     // thread_calc_escs.join();
     // thread_calc_orientation.join();
-
-    ucl_free(&ucl);
 
 }
