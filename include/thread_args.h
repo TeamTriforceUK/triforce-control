@@ -73,10 +73,7 @@ typedef struct {
   euler_t orientation;
 
   struct {
-    Mutex *speed;
-    Mutex *accel;
-    Mutex *engine;
-    Mutex *odometer;
+    Mutex *pc_serial;
   } mutex;
 
 

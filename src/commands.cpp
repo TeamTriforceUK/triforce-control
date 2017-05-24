@@ -35,20 +35,10 @@
 #include "types.h"
 
 const char * command_get_str(command_id_t id){
-  switch(id){
-    case FULLY_DISARM:
-      return available_commands[0].name;
-    case PARTIAL_DISARM:
-      return available_commands[1].name;
-    case PARTIAL_ARM:
-      return available_commands[2].name;
-    case FULLY_ARM:
-      return available_commands[3].name;
-    case STATUS:
-      return available_commands[4].name;
-    default:
-      return "INVALID COMMAND";
-  }
+  if(id > 0 && id < NUM_COMMANDS)
+    return available_commands[id].name;
+  else
+    return "INVALID COMMAND";
 }
 
 int command_generate(command_t *command, char *buffer){
@@ -86,7 +76,13 @@ int command_generate(command_t *command, char *buffer){
       //When a matching command is found, populate the command
       command->id = available_commands[i].id;
       command->name = available_commands[i].name;
-      //TODO: Set command parameters for parameterised commands
+
+      // Set command parameters for parameterised commands
+      // int i;
+      // for(i = 0; i < part; i++){
+      //   memcpy(command->param[i], param_part[i], strlen(param_part[i]));
+      // }
+
       //return true if matching command is found
       return RET_OK;
     }
@@ -108,6 +104,10 @@ int command_execute(command_t *command, thread_args_t *targs){
       return command_fully_arm(command, targs);
     case STATUS:
       return command_status(command, targs);
+    case GET_PARAM:
+      return command_get_param(command, targs);
+    case SET_PARAM:
+      return command_set_param(command, targs);
     default:
       return RET_ERROR;
   }
@@ -180,4 +180,11 @@ int command_status(command_t *command, thread_args_t *targs){
   );
   LOG("\r              heading: %d, pitch: %d, roll: %d\r\n", targs->orientation.heading, targs->orientation.pitch, targs->orientation.roll);
   return RET_OK;
+}
+
+int command_get_param(command_t *command, thread_args_t *targs){
+  LOG("Getting param\r\n");
+}
+int command_set_param(command_t *command, thread_args_t *targs){
+  LOG("Setting param\r\n");
 }

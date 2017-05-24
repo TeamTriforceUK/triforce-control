@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 
-extern Serial serial;
+extern Serial *serial_ptr;
 
 #define UCL_FLAGS_TIMESTAMP (1 << 0)
 #define UCL_FLAGS_LOG_LEVEL (1 << 1)
@@ -26,7 +26,7 @@ extern Serial serial;
 
 //Legacy function, TODO: remove
 #define LOG( args...) \
-  serial.printf(args); \
+  serial_ptr->printf(args); \
 
 enum ucl_error_code_e {
 	UCL_ERROR,

@@ -35,7 +35,9 @@ static const command_t available_commands[] = {
   {.id = PARTIAL_DISARM, .name = "decarm"},
   {.id = PARTIAL_ARM, .name = "incarm"},
   {.id = FULLY_ARM, .name = "arm"},
-  {.id = STATUS, .name = "status"}
+  {.id = STATUS, .name = "status"},
+  {.id = GET_PARAM, .name = "get"},
+  {.id = SET_PARAM, .name = "set"}
 };
 
 #define NUM_COMMANDS (sizeof(available_commands) / sizeof(command_t))
@@ -50,5 +52,8 @@ int command_partial_arm(command_t *command, thread_args_t *targs);
 int command_fully_arm(command_t *command, thread_args_t *targs);
 
 int command_status(command_t *command, thread_args_t *targs);
+
+int command_get_param(command_t *command, thread_args_t *targs);
+int command_set_param(command_t *command, thread_args_t *targs);
 
 #endif //TC_COMMANDS_H

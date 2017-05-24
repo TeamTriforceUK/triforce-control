@@ -48,56 +48,42 @@
 #include "config.h"
 #include "tasks.h"
 #include "utilc-logging.h"
+#include "mbed_memory_status.h"
 
 
 /* Set up logging */
 LocalFileSystem local("local");
-struct ucl_s ucl;
-Serial serial(USBTX, USBRX);
-
-/** Init
- *
- * Sets up devices
- * Will loop init for bno055 untill it starts correctly.
- */
-void init(){
-    #ifdef ORIENTATION
-    init_bno055:
-    /* Initialise the sensor */
-    if(!bno055_init()){
-
-        /* There was a problem detecting the BNO055 ... check your connections */
-        #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
-        //pc.printf("BNO055 not detected\r\n");
-        #endif
-        goto init_bno055;
-
-    } else {
-        #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
-        //pc.printf("BNO055 was detected!\r\n");
-        #endif
-    }
-    #endif
-}
-
+Serial *serial_ptr;
 
 /** Main
  *
  * Main Loop
  */
 int main() {
+    Serial *serial = new Serial(USBTX, USBRX);
+    serial->baud(115200);
+
+
     // Initialise thread arguments structure
-    thread_args_t targs;
-    memset(&targs, 0x00, sizeof(thread_args_t));
-    thread_args_init(&targs);
+    thread_args_t *targs;
+    targs = (thread_args_t*) malloc(sizeof(thread_args_t));
+    memset(targs, 0x00, sizeof(thread_args_t));
+    thread_args_init(targs);
 
     //Set baud rate for USB serial
-    targs.serial = &serial;
-    targs.serial->baud(115200);
+    targs->serial = serial;
+    serial_ptr = serial;
+
+
+    // print_all_thread_info();
+    // print_heap_and_isr_stack_info();
 
     // Print initial messsage inidicating start of new process
-    LOG("Triforce Control System v%s \r\n", VERSION);
-    //ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
+    targs->serial->puts("Triforce Control System v");
+    targs->serial->puts(VERSION);
+    targs->serial->puts("\r\n");
+
+    targs->serial->puts("init(): PWM inputs\r\n");
 
     /* RC inputs from two reveiver units */
     PwmIn rx_drive[RC_NUMBER_CHANNELS] = {
@@ -120,25 +106,29 @@ int main() {
 
     int chan;
     for(chan= 0; chan < RC_NUMBER_CHANNELS; chan++){
-      targs.receiver[0].channel[chan] = &rx_drive[chan];
-      targs.receiver[1].channel[chan] = &rx_weapon[chan];
+      targs->receiver[0].channel[chan] = &rx_drive[chan];
+      targs->receiver[1].channel[chan] = &rx_weapon[chan];
     }
+
+    targs->serial->puts("init(): PWM Outputs\r\n");
 
     /* 5 channel ESC output */
     ESC esc_omni_1(DRIVE_ESC_OUT_1_PIN, 20, 1500);
-    targs.escs.drive[0] = &esc_omni_1;
+    targs->escs.drive[0] = &esc_omni_1;
 
     ESC esc_omni_2(DRIVE_ESC_OUT_2_PIN, 20, 1500);
-    targs.escs.drive[1] = &esc_omni_2;
+    targs->escs.drive[1] = &esc_omni_2;
 
     ESC esc_omni_3(DRIVE_ESC_OUT_3_PIN, 20, 1500); //LED4
-    targs.escs.drive[2] = &esc_omni_3;
+    targs->escs.drive[2] = &esc_omni_3;
 
     ESC esc_weapon_1(WEAPON_ESC_OUT_1_PIN); //LED3
-    targs.escs.weapon[0] = &esc_weapon_1;
+    targs->escs.weapon[0] = &esc_weapon_1;
 
     ESC esc_weapon_2(WEAPON_ESC_OUT_2_PIN); //LED2
-    targs.escs.weapon[1] = &esc_weapon_2;
+    targs->escs.weapon[1] = &esc_weapon_2;
+
+    targs->serial->puts("init(): onboard LEDS\r\n");
 
     /* LEDs */
     DigitalOut led[NUM_SURFACE_LEDS] = {
@@ -150,13 +140,18 @@ int main() {
 
     int l;
     for(l = 0; l < NUM_SURFACE_LEDS; l++){
-      targs.leds[l] = &led[l];
+      targs->leds[l] = &led[l];
     }
 
-    Mail<command_t, COMMAND_QUEUE_LEN> command_queue;
-    targs.command_queue = &command_queue;
+    targs->serial->puts("init(): Command Queue\r\n");
 
-    //init();
+    Mail<command_t, COMMAND_QUEUE_LEN> *command_queue = new Mail<command_t, COMMAND_QUEUE_LEN>();
+    targs->command_queue = command_queue;
+
+    targs->serial->puts("init(): Mutexes\r\n");
+    targs->mutex.pc_serial = new Mutex();
+
+    targs->serial->puts("init(): Starting Tasks\r\n");
 
     Thread thread_serial_commands_in;
     thread_serial_commands_in.set_priority(osPriorityRealtime);
@@ -165,8 +160,8 @@ int main() {
     Thread thread_process_commands;
     thread_process_commands.set_priority(osPriorityHigh);
     thread_process_commands.start(callback(task_process_commands, (void *) &targs));
-
-
+    //
+    //
     Thread thread_state_leds;
     thread_state_leds.start(callback(task_state_leds, (void *) &targs));
 
@@ -190,5 +185,9 @@ int main() {
     // thread_set_escs.join();
     // thread_calc_escs.join();
     // thread_calc_orientation.join();
+
+    free(targs);
+    delete(command_queue);
+    delete(serial);
 
 }

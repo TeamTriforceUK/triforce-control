@@ -63,15 +63,18 @@ void task_process_commands(const void *targs){
 * @param [in/out] targs Thread arguments.
 */
 void task_serial_commands_in(const void *targs){
-  LOG("Serial in task started \r\n");
   thread_args_t * args = (thread_args_t *) targs;
 
   char buffer[100];
   int pos = 0;
   LOG( "$");
-
+  bool readable;
   while(args->active){
-    if(args->serial->readable()){
+    args->serial->puts("check\r\n");
+    bool readable = args->serial->readable();
+    // LOG("test\r\n");
+    if(readable){
+      LOG("readable\r\n");
       buffer[pos] = args->serial->getc();
 
       // If ENTER key is pressed, execute command
@@ -98,6 +101,7 @@ void task_serial_commands_in(const void *targs){
       LOG("\r$ %s", buffer);
       pos++;
     }
+    LOG("unreadable\r\n");
   }
   LOG("Serial in task ended\r\n");
 }
