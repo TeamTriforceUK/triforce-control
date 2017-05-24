@@ -37,6 +37,9 @@
 #define RECV_D_CHAN_5_PIN p11
 #define RECV_D_CHAN_6_PIN p12
 
+#define BNO055_SDA_PIN p9
+#define BNO055_SCL_PIN p10
+
 #define RECV_W_CHAN_1_PIN p13
 #define RECV_W_CHAN_2_PIN p14
 #define RECV_W_CHAN_3_PIN p15

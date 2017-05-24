@@ -27,8 +27,9 @@
 
 #include "mbed.h"
 #include "bno055.h"
+#include "config.h"
 
-I2C i2c(p9, p10);
+I2C i2c(BNO055_SDA_PIN, BNO055_SCL_PIN);
 
 /**
  * Function to write to a single 8-bit register

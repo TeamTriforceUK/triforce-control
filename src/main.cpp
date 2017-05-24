@@ -49,36 +49,13 @@
 #include "tasks.h"
 #include "utilc-logging.h"
 
+#include "mbed_memory_status.h"
+
 
 /* Set up logging */
 LocalFileSystem local("local");
 struct ucl_s ucl;
 Serial serial(USBTX, USBRX);
-
-/** Init
- *
- * Sets up devices
- * Will loop init for bno055 untill it starts correctly.
- */
-void init(){
-    #ifdef ORIENTATION
-    init_bno055:
-    /* Initialise the sensor */
-    if(!bno055_init()){
-
-        /* There was a problem detecting the BNO055 ... check your connections */
-        #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
-        //pc.printf("BNO055 not detected\r\n");
-        #endif
-        goto init_bno055;
-
-    } else {
-        #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
-        //pc.printf("BNO055 was detected!\r\n");
-        #endif
-    }
-    #endif
-}
 
 
 /** Main
@@ -87,20 +64,24 @@ void init(){
  */
 int main() {
     // Initialise thread arguments structure
-    thread_args_t targs;
-    memset(&targs, 0x00, sizeof(thread_args_t));
-    thread_args_init(&targs);
+    thread_args_t *targs;
+    targs = (thread_args_t *) malloc(sizeof(thread_args_t));
+    if(targs == NULL){
+      LOG("Failed to allocate thread_args_t\r\n");
+    }
+    memset(targs, 0x00, sizeof(thread_args_t));
+    thread_args_init(targs);
 
     //Set baud rate for USB serial
-    targs.serial = &serial;
-    targs.serial->baud(115200);
+    targs->serial = &serial;
+    targs->serial->baud(115200);
 
-    ucl_init(&ucl);
+    //ucl_init(&ucl);
     //ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_FILE, "/local/log.txt");
-    ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_STDOUT);
+    //ucl_dest_h dest1 = ucl_add_dest(&ucl, UCL_DEST_STDOUT);
 
     // Print initial messsage inidicating start of new process
-    ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
+    //ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
     LOG("Triforce Control System v%s \r\n", VERSION);
     //ucl_log(&ucl, UCL_LL_INFO, "This is some info, this is message %d\n", 1);
 
@@ -125,25 +106,25 @@ int main() {
 
     int chan;
     for(chan= 0; chan < RC_NUMBER_CHANNELS; chan++){
-      targs.receiver[0].channel[chan] = &rx_drive[chan];
-      targs.receiver[1].channel[chan] = &rx_weapon[chan];
+      targs->receiver[0].channel[chan] = &rx_drive[chan];
+      targs->receiver[1].channel[chan] = &rx_weapon[chan];
     }
 
     /* 5 channel ESC output */
     ESC esc_omni_1(DRIVE_ESC_OUT_1_PIN, 20, 1500);
-    targs.escs.drive[0] = &esc_omni_1;
+    targs->escs.drive[0] = &esc_omni_1;
 
     ESC esc_omni_2(DRIVE_ESC_OUT_2_PIN, 20, 1500);
-    targs.escs.drive[1] = &esc_omni_2;
+    targs->escs.drive[1] = &esc_omni_2;
 
     ESC esc_omni_3(DRIVE_ESC_OUT_3_PIN, 20, 1500); //LED4
-    targs.escs.drive[2] = &esc_omni_3;
+    targs->escs.drive[2] = &esc_omni_3;
 
     ESC esc_weapon_1(WEAPON_ESC_OUT_1_PIN); //LED3
-    targs.escs.weapon[0] = &esc_weapon_1;
+    targs->escs.weapon[0] = &esc_weapon_1;
 
     ESC esc_weapon_2(WEAPON_ESC_OUT_2_PIN); //LED2
-    targs.escs.weapon[1] = &esc_weapon_2;
+    targs->escs.weapon[1] = &esc_weapon_2;
 
     /* LEDs */
     DigitalOut led[NUM_SURFACE_LEDS] = {
@@ -155,25 +136,38 @@ int main() {
 
     int l;
     for(l = 0; l < NUM_SURFACE_LEDS; l++){
-      targs.leds[l] = &led[l];
+      targs->leds[l] = &led[l];
     }
 
     Mail<command_t, COMMAND_QUEUE_LEN> command_queue;
-    targs.command_queue = &command_queue;
+    targs->command_queue = &command_queue;
 
-    //init();
+    unsigned attempts = 0;
+    LOG("init(): BNO055\r\n");
+    while(!bno055_init() && attempts < 3){
+        //LOG("\tfailed, retrying\r\n");
+        attempts++;
+        print_all_thread_info();
+        print_heap_and_isr_stack_info();
+    }
 
     Thread thread_serial_commands_in;
     thread_serial_commands_in.set_priority(osPriorityRealtime);
     thread_serial_commands_in.start(callback(task_serial_commands_in, (void *) &targs));
+    // print_all_thread_info();
+    // print_heap_and_isr_stack_info();
 
     Thread thread_process_commands;
     thread_process_commands.set_priority(osPriorityHigh);
     thread_process_commands.start(callback(task_process_commands, (void *) &targs));
+    // print_all_thread_info();
+    // print_heap_and_isr_stack_info();
 
 
     Thread thread_state_leds;
     thread_state_leds.start(callback(task_state_leds, (void *) &targs));
+    // print_all_thread_info();
+    // print_heap_and_isr_stack_info();
 
     // Thread thread_read_receiver;
     // thread_read_receiver.start(callback(task_read_receiver, (void *) &targs));
@@ -184,8 +178,10 @@ int main() {
     // Thread thread_calc_escs;
     // thread_read_receiver.start(callback(task_calc_escs, (void *) &targs));
 
-    // Thread thread_calc_orientation;
-    // thread_calc_orientation.start(callback(task_calc_orientation, (void *) &targs));
+    Thread thread_calc_orientation;
+    thread_calc_orientation.start(callback(task_calc_orientation, (void *) &targs));
+
+
 
 
     thread_serial_commands_in.join();
@@ -194,8 +190,9 @@ int main() {
     // thread_read_receiver.join();
     // thread_set_escs.join();
     // thread_calc_escs.join();
-    // thread_calc_orientation.join();
+    thread_calc_orientation.join();
 
-    ucl_free(&ucl);
+    //ucl_free(&ucl);
+    free(targs);
 
 }

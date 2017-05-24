@@ -34,11 +34,14 @@ enum command_id_t {
   PARTIAL_ARM,
   FULLY_ARM,
   STATUS
+  // SET_PARAM,
+  // GET_PARAM
 };
 
 typedef struct {
   command_id_t id;
   const char *name;
+  //char *param[2];
 } command_t;
 
 #endif //TC_COMMAND_H

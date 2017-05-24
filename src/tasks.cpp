@@ -36,6 +36,16 @@
 #include "return_codes.h"
 
 /**
+* @brief Read in BNO055 data (except Euler orientation, handled elsewhere)
+* @param [in/out] targs Thread arguments.
+*/
+void task_bno055_read(const void *targs){
+  thread_args_t * args = (thread_args_t *) targs;
+  while(args->active){
+  }
+}
+
+/**
 * @brief Execute commands as they become available on the mail queue.
 * @param [in/out] targs Thread arguments.
 */
@@ -316,9 +326,9 @@ void task_calc_orientation(const void *targs){
         }else{
             args->inverted = false;
         }
-        #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
-        args->serial->printf("Inverted= %s \t (%7.2f) \r\n", args->inverted ? "true" : "false", orientation.roll);
-        #endif
+        // #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
+        // args->serial->printf("Inverted= %s \t (%7.2f) \r\n", args->inverted ? "true" : "false", orientation.roll);
+        // #endif
     }
   }
 }
