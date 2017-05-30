@@ -36,8 +36,8 @@ typedef enum  {
   PARTIAL_ARM,
   FULLY_ARM,
   STATUS,
-  SET_PARAM,
-  GET_PARAM
+  GET_PARAM,
+  SET_PARAM
 } command_id_t;
 
 

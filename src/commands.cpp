@@ -139,8 +139,8 @@ int command_generate(command_t *command, char *buffer) {
   return RET_ERROR;
 }
 
-int command_execute(command_t *command, thread_args_t *targs){
-  switch(command->id){
+int command_execute(command_t *command, thread_args_t *targs) {
+  switch (command->id) {
     case FULLY_DISARM:
       return command_fully_disarm(command, targs);
     case PARTIAL_DISARM:
@@ -160,16 +160,16 @@ int command_execute(command_t *command, thread_args_t *targs){
   }
 }
 
-int command_fully_disarm(command_t *command, thread_args_t *targs){
-  if(targs->state == STATE_DISARMED){
+int command_fully_disarm(command_t *command, thread_args_t *targs) {
+  if (targs->state == STATE_DISARMED) {
     return RET_ALREADY_DISARMED;
   }
   targs->state = STATE_DISARMED;
   return RET_OK;
 }
 
-int command_partial_disarm(command_t *command, thread_args_t *targs){
-  switch(targs->state){
+int command_partial_disarm(command_t *command, thread_args_t *targs) {
+  switch (targs->state) {
     case STATE_DISARMED:
       return RET_ALREADY_DISARMED;
     case STATE_DRIVE_ONLY:
@@ -186,8 +186,8 @@ int command_partial_disarm(command_t *command, thread_args_t *targs){
   }
 }
 
-int command_partial_arm(command_t *command, thread_args_t *targs){
-  switch(targs->state){
+int command_partial_arm(command_t *command, thread_args_t *targs) {
+  switch (targs->state) {
     case STATE_DISARMED:
       targs->state = STATE_DRIVE_ONLY;
       return RET_OK;
@@ -204,15 +204,15 @@ int command_partial_arm(command_t *command, thread_args_t *targs){
   }
 }
 
-int command_fully_arm(command_t *command, thread_args_t *targs){
-  if(targs->state == STATE_FULLY_ARMED){
+int command_fully_arm(command_t *command, thread_args_t *targs) {
+  if (targs->state == STATE_FULLY_ARMED) {
     return RET_ALREADY_ARMED;
   }
   targs->state = STATE_FULLY_ARMED;
   return RET_OK;
 }
 
-int command_status(command_t *command, thread_args_t *targs){
+int command_status(command_t *command, thread_args_t *targs) {
   LOG("\rStatus: %s\r\n", state_to_str(targs->state));
   // LOG("\r(ESCS) D1: %d, D2: %d, D3: %d, W1: %d, W2: %d\r\n",
   //   targs->outputs.wheel_1,
@@ -235,47 +235,44 @@ int command_get_param(command_t *command, thread_args_t *targs) {
   LOG("Getting param\r\n");
   switch (command->tele_param->id) {
     case CID_RING_RPM:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_CON_1_RPM:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
     case CID_CON_2_RPM:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_ACCEL_X:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_ACCEL_Y:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_ACCEL_Z:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_PITCH:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_ROLL:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_YAW:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_WEAPON_VOLTAGE:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_DRIVE_VOLTAGE:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_AMBIENT_TEMP:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
-      break;
     case CID_ESP_LED:
-      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      printf(
+        "%s %.2f\r\n",
+        tele_commands[command->tele_param->id].name,
+        tele_commands[command->tele_param->id].param.f);
       break;
   }
   return RET_OK;
 }
 int command_set_param(command_t *command, thread_args_t *targs) {
   LOG("Setting param\r\n");
+  switch (command->tele_param->id) {
+    case CID_RING_RPM:
+    case CID_CON_1_RPM:
+    case CID_CON_2_RPM:
+    case CID_ACCEL_X:
+    case CID_ACCEL_Y:
+    case CID_ACCEL_Z:
+    case CID_PITCH:
+    case CID_ROLL:
+    case CID_YAW:
+    case CID_WEAPON_VOLTAGE:
+    case CID_DRIVE_VOLTAGE:
+    case CID_AMBIENT_TEMP:
+    case CID_ESP_LED:
+      tele_commands[command->tele_param->id].param.f = command->value.f;
+      break;
+  }
   return RET_OK;
 }
