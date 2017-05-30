@@ -25,10 +25,12 @@
 *        for definition of available commands.
 */
 
-#ifndef TC_COMMAND_H
-#define TC_COMMAND_H
+#ifndef INCLUDE_COMMAND_H_
+#define INCLUDE_COMMAND_H_
 
-enum command_id_t {
+#include "./tele_param.h"
+
+typedef enum  {
   FULLY_DISARM = 0,
   PARTIAL_DISARM,
   PARTIAL_ARM,
@@ -36,12 +38,23 @@ enum command_id_t {
   STATUS,
   SET_PARAM,
   GET_PARAM
-};
+} command_id_t;
+
 
 typedef struct {
   command_id_t id;
   const char *name;
   char *param[2];
+
+  /*! Used if the command gets or sets a parameter. */
+  tele_command_t *tele_param;
+
+  union {
+    float f;
+    int i;
+    char c;
+    bool b;
+  } value;
 } command_t;
 
-#endif //TC_COMMAND_H
+#endif  // INCLUDE_COMMAND_H_

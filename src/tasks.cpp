@@ -34,6 +34,7 @@
 #include "utilc-logging.h"
 #include "commands.h"
 #include "return_codes.h"
+#include "tele_params.h"
 
 /**
 * @brief Execute commands as they become available on the mail queue.
@@ -70,11 +71,9 @@ void task_serial_commands_in(const void *targs){
   LOG( "$");
   bool readable;
   while(args->active){
-    args->serial->puts("check\r\n");
     bool readable = args->serial->readable();
     // LOG("test\r\n");
     if(readable){
-      LOG("readable\r\n");
       buffer[pos] = args->serial->getc();
 
       // If ENTER key is pressed, execute command
@@ -101,7 +100,6 @@ void task_serial_commands_in(const void *targs){
       LOG("\r$ %s", buffer);
       pos++;
     }
-    LOG("unreadable\r\n");
   }
   LOG("Serial in task ended\r\n");
 }
@@ -187,11 +185,11 @@ void task_read_receiver(const void *targs) {
 * @brief Change the arming state based on the arming switch.
 * @param [in/out] targs Thread arguments.
 */
-void task_arming(const void *targs){
+void task_arming(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   bool drive_switch, weapon_switch, drive_arm, weapon_arm;
 
-  while(args->active){
+  while (args->active) {
     drive_switch = (args->controls[0].channel[3] > RC_SWITCH_MIDPOINT);
     weapon_switch = (args->controls[1].channel[3] > RC_SWITCH_MIDPOINT);
 
@@ -207,68 +205,68 @@ void task_arming(const void *targs){
       (args->controls[1].channel[2] < RC_ARM_CHANNEL_3) &&
       BETWEEN(args->controls[1].channel[3], 45, 55);
 
-    switch(args->state){
+    switch (args->state) {
       /* From the fully armed state we can only decrease the arm state,
       so we don't need to be concerned with the stick positions. */
       case STATE_FULLY_ARMED:
-        if(!drive_switch && !weapon_switch){
+        if (!drive_switch && !weapon_switch) {
           args->state = STATE_DISARMED;
-        } else if(drive_switch && !weapon_switch){
+        } else if (drive_switch && !weapon_switch) {
           args->state = STATE_DRIVE_ONLY;
-        } else if(!drive_switch && weapon_switch){
+        } else if (!drive_switch && weapon_switch) {
           args->state = STATE_WEAPON_ONLY;
         }
         break;
       case STATE_DRIVE_ONLY:
-        if(!drive_switch){
+        if (!drive_switch) {
           args->state = STATE_DISARMED;
-        } else if(weapon_arm){
+        } else if (weapon_arm) {
           args->state = STATE_FULLY_ARMED;
         }
         break;
       case STATE_WEAPON_ONLY:
-        if(!weapon_switch){
+        if (!weapon_switch) {
           args->state = STATE_DISARMED;
-        } else if(drive_arm){
+        } else if (drive_arm) {
           args->state = STATE_FULLY_ARMED;
         }
         break;
       case STATE_DISARMED:
-        if(drive_arm && weapon_arm){
+        if (drive_arm && weapon_arm) {
           args->state = STATE_FULLY_ARMED;
-        } else if(drive_arm){
+        } else if (drive_arm) {
           args->state = STATE_DRIVE_ONLY;
-        } else if(weapon_arm){
+        } else if (weapon_arm) {
           args->state = STATE_WEAPON_ONLY;
         }
     }
   }
 }
 
-void task_failsafe(const void *targs){
+void task_failsafe(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   bool drive_inactive, weapon_inactive;
-  while(args->active){
+  while (args->active) {
     drive_inactive = args->receiver[0].channel[0]->stallTimer.read_ms() > 200;
     weapon_inactive = args->receiver[1].channel[0]->stallTimer.read_ms() > 200;
 
-    switch(args->state){
+    switch (args->state) {
       case STATE_FULLY_ARMED:
-        if(drive_inactive && weapon_inactive){
+        if (drive_inactive && weapon_inactive) {
           args->state = STATE_DISARMED;
-        } else if(drive_inactive && !weapon_inactive){
+        } else if (drive_inactive && !weapon_inactive) {
           args->state = STATE_WEAPON_ONLY;
-        } else if(!drive_inactive && weapon_inactive){
+        } else if (!drive_inactive && weapon_inactive) {
           args->state = STATE_DRIVE_ONLY;
         }
         break;
       case STATE_DRIVE_ONLY:
-        if(drive_inactive){
+        if (drive_inactive) {
           args->state = STATE_DISARMED;
         }
         break;
       case STATE_WEAPON_ONLY:
-        if(weapon_inactive){
+        if (weapon_inactive){
           args->state = STATE_DISARMED;
         }
         break;
@@ -283,7 +281,7 @@ void task_failsafe(const void *targs){
 void task_set_escs(const void *targs) {
     thread_args_t * args = (thread_args_t *) targs;
 
-    switch(args->state){
+    switch (args->state) {
       case STATE_FULLY_ARMED:
         args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
         args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
@@ -302,12 +300,12 @@ void task_set_escs(const void *targs) {
 }
 
 
-void task_calc_orientation(const void *targs){
+void task_calc_orientation(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
-  while(args->active){
+  while (args->active) {
     /* If there is an error then we maintain the same
      * orientation to stop random control flipping */
-    if(!bno055_healthy()){
+    if (!bno055_healthy()) {
         LOG("ERROR: BNO055 has an error/status problem!!!\r\n");
     } else {
         /* Read in the Euler angles */
@@ -315,14 +313,89 @@ void task_calc_orientation(const void *targs){
 
         /* We are upside down in range -30 -> -90
          * the sensor will report -60 when inverted */
-        if(args->orientation.roll < -30 && args->orientation.roll > -90){
+        if (args->orientation.roll < -30 && args->orientation.roll > -90){
             args->inverted = true;
-        }else{
+        } else {
             args->inverted = false;
         }
         #if defined (PC_DEBUGGING) && defined (DEBUG_ORIENTATION)
         args->serial->printf("Inverted= %s \t (%7.2f) \r\n", args->inverted ? "true" : "false", orientation.roll);
         #endif
     }
+  }
+}
+
+void task_collect_telemetry(const void *targs) {
+  thread_args_t * args = (thread_args_t *) targs;
+  float v = 0.00f;
+  int vi = 0;
+  int i;
+  while (args->active) {
+    for (i = 0; i < NUM_TELEM_PARAMS; i++) {
+      switch (tele_commands[i].id) {
+        case CID_RING_RPM:
+          // TODO(camieac): Add support for RPM sensing
+          tele_commands[i].param.f = 0.00f;
+          break;
+        case CID_CON_1_RPM:
+          // TODO(camieac): Add support for RPM sensing
+          tele_commands[i].param.f = 0.00f;
+          break;
+        case CID_CON_2_RPM:
+          // TODO(camieac): Add support for RPM sensing
+          tele_commands[i].param.f = 0.00f;
+          break;
+        case CID_ACCEL_X:
+        case CID_ACCEL_Y:
+        case CID_ACCEL_Z:
+        case CID_PITCH:
+        case CID_ROLL:
+        case CID_YAW:
+        case CID_WEAPON_VOLTAGE:
+        case CID_DRIVE_VOLTAGE:
+        case CID_AMBIENT_TEMP:
+          tele_commands[i].param.f = v;
+          break;
+        case CID_ESP_LED:
+          tele_commands[i].param.i = vi;
+          break;
+        default:
+          args->serial->puts("UNSUPPORTED TELE COMMAND\r\n");
+      }
+      v += 1.0f;
+      vi += 1;
+    }
+    wait(1);
+  }
+}
+
+void task_stream_telemetry(const void *targs) {
+  thread_args_t * args = (thread_args_t *) targs;
+  args->serial->printf("Staring streaming task\r\n");
+
+  int i = 0;
+  while (args->active) {
+    /* The ESP looks for a carriage return character to delimit a command. */
+
+    for (i = 0; i < NUM_TELEM_PARAMS; i++) {
+      switch (tele_commands[i].type) {
+        case CT_FLOAT:
+          args->esp_serial->printf(
+            "%s %.2f\r",
+            tele_commands[i].name,
+            tele_commands[i].param.f);
+        break;
+        case CT_INT:
+          args->esp_serial->printf(
+            "%s %d\r",
+            tele_commands[i].name,
+            tele_commands[i].param.i);
+          break;
+        default:
+          args->serial->printf("Type not yet supported for streaming.");
+          break;
+      }
+    }
+    wait(1);
   }
 }

@@ -33,21 +33,22 @@
 #include "return_codes.h"
 #include "thread_args.h"
 #include "types.h"
+#include "tele_params.h"
 
-const char * command_get_str(command_id_t id){
-  if(id > 0 && id < NUM_COMMANDS)
+const char * command_get_str(command_id_t id) {
+  if (id > 0 && id < NUM_COMMANDS)
     return available_commands[id].name;
   else
     return "INVALID COMMAND";
 }
 
-int command_generate(command_t *command, char *buffer){
-  //Get the size of the entire command string
+int command_generate(command_t *command, char *buffer) {
+  // Get the size of the entire command string
   size_t command_len = strlen(buffer);
   char command_str[command_len];
   memcpy(command_str, buffer, command_len);
 
-  //Seperate commands into parts
+  // Seperate commands into parts
   char param_part[2][10];
   char command_part[10];
 
@@ -64,18 +65,64 @@ int command_generate(command_t *command, char *buffer){
     part++;
   }
 
-  //Find a matching command for the given command string
+  // Find a matching command for the given command string
   int i;
-  for(i = 0; i < NUM_COMMANDS; i++){
+  for (i = 0; i < NUM_COMMANDS; i++) {
     size_t cplen = strlen(command_part);
     char *command_compare;
     command_compare = (char *) command_get_str(available_commands[i].id);
     size_t cclen = strlen(command_compare);
 
-    if(strncmp(command_compare, command_part, MIN(cclen, cplen)) == 0){
-      //When a matching command is found, populate the command
+    if (strncmp(command_compare, command_part, MIN(cclen, cplen)) == 0){
+      // When a matching command is found, populate the command
       command->id = available_commands[i].id;
       command->name = available_commands[i].name;
+
+      if (command->id == GET_PARAM || command->id == SET_PARAM) {
+        int k;
+        for (k = 0; k < NUM_TELE_COMMANDS; k++) {
+          printf("Checking %s\r\n", tele_commands[k].name);
+          if (strncmp(param_part[0],
+            tele_commands[k].name,
+            MIN(strlen(param_part[0]), strlen(tele_commands[k].name))) == 0) {
+            command->tele_param = &tele_commands[k];
+            printf("%s %s\r\n", command_get_str(command->id), tele_commands[k].name);
+            break;
+          }
+        }
+      }
+
+      if (command->id == SET_PARAM) {
+        char *end;
+        switch (command->tele_param->type) {
+            case CT_INT:
+              command->value.i = strtol(param_part[1], &end, 10);
+              if (end == param_part[1]) {
+                printf("Conversion error\r\n");
+                return RET_ERROR;
+              }
+              printf("d: %d\r\n", command->value.i);
+              break;
+            case CT_FLOAT:
+              command->value.f = strtod(param_part[1], &end);
+              if (end == param_part[1]) {
+                printf("Conversion error\r\n");
+                return RET_ERROR;
+              }
+              printf("f: %f\r\n", command->value.f);
+              break;
+            case CT_BOOLEAN:
+              command->value.b = (strtod(param_part[1], &end) == 1);
+              if (param_part[1] == end) {
+                return RET_ERROR;
+              }
+              return RET_OK;
+            case CT_STRING:
+            default:
+              printf("unsupported param\r\n");
+              return RET_ERROR;
+        }
+      }
 
       // Set command parameters for parameterised commands
       // int i;
@@ -83,12 +130,12 @@ int command_generate(command_t *command, char *buffer){
       //   memcpy(command->param[i], param_part[i], strlen(param_part[i]));
       // }
 
-      //return true if matching command is found
+      // return true if matching command is found
       return RET_OK;
     }
   }
 
-  //Return false (0) if no match is found
+  // Return false (0) if no match is found
   return RET_ERROR;
 }
 
@@ -138,6 +185,7 @@ int command_partial_disarm(command_t *command, thread_args_t *targs){
       return RET_ERROR;
   }
 }
+
 int command_partial_arm(command_t *command, thread_args_t *targs){
   switch(targs->state){
     case STATE_DISARMED:
@@ -155,6 +203,7 @@ int command_partial_arm(command_t *command, thread_args_t *targs){
       return RET_ERROR;
   }
 }
+
 int command_fully_arm(command_t *command, thread_args_t *targs){
   if(targs->state == STATE_FULLY_ARMED){
     return RET_ALREADY_ARMED;
@@ -182,9 +231,51 @@ int command_status(command_t *command, thread_args_t *targs){
   return RET_OK;
 }
 
-int command_get_param(command_t *command, thread_args_t *targs){
+int command_get_param(command_t *command, thread_args_t *targs) {
   LOG("Getting param\r\n");
+  switch (command->tele_param->id) {
+    case CID_RING_RPM:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_CON_1_RPM:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+    case CID_CON_2_RPM:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_ACCEL_X:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_ACCEL_Y:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_ACCEL_Z:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_PITCH:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_ROLL:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_YAW:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_WEAPON_VOLTAGE:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_DRIVE_VOLTAGE:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_AMBIENT_TEMP:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+    case CID_ESP_LED:
+      printf("%s %.2f\r\n", tele_commands[command->tele_param->id].name,  0.0f);
+      break;
+  }
+  return RET_OK;
 }
-int command_set_param(command_t *command, thread_args_t *targs){
+int command_set_param(command_t *command, thread_args_t *targs) {
   LOG("Setting param\r\n");
+  return RET_OK;
 }

@@ -36,5 +36,7 @@ const char * state_to_str(state_t state){
       return "WEAPON ONLY";
     case STATE_FULLY_ARMED:
       return "FULLY ARMED";
+    default:
+      return "INVALID STATE";
   }
 }

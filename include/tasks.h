@@ -34,5 +34,7 @@ void task_read_receiver(const void *targs);
 void task_set_escs(const void *targs);
 void task_calc_escs(const void *targs);
 void task_calc_orientation(const void *targs);
+void task_collect_telemetry(const void *targs);
+void task_stream_telemetry(const void *targs);
 
 #endif //TC_TASKS_H

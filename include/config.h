@@ -51,6 +51,11 @@
 #define WEAPON_ESC_OUT_1_PIN p24
 #define WEAPON_ESC_OUT_2_PIN p25
 
+#define ESP_TX p28
+#define ESP_RX p27
+
+#define ESP8266_READY_PIN p29
+
 /* End of Pin Assignments */
 
 #define RC_NUMBER_CHANNELS 6

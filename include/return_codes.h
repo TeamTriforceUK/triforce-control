@@ -26,15 +26,15 @@
 */
 
 
-#ifndef TC_RETURN_CODES_H
-#define TC_RETURN_CODES_H
+#ifndef INCLUDE_RETURN_CODES_H_
+#define INCLUDE_RETURN_CODES_H_
 
-enum return_codes_t{
+enum return_codes_t {
   RET_ERROR = 0,
   RET_OK,
   RET_ALREADY_DISARMED,
   RET_ALREADY_ARMED
-} ;
+};
 
 static const char * ret_str[] = {
   "Error",
@@ -45,4 +45,4 @@ static const char * ret_str[] = {
 
 const char * err_to_str(int err);
 
-#endif //TC_RETURN_CODES_H
+#endif  // INCLUDE_RETURN_CODES_H_

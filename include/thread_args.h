@@ -53,11 +53,13 @@ typedef struct {
   /*! USB serial port */
   Serial *serial;
 
-  bool active;
-  bool armed;
-  bool just_armed;
-  bool failsafe;
-  bool inverted;
+  /*! Serial connection to ESP8266 */
+  Serial *esp_serial;
+  DigitalIn *esp_ready_pin;
+
+  /*! Stores telemetry values */
+  /* TODO(camieac): Telemetry parameters should only be accessible
+      through thread_args_t. */
 
   struct rc_outputs outputs;
 
@@ -67,10 +69,13 @@ typedef struct {
     ESC *drive[3];
     ESC *weapon[2];
   } escs;
+  #define NUM_TELEM_PARAMS 12
 
   orientation_t orientation_detected;
   orientation_t orientation_override;
   euler_t orientation;
+  bool inverted;
+  bool active;
 
   struct {
     Mutex *pc_serial;
