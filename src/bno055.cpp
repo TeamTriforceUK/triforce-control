@@ -25,6 +25,7 @@
 * @brief Interfaces with BNO055 via mbed I2C.
 */
 
+#include <stdint.h>
 #include "mbed.h"
 #include "bno055.h"
 
@@ -44,8 +45,7 @@ void bno055_write_reg(int regAddr, char value)
 /**
  * Function to read from a single 8-bit register
  */
-char bno055_read_reg(int regAddr)
-{
+char bno055_read_reg(int regAddr) {
     char rwbuf = regAddr;
     i2c.write(bno055_addr, &rwbuf, 1, false);
     i2c.read(bno055_addr, &rwbuf, 1, false);
@@ -55,8 +55,7 @@ char bno055_read_reg(int regAddr)
 /**
  * Returns the calibration status of each component
  */
-calib_status_t bno055_read_calibration_status()
-{
+calib_status_t bno055_read_calibration_status() {
     calib_status_t status;
     int regVal = bno055_read_reg(BNO055_CALIB_STAT_ADDR);
 
@@ -72,8 +71,7 @@ calib_status_t bno055_read_calibration_status()
 /**
  * Checks that there are no errors on the accelerometer
  */
-bool bno055_healthy()
-{
+bool bno055_healthy() {
     int sys_error = bno055_read_reg(BNO055_SYS_ERR_ADDR);
     wait(0.001);
     int sys_stat = bno055_read_reg(BNO055_SYS_STAT_ADDR);
@@ -89,21 +87,20 @@ bool bno055_healthy()
 /**
  * Configure and initialize the BNO055
  */
-bool bno055_init()
-{
+bool bno055_init() {
     unsigned char regVal;
     i2c.frequency(400000);
     bool startupPass = true;
 
     // Do some basic power-up tests
     regVal = bno055_read_reg(BNO055_ID_ADDR);
-    if(regVal != 0xA0){
+    if (regVal != 0xA0) {
         startupPass = false;
     }
 
     regVal = bno055_read_reg(BNO055_TEMP_ADDR);
 
-    if(regVal == 0)
+    if (regVal == 0)
         startupPass = false;
 
     // Change mode to CONFIG
@@ -134,8 +131,7 @@ bool bno055_init()
 /**
  * Reads the Euler angles, zeroed out
  */
-euler_t bno055_read_euler_angles()
-{
+euler_t bno055_read_euler_angles() {
     char buf[16];
     euler_t e;
 
@@ -144,13 +140,37 @@ euler_t bno055_read_euler_angles()
     i2c.write(bno055_addr, buf, 1, false);
     i2c.read(bno055_addr, buf, 6, false);
 
-    short int euler_head = buf[0] + (buf[1] << 8);
-    short int euler_roll = buf[2] + (buf[3] << 8);
-    short int euler_pitch = buf[4] + (buf[5] << 8);
+    uint16_t euler_head = buf[0] + (buf[1] << 8);
+    uint16_t euler_roll = buf[2] + (buf[3] << 8);
+    uint16_t euler_pitch = buf[4] + (buf[5] << 8);
 
-    e.heading = ((float)euler_head) / 16.0;
-    e.roll = ((float)euler_roll) / 16.0;
-    e.pitch = ((float)euler_pitch) / 16.0;
+    e.heading = ((float) euler_head) / 16.0;
+    e.roll = ((float) euler_roll) / 16.0;
+    e.pitch = ((float) euler_pitch) / 16.0;
 
     return e;
+}
+
+euler_t bno055_read_accel() {
+    char buf[16];
+    euler_t e;
+
+    // Read in the Euler angles
+    buf[0] = BNO055_ACCEL_DATA_X_LSB_ADDR;
+    i2c.write(bno055_addr, buf, 1, false);
+    i2c.read(bno055_addr, buf, 6, false);
+
+    uint16_t x = buf[0] + (buf[1] << 8);
+    uint16_t y = buf[2] + (buf[3] << 8);
+    uint16_t z = buf[4] + (buf[5] << 8);
+
+    e.x = ((float) x) / 100.0;
+    e.y = ((float) y) / 100.0;
+    e.z = ((float) z) / 100.0;
+
+    return e;
+}
+
+uint8_t bno055_read_temp() {
+  return (uint8_t) bno055_read_reg(BNO055_TEMP_ADDR);
 }

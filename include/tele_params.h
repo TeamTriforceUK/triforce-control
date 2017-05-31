@@ -23,7 +23,7 @@ static tele_command_t tele_commands[] = {
   {.id = CID_YAW, .name = "yaw", .unit = CU_DEGREES, .type = CT_FLOAT},
   {.id = CID_WEAPON_VOLTAGE, .name = "w_voltage", .unit = CU_VOLTS, .type = CT_FLOAT},
   {.id = CID_DRIVE_VOLTAGE, .name = "d_voltage", .unit = CU_VOLTS, .type = CT_FLOAT},
-  {.id = CID_AMBIENT_TEMP, .name = "temp", .unit = CU_CELCIUS, .type = CT_FLOAT},
+  {.id = CID_AMBIENT_TEMP, .name = "temp", .unit = CU_CELCIUS, .type = CT_INT},
   {.id = CID_ESP_LED, .name = "esp_led", .unit = CU_NONE, .type = CT_BOOLEAN},
 };
 

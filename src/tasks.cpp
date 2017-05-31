@@ -327,8 +327,7 @@ void task_calc_orientation(const void *targs) {
 
 void task_collect_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
-  float v = 0.00f;
-  int vi = 0;
+  euler_t e;
   int i;
   while (args->active) {
     for (i = 0; i < NUM_TELEM_PARAMS; i++) {
@@ -348,22 +347,39 @@ void task_collect_telemetry(const void *targs) {
         case CID_ACCEL_X:
         case CID_ACCEL_Y:
         case CID_ACCEL_Z:
+          e = bno055_read_accel();
+          tele_commands[CID_ACCEL_X].param.f = e.x;
+          tele_commands[CID_ACCEL_Y].param.f = e.y;
+          tele_commands[CID_ACCEL_Z].param.f = e.z;
+          // We do x, y and z in one op, so skip 2 once done
+          if (i == CID_ACCEL_X) {
+            i+=2;
+          }
+          break;
         case CID_PITCH:
         case CID_ROLL:
         case CID_YAW:
+          e = bno055_read_euler_angles();
+          tele_commands[CID_PITCH].param.f = e.pitch;
+          tele_commands[CID_ROLL].param.f = e.roll;
+          tele_commands[CID_YAW].param.f = e.heading;
+          // We do x, y and z in one op, so skip 2 once done
+          if (i == CID_PITCH) {
+            i+=2;
+          }
+          break;
         case CID_WEAPON_VOLTAGE:
         case CID_DRIVE_VOLTAGE:
+          break;
         case CID_AMBIENT_TEMP:
-          tele_commands[i].param.f = v;
+          tele_commands[i].param.i = bno055_read_temp();
           break;
         case CID_ESP_LED:
-          tele_commands[i].param.i = vi;
+          //tele_commands[i].param.i = vi;
           break;
         default:
           args->serial->puts("UNSUPPORTED TELE COMMAND\r\n");
       }
-      v += 1.0f;
-      vi += 1;
     }
     wait(1);
   }

@@ -194,9 +194,9 @@ int main() {
   Thread thread_calc_orientation;
   thread_calc_orientation.start(callback(task_calc_orientation, (void *) targs));
 
-  // Thread thread_collect_telemetry;
-  // // thread_collect_telemetry.set_priority(osPriorityHigh);
-  // thread_collect_telemetry.start(callback(task_collect_telemetry, (void *) targs));
+  Thread thread_collect_telemetry;
+  // thread_collect_telemetry.set_priority(osPriorityHigh);
+  thread_collect_telemetry.start(callback(task_collect_telemetry, (void *) targs));
 
   Thread thread_stream_telemetry;
   // thread_stream_telemetry.set_priority(osPriorityHigh);
@@ -209,7 +209,7 @@ int main() {
   // thread_read_receiver.join();
   // thread_set_escs.join();
   thread_calc_orientation.join();
-  // thread_collect_telemetry.join();
+  thread_collect_telemetry.join();
   thread_stream_telemetry.join();
 
   free(targs);

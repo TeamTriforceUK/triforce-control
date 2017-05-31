@@ -28,6 +28,8 @@
 #ifndef TC_BNO055_H
 #define TC_BNO055_H
 
+#include <stdint.h>
+
 #include "mbed.h"
 
 
@@ -35,6 +37,7 @@ const int bno055_addr = 0x28 << 1;
 
 const int BNO055_ID_ADDR                                          = 0x00;
 const int BNO055_EULER_H_LSB_ADDR                                 = 0x1A;
+const int BNO055_ACCEL_DATA_X_LSB_ADDR                            = 0x08;
 const int BNO055_TEMP_ADDR                                        = 0x34;
 const int BNO055_OPR_MODE_ADDR                                    = 0x3D;
 const int BNO055_CALIB_STAT_ADDR                                  = 0x35;
@@ -51,11 +54,19 @@ typedef struct
     int sys;
 } calib_status_t;
 
-typedef struct
-{
-    float heading;
-    float pitch;
-    float roll;
+typedef struct {
+  union {
+    struct {
+      float heading;
+      float pitch;
+      float roll;
+    };
+    struct {
+      float x;
+      float y;
+      float z;
+    };
+  };
 } euler_t;
 
 
@@ -70,5 +81,8 @@ bool bno055_healthy();
 bool bno055_init();
 
 euler_t bno055_read_euler_angles();
+euler_t bno055_read_accel();
+
+uint8_t bno055_read_temp();
 
 #endif //TC_BNO055_H
