@@ -44,7 +44,6 @@ typedef enum  {
 typedef struct {
   command_id_t id;
   const char *name;
-  char *param[2];
 
   /*! Used if the command gets or sets a parameter. */
   tele_command_t *tele_param;
@@ -54,6 +53,7 @@ typedef struct {
     int i;
     char c;
     bool b;
+    const char *s;
   } value;
 } command_t;
 

@@ -330,7 +330,7 @@ void task_collect_telemetry(const void *targs) {
   euler_t e;
   int i;
   while (args->active) {
-    for (i = 0; i < NUM_TELEM_PARAMS; i++) {
+    for (i = 0; i < NUM_TELE_COMMANDS; i++) {
       switch (tele_commands[i].id) {
         case CID_RING_RPM:
           // TODO(camieac): Add support for RPM sensing
@@ -377,6 +377,9 @@ void task_collect_telemetry(const void *targs) {
         case CID_ESP_LED:
           //tele_commands[i].param.i = vi;
           break;
+        case CID_ARM_STATUS:
+          tele_commands[i].param.i = args->state;
+          break;
         default:
           args->serial->puts("UNSUPPORTED TELE COMMAND\r\n");
       }
@@ -393,7 +396,7 @@ void task_stream_telemetry(const void *targs) {
   while (args->active) {
     /* The ESP looks for a carriage return character to delimit a command. */
 
-    for (i = 0; i < NUM_TELEM_PARAMS; i++) {
+    for (i = 0; i < NUM_TELE_COMMANDS; i++) {
       switch (tele_commands[i].type) {
         case CT_FLOAT:
           args->esp_serial->printf(
@@ -407,8 +410,28 @@ void task_stream_telemetry(const void *targs) {
             tele_commands[i].name,
             tele_commands[i].param.i);
           break;
+        case CT_BOOLEAN:
+          args->esp_serial->printf(
+            "%s %s\r",
+            tele_commands[i].name,
+            tele_commands[i].param.b ? "ON" : "OFF");
+          break;
+        case CT_NONE:
+          // switch (tele_commands[i].id) {
+          //   args->serial->printf("str: %d\r\n", tele_commands[i].id);
+          //   case CID_ARM_STATUS:
+          //     args->esp_serial->printf(
+          //       "%s %s\r",
+          //       tele_commands[i].name,
+          //       state_to_str(args->state));
+          //     break;
+          //     default:
+          //       args->serial->printf("Command not yet supported for streaming.");
+          //       break;
+          // }
+          // break;
         default:
-          args->serial->printf("Type not yet supported for streaming.");
+          args->serial->printf("Type not yet supported for streaming.\r\n");
           break;
       }
     }

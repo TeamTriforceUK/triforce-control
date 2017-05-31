@@ -18,7 +18,8 @@ typedef enum {
   CT_INT = 0,
   CT_FLOAT,
   CT_STRING,
-  CT_BOOLEAN
+  CT_BOOLEAN,
+  CT_NONE
 } tele_command_type_t;
 
 typedef enum {
@@ -48,7 +49,8 @@ typedef enum tele_command_id_t {
   CID_WEAPON_VOLTAGE,
   CID_DRIVE_VOLTAGE,
   CID_AMBIENT_TEMP,
-  CID_ESP_LED
+  CID_ESP_LED,
+  CID_ARM_STATUS,
 };
 
 typedef struct {
@@ -63,6 +65,7 @@ typedef struct {
     int i;
     char c;
     bool b;
+    const char *s;
   } param;
 
 } tele_command_t;

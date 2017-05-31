@@ -73,7 +73,7 @@ int command_generate(command_t *command, char *buffer) {
     command_compare = (char *) command_get_str(available_commands[i].id);
     size_t cclen = strlen(command_compare);
 
-    if (strncmp(command_compare, command_part, MIN(cclen, cplen)) == 0){
+    if (strncmp(command_compare, command_part, MIN(cclen, cplen)) == 0) {
       // When a matching command is found, populate the command
       command->id = available_commands[i].id;
       command->name = available_commands[i].name;
@@ -252,6 +252,12 @@ int command_get_param(command_t *command, thread_args_t *targs) {
         tele_commands[command->tele_param->id].name,
         tele_commands[command->tele_param->id].param.f);
       break;
+    case CID_ARM_STATUS:
+      printf(
+        "%s %s\r\n",
+        tele_commands[command->tele_param->id].name,
+        state_to_str(targs->state));
+      break;
   }
   return RET_OK;
 }
@@ -273,6 +279,9 @@ int command_set_param(command_t *command, thread_args_t *targs) {
     case CID_ESP_LED:
       tele_commands[command->tele_param->id].param.f = command->value.f;
       break;
+    case CID_ARM_STATUS:
+      printf("Use arming commands to set arm_state!\r\n");
+      return RET_ERROR;
   }
   return RET_OK;
 }

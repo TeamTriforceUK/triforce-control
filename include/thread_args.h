@@ -69,7 +69,6 @@ typedef struct {
     ESC *drive[3];
     ESC *weapon[2];
   } escs;
-  #define NUM_TELEM_PARAMS 12
 
   orientation_t orientation_detected;
   orientation_t orientation_override;
