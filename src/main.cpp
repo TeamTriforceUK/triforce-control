@@ -41,6 +41,7 @@
 #include "rtos.h"
 #include "esc.h"
 #include "PwmIn.h"
+#include "assert.h"
 
 #include "bno055.h"
 #include "tmath.h"
@@ -49,6 +50,7 @@
 #include "tasks.h"
 #include "utilc-logging.h"
 #include "return_codes.h"
+#include "task.h"
 
 
 /* Set up logging */
@@ -126,10 +128,22 @@ int main() {
   };
 
   int chan;
-  for(chan= 0; chan < RC_NUMBER_CHANNELS; chan++){
-    targs->receiver[0].channel[chan] = &rx_drive[chan];
-    targs->receiver[1].channel[chan] = &rx_weapon[chan];
-  }
+  // while(1) {
+    for (chan= 0; chan < RC_NUMBER_CHANNELS; chan++) {
+      targs->receiver[0].channel[chan] = &rx_drive[chan];
+      targs->receiver[1].channel[chan] = &rx_weapon[chan];
+      // A test read ensures PwmIn is configured correctly
+      targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
+        0, chan,
+        convert_pulsewidth(
+          targs->receiver[0].channel[chan]->pulsewidth()));
+      targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
+        1, chan,
+        convert_pulsewidth(
+          targs->receiver[1].channel[chan]->pulsewidth()));
+    }
+    // Thread::wait(500);
+  // }
 
   targs->serial->puts("init(): PWM Outputs\r\n");
 
@@ -140,13 +154,13 @@ int main() {
   ESC esc_omni_2(DRIVE_ESC_OUT_2_PIN, 20, 1500);
   targs->escs.drive[1] = &esc_omni_2;
 
-  ESC esc_omni_3(DRIVE_ESC_OUT_3_PIN, 20, 1500); //LED4
+  ESC esc_omni_3(DRIVE_ESC_OUT_3_PIN, 20, 1500);
   targs->escs.drive[2] = &esc_omni_3;
 
-  ESC esc_weapon_1(WEAPON_ESC_OUT_1_PIN); //LED3
+  ESC esc_weapon_1(WEAPON_ESC_OUT_1_PIN);
   targs->escs.weapon[0] = &esc_weapon_1;
 
-  ESC esc_weapon_2(WEAPON_ESC_OUT_2_PIN); //LED2
+  ESC esc_weapon_2(WEAPON_ESC_OUT_2_PIN);
   targs->escs.weapon[1] = &esc_weapon_2;
 
   targs->serial->puts("init(): onboard LEDS\r\n");
@@ -160,7 +174,7 @@ int main() {
   };
 
   int l;
-  for(l = 0; l < NUM_SURFACE_LEDS; l++){
+  for (l = 0; l < NUM_SURFACE_LEDS; l++){
     targs->leds[l] = &led[l];
   }
 
@@ -172,45 +186,28 @@ int main() {
   targs->serial->puts("init(): Mutexes\r\n");
   targs->mutex.pc_serial = new Mutex();
 
-  targs->serial->puts("init(): Starting Tasks\r\n");
+  targs->serial->printf("init(): Starting %d Tasks\r\n", NUM_TASKS);
 
-  Thread thread_serial_commands_in;
-  thread_serial_commands_in.set_priority(osPriorityRealtime);
-  thread_serial_commands_in.start(callback(task_serial_commands_in, (void *) targs));
+  //Allow access to tasks from threads
+  targs->tasks = (task_t *) &tasks;
 
-  Thread thread_process_commands;
-  thread_process_commands.set_priority(osPriorityHigh);
-  thread_process_commands.start(callback(task_process_commands, (void *) targs));
+  Thread threads[NUM_TASKS];
 
-  Thread thread_state_leds;
-  thread_state_leds.start(callback(task_state_leds, (void *) targs));
+  // Start all tasks
+  int t;
+  for (t = 0; t < (NUM_TASKS - 2); t++) {
+    targs->serial->printf("\rinit(): Starting %s (%d) active?: %s\r\n", tasks[t].name, tasks[t].id, tasks[t].active ? "Yes" : "No");
+    tasks[t].args = targs;
+    threads[t].set_priority(tasks[t].priority);
+    threads[t].start(callback(tasks[t].func, tasks[t].args));
+    //The task ID must correspond with its position within the task array
+    assert(t == tasks[t].id);
+  }
 
-  // Thread thread_read_receiver;
-  // thread_read_receiver.start(callback(task_read_receiver, (void *) targs));
-  //
-  // Thread thread_set_escs;
-  // thread_set_escs.start(callback(task_set_escs, (void *) targs));
-
-  Thread thread_calc_orientation;
-  thread_calc_orientation.start(callback(task_calc_orientation, (void *) targs));
-
-  Thread thread_collect_telemetry;
-  // thread_collect_telemetry.set_priority(osPriorityHigh);
-  thread_collect_telemetry.start(callback(task_collect_telemetry, (void *) targs));
-
-  Thread thread_stream_telemetry;
-  // thread_stream_telemetry.set_priority(osPriorityHigh);
-  thread_stream_telemetry.start(callback(task_stream_telemetry, (void *) targs));
-
-
-  thread_serial_commands_in.join();
-  thread_process_commands.join();
-  thread_state_leds.join();
-  // thread_read_receiver.join();
-  // thread_set_escs.join();
-  thread_calc_orientation.join();
-  thread_collect_telemetry.join();
-  thread_stream_telemetry.join();
+  // Wait for all tasks to complete
+  for (t = 0; t < NUM_TASKS; t++) {
+    threads[t].join();
+  }
 
   free(targs);
   delete(targs->esp_ready_pin);

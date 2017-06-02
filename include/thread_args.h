@@ -36,8 +36,11 @@
 #include "states.h"
 #include "bno055.h"
 #include "command.h"
+#include "task.h"
 
 typedef struct {
+
+  task_t *tasks;
 
   state_t state;
 
@@ -46,6 +49,9 @@ typedef struct {
 
   /*! Receiver inputs. */
   rc_receiver_t receiver[RC_NUMBER_CONTROLLERS];
+
+  /*! Defines the upper and lower limits of each PWM input from a receiver. */
+  channel_limits_t channel_limits[RC_NUMBER_CONTROLLERS][RC_NUMBER_CHANNELS];
 
   /*! Mail queue for commands from serial comms or RF RX */
   Mail<command_t, COMMAND_QUEUE_LEN> *command_queue;

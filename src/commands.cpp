@@ -34,6 +34,7 @@
 #include "thread_args.h"
 #include "types.h"
 #include "tele_params.h"
+#include "tasks.h"
 
 const char * command_get_str(command_id_t id) {
   if (id > 0 && id < NUM_COMMANDS)
@@ -155,6 +156,8 @@ int command_execute(command_t *command, thread_args_t *targs) {
       return command_get_param(command, targs);
     case SET_PARAM:
       return command_set_param(command, targs);
+    case CALIBRATE_CHANNELS:
+      return command_calibrate_channels(command, targs);
     default:
       return RET_ERROR;
   }
@@ -283,5 +286,14 @@ int command_set_param(command_t *command, thread_args_t *targs) {
       printf("Use arming commands to set arm_state!\r\n");
       return RET_ERROR;
   }
+  return RET_OK;
+}
+
+int command_calibrate_channels(command_t *command, thread_args_t *targs) {
+  if (targs->state != STATE_DISARMED) {
+    return RET_DISARM_FIRST;
+  }
+
+  targs->tasks[TASK_CALIBRATE_CHANNELS].active = true;
   return RET_OK;
 }

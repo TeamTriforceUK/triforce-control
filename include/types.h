@@ -6,7 +6,7 @@
 
 /* Positions of controls */
 typedef struct {
-    int channel[RC_NUMBER_CHANNELS];
+    float channel[RC_NUMBER_CHANNELS];
 } rc_controls_t;
 
 typedef struct {
@@ -75,6 +75,10 @@ enum orientation_t {
   INVERTED
 };
 
+typedef struct {
+  float min;
+  float max;
+} channel_limits_t;
 
 const char * orientation_to_str(orientation_t orientation);
 

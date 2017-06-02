@@ -37,7 +37,8 @@ typedef enum  {
   FULLY_ARM,
   STATUS,
   GET_PARAM,
-  SET_PARAM
+  SET_PARAM,
+  CALIBRATE_CHANNELS
 } command_id_t;
 
 
