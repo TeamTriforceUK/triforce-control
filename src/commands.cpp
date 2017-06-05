@@ -156,8 +156,10 @@ int command_execute(command_t *command, thread_args_t *targs) {
       return command_get_param(command, targs);
     case SET_PARAM:
       return command_set_param(command, targs);
+#ifdef TASK_CALIBRATE_CHANNELS
     case CALIBRATE_CHANNELS:
       return command_calibrate_channels(command, targs);
+#endif  // TASK_CALIBRATE_CHANNELS
     default:
       return RET_ERROR;
   }
@@ -288,12 +290,13 @@ int command_set_param(command_t *command, thread_args_t *targs) {
   }
   return RET_OK;
 }
-
+#ifdef TASK_CALIBRATE_CHANNELS
 int command_calibrate_channels(command_t *command, thread_args_t *targs) {
   if (targs->state != STATE_DISARMED) {
     return RET_DISARM_FIRST;
   }
 
-  targs->tasks[TASK_CALIBRATE_CHANNELS].active = true;
+  targs->tasks[TASK_CALIBRATE_CHANNELS_ID].active = true;
   return RET_OK;
 }
+#endif  // TASK_CALIBRATE_CHANNELS

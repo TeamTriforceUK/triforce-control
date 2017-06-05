@@ -36,6 +36,10 @@
 #include "return_codes.h"
 #include "tele_params.h"
 
+void task_start(thread_args_t *targs, unsigned task_id) {
+  targs->serial->printf("Task %d (\"%s\") started.\r\n", task_id, tasks[task_id].name);
+}
+
 /**
 * @brief Execute commands as they become available on the mail queue.
 * @param [in/out] targs Thread arguments.
@@ -43,8 +47,9 @@
 #ifdef TASK_PROCESS_COMMANDS
 void task_process_commands(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_PROCESS_COMMANDS_ID);
   while (args->active) {
-    if (args->tasks[TASK_PROCESS_COMMANDS].active) {
+    if (args->tasks[TASK_PROCESS_COMMANDS_ID].active) {
       osEvent evt;
       while ((evt = args->command_queue->get(1)).status == osEventMail) {
           command_t *command_q = (command_t*) evt.value.p;
@@ -68,13 +73,14 @@ void task_process_commands(const void *targs) {
 #ifdef TASK_READ_SERIAL
 void task_read_serial(const void *targs){
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_READ_SERIAL_ID);
 
   char buffer[100];
   int pos = 0;
   LOG( "$");
   bool readable;
   while (args->active) {
-    if (args->tasks[TASK_READ_SERIAL].active) {
+    if (args->tasks[TASK_READ_SERIAL_ID].active) {
       bool readable = args->serial->readable();
       // LOG("test\r\n");
       if (readable) {
@@ -117,12 +123,14 @@ void task_read_serial(const void *targs){
 #ifdef TASK_LED_STATE
 void task_state_leds(const void *targs){
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_LED_STATE_ID);
+
   static state_t previous_state = args->state;
   bool first_time = true;
   bool weapon_only_ripple[4] = {true, false, false, false};
   bool tmp_ripple;
   while (args->active) {
-    if (args->tasks[TASK_LED_STATE].active) {
+    if (args->tasks[TASK_LED_STATE_ID].active) {
       if (args->state != previous_state || first_time) {
         LOG("state change: %s --> %s\r\n", state_to_str(previous_state), state_to_str(args->state));
         switch (args->state) {
@@ -180,10 +188,11 @@ void task_state_leds(const void *targs){
 #ifdef TASK_READ_RECEIVERS
 void task_read_receiver(const void *targs) {
   // thread_args_t * args = (thread_args_t *) targs;
+  // task_start(args, TASK_READ_RECEIVERS_ID);
   // int controller, channel;
   // float v, min, max;
   // while (args->active) {
-  //   if (args->tasks[TASK_READ_RECEIVERS].active) {
+  //   if (args->tasks[TASK_READ_RECEIVERS_ID].active) {
   //     for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
   //       for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++) {
   //         // v = args->receiver[controller].channel[channel]->pulsewidth();
@@ -204,10 +213,12 @@ void task_read_receiver(const void *targs) {
 #ifdef TASK_ARMING
 void task_arming(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_ARMING_ID);
+
   bool drive_switch, weapon_switch, drive_arm, weapon_arm;
 
   while (args->active) {
-    if (args->tasks[TASK_ARMING].active) {
+    if (args->tasks[TASK_ARMING_ID].active) {
       drive_switch = (args->controls[0].channel[3] > RC_SWITCH_MIDPOINT);
       weapon_switch = (args->controls[1].channel[3] > RC_SWITCH_MIDPOINT);
 
@@ -266,9 +277,11 @@ void task_arming(const void *targs) {
 #ifdef TASK_FAILSAFE
 void task_failsafe(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_FAILSAFE_ID);
+
   bool drive_inactive, weapon_inactive;
   while (args->active) {
-    if (args->tasks[TASK_FAILSAFE].active) {
+    if (args->tasks[TASK_FAILSAFE_ID].active) {
       drive_inactive = args->receiver[0].channel[0]->stallTimer.read_ms() > 200;
       weapon_inactive = args->receiver[1].channel[0]->stallTimer.read_ms() > 200;
 
@@ -305,8 +318,10 @@ void task_failsafe(const void *targs) {
 #ifdef TASK_SET_ESCS
 void task_set_escs(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_SET_ESCS_ID);
+
   while(args->active) {
-    if (args->tasks[TASK_SET_ESCS].active) {
+    if (args->tasks[TASK_SET_ESCS_ID].active) {
       switch (args->state) {
         case STATE_FULLY_ARMED:
           args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
@@ -331,8 +346,10 @@ void task_set_escs(const void *targs) {
 #ifdef TASK_CALC_ORIENTATION
 void task_calc_orientation(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_CALC_ORIENTATION_ID);
+
   while (args->active) {
-    if (args->tasks[TASK_CALC_ORIENTATION].active) {
+    if (args->tasks[TASK_CALC_ORIENTATION_ID].active) {
       /* If there is an error then we maintain the same
        * orientation to stop random control flipping */
       if (!bno055_healthy()) {
@@ -360,10 +377,12 @@ void task_calc_orientation(const void *targs) {
 #ifdef TASK_COLLECT_TELEMETRY
 void task_collect_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_COLLECT_TELEMETRY_ID);
+
   euler_t e;
   int i;
   while (args->active) {
-    if (args->tasks[TASK_COLLECT_TELEMETRY].active) {
+    if (args->tasks[TASK_COLLECT_TELEMETRY_ID].active) {
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].id) {
           case CID_RING_RPM:
@@ -427,11 +446,12 @@ void task_collect_telemetry(const void *targs) {
 #ifdef TASK_STREAM_TELEMETRY
 void task_stream_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_STREAM_TELEMETRY_ID);
 
   int i = 0;
   while (args->active) {
     /* The ESP looks for a carriage return character to delimit a command. */
-    if (args->tasks[TASK_STREAM_TELEMETRY].active) {
+    if (args->tasks[TASK_STREAM_TELEMETRY_ID].active) {
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].type) {
           case CT_FLOAT:
@@ -467,6 +487,7 @@ void task_stream_telemetry(const void *targs) {
 
 void task_print_channels(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+
   while (args->active) {
     int controller, channel;
     for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
@@ -482,6 +503,8 @@ void task_print_channels(const void *targs) {
 #ifdef TASK_CALIBRATE_CHANNELS
 void task_calibrate_channels(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_CALIBRATE_CHANNELS_ID);
+
   int controller, channel;
   unsigned calibration_time;
   unsigned calibration_time_ms = 10000;
@@ -490,8 +513,8 @@ void task_calibrate_channels(const void *targs) {
 
   while (args->active) {
     // args->serial->printf("t %d is %s\r\n", TASK_CALIBRATE_CHANNELS, args->tasks[TASK_CALIBRATE_CHANNELS].active ? "true" : "false");
-    if (args->tasks[TASK_CALIBRATE_CHANNELS].active == true) {
-      args->serial->printf("t %d is %s\r\n", TASK_CALIBRATE_CHANNELS, args->tasks[TASK_CALIBRATE_CHANNELS].active ? "true" : "false");
+    if (args->tasks[TASK_CALIBRATE_CHANNELS_ID].active == true) {
+      args->serial->printf("t %d is %s\r\n", TASK_CALIBRATE_CHANNELS_ID, args->tasks[TASK_CALIBRATE_CHANNELS_ID].active ? "true" : "false");
 
       args->serial->printf("Controller calibration beginning,\r\n");
       args->serial->printf("move controller sticks & switches to extremities.\r\n");
@@ -549,7 +572,7 @@ void task_calibrate_channels(const void *targs) {
       }
 
       // De-activate task to prevent further repititions
-      args->tasks[TASK_CALIBRATE_CHANNELS].active = false;
+      args->tasks[TASK_CALIBRATE_CHANNELS_ID].active = false;
 
     }
 
