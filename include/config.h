@@ -29,6 +29,21 @@
 #ifndef TC_CONFIG_H
 #define TC_CONFIG_H
 
+/* The following macros are used to enable and disable tasks at
+   preprocessing time. */
+
+#define TASK_READ_SERIAL
+#define TASK_PROCESS_COMMANDS
+#define TASK_LED_STATE
+// #define TASK_READ_RECEIVERS
+// #define TASK_ARMING
+// #define TASK_FAILSAFE
+// #define TASK_SET_ESCS
+// #define TASK_CALC_ORIENTATION
+#define TASK_COLLECT_TELEMETRY
+#define TASK_STREAM_TELEMETRY
+#define TASK_CALIBRATE_CHANNELS
+
 /* Pin Assignments */
 #define RECV_D_CHAN_1_PIN p5
 #define RECV_D_CHAN_2_PIN p6

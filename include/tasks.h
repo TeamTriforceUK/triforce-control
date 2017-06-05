@@ -30,21 +30,7 @@
 #include "mbed.h"
 #include "task.h"
 #include "thread_args.h"
-
-/* The following macros are used to enable and disable tasks at
-   preprocessing time. */
-
-#define TASK_READ_SERIAL
-#define TASK_PROCESS_COMMANDS
-#define TASK_LED_STATE
-// #define TASK_READ_RECEIVERS
-// #define TASK_ARMING
-// #define TASK_FAILSAFE
-// #define TASK_SET_ESCS
-// #define TASK_CALC_ORIENTATION
-#define TASK_COLLECT_TELEMETRY
-#define TASK_STREAM_TELEMETRY
-#define TASK_CALIBRATE_CHANNELS
+#include "config.h"
 
 /* The COUNTER macro is a GCC preprocessor macro that increments after every
    time it is used. We use it here to allow the task IDs to be a sequence
