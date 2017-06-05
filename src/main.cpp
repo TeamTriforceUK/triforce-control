@@ -195,7 +195,7 @@ int main() {
 
   // Start all tasks
   int t;
-  for (t = 0; t < (NUM_TASKS - 2); t++) {
+  for (t = 0; t < NUM_TASKS; t++) {
     targs->serial->printf("\rinit(): Starting %s (%d) active?: %s\r\n", tasks[t].name, tasks[t].id, tasks[t].active ? "Yes" : "No");
     tasks[t].args = targs;
     threads[t].set_priority(tasks[t].priority);
