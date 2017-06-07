@@ -17,31 +17,35 @@
  */
 
 /**
-* @file utils.h
+* @file utils.cpp
 * @author Cameron A. Craig
-* @date 18 May 2017
+* @date 7 Jun 2017
 * @copyright 2017 Cameron A. Craig
-* @brief Useful utility functions and macros.
+* @brief Useful utility functions.
 */
 
+#include "utils.h"
 
-#ifndef TC_UTILS_H
-#define TC_UTILS_H
+bool is_drive_stalled(thread_args_t *args){
+  /* We have averted an extremely dangerous situation by also checking if (stall_time < 0).
+    Confused?  What happens if stallTimer overflows? It becomes negative.
+    If the last known controller positions were in the arming positions,
+    the arming criteria would be met as soon as the stall time overflows.
+    Disaster averted :)
+    */
 
-#include "thread_args.h"
-#include "config.h"
+  int stall_time = args->receiver[1].channel[RC_1_AILERON]->stallTimer.read_ms();
+  return  (stall_time > 200) || (stall_time < 0);
+}
 
-#define MAX(a,b) \
-  ({ typeof (a) _a = (a); \
-     typeof (b) _b = (b); \
-   _a > _b ? _a : _b; })
+bool is_weapon_stalled(thread_args_t *args){
+  /* We have averted an extremely dangerous situation by also checking if (stall_time < 0).
+    Confused?  What happens if stallTimer overflows? It becomes negative.
+    If the last known controller positions were in the arming positions,
+    the arming criteria would be met as soon as the stall time overflows.
+    Disaster averted :)
+    */
 
-#define MIN(a,b) \
-  ({ typeof (a) _a = (a); \
-      typeof (b) _b = (b); \
-    _a < _b ? _a : _b; })
-
-bool is_drive_stalled(thread_args_t *args);
-bool is_weapon_stalled(thread_args_t *args);
-
-#endif //TC_UTILS_H
+  int stall_time = args->receiver[0].channel[RC_0_THROTTLE]->stallTimer.read_ms();
+  return  (stall_time > 200) || (stall_time < 0);
+}

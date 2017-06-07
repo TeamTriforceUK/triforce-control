@@ -152,7 +152,7 @@ static volatile task_t tasks[] = {
   {.id = TASK_ARMING_ID,             .name = "Arming" ,            .func = task_arming,             .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,   .active = true},
 #endif
 #ifdef TASK_FAILSAFE
-  {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
+  {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_SET_ESCS
   {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},

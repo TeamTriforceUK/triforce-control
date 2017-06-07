@@ -35,6 +35,7 @@
 #include "commands.h"
 #include "return_codes.h"
 #include "tele_params.h"
+#include "utils.h"
 
 void task_start(thread_args_t *targs, unsigned task_id) {
   targs->serial->printf("started task %d (%s)\tstack [alloc: %d, used: %d, free: %d]\r\n", task_id, tasks[task_id].name, targs->threads[task_id].stack_size(), targs->threads[task_id].used_stack(), targs->threads[task_id].free_stack());
@@ -131,6 +132,7 @@ void task_state_leds(const void *targs){
   bool first_time = true;
   bool weapon_only_ripple[4] = {true, false, false, false};
   bool tmp_ripple;
+
   while (args->active) {
     if (args->tasks[TASK_LED_STATE_ID].active) {
       if (args->state != previous_state || first_time) {
@@ -233,20 +235,26 @@ void task_arming(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_ARMING_ID);
 
-  bool drive_switch, weapon_switch, drive_arm, weapon_arm;
+  bool drive_switch, weapon_switch, drive_arm, weapon_arm, drive_stalled, weapon_stalled;
 
   while (args->active) {
     if (args->tasks[TASK_ARMING_ID].active) {
       weapon_switch = (args->controls[0].channel[RC_0_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
       drive_switch = (args->controls[1].channel[RC_1_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
 
-      weapon_arm = weapon_switch &&
+      /* If a transmitter is lost (turned off/out of range),
+         disable arming for that TX.
+      */
+      drive_stalled = is_drive_stalled(args);
+      weapon_stalled = is_weapon_stalled(args);
+
+      weapon_arm = weapon_switch && !weapon_stalled &&
         BETWEEN(args->controls[0].channel[RC_0_THROTTLE], 0, 2) &&
         BETWEEN(args->controls[0].channel[RC_0_ELEVATION], 45, 55) &&
         BETWEEN(args->controls[0].channel[RC_0_RUDDER], 45, 55) &&
         BETWEEN(args->controls[0].channel[RC_0_AILERON], 45, 55);
 
-      drive_arm = drive_switch &&
+      drive_arm = drive_switch && !drive_stalled &&
         BETWEEN(args->controls[1].channel[RC_1_THROTTLE], 0, 2) &&
         BETWEEN(args->controls[1].channel[RC_1_ELEVATION], 45, 55) &&
         BETWEEN(args->controls[1].channel[RC_1_RUDDER], 45, 55) &&
@@ -303,10 +311,11 @@ void task_failsafe(const void *targs) {
   task_start(args, TASK_FAILSAFE_ID);
 
   bool drive_inactive, weapon_inactive;
+
   while (args->active) {
     if (args->tasks[TASK_FAILSAFE_ID].active) {
-      drive_inactive = args->receiver[0].channel[0]->stallTimer.read_ms() > 200;
-      weapon_inactive = args->receiver[1].channel[0]->stallTimer.read_ms() > 200;
+      weapon_inactive = is_weapon_stalled(args);
+      drive_inactive = is_drive_stalled(args);
 
       switch (args->state) {
         case STATE_FULLY_ARMED:
@@ -330,6 +339,20 @@ void task_failsafe(const void *targs) {
           break;
       }
     }
+    // For debugging purposes
+    // Thread::wait(1000);
+    // args->serial->printf("drive stall timer: %d ms\r\n", args->receiver[1].channel[0]->stallTimer.read_ms());
+    // args->serial->printf("drive stall timer: %d ms\r\n", args->receiver[1].channel[1]->stallTimer.read_ms());
+    // args->serial->printf("drive stall timer: %d ms\r\n", args->receiver[1].channel[2]->stallTimer.read_ms());
+    // args->serial->printf("drive stall timer: %d ms\r\n", args->receiver[1].channel[3]->stallTimer.read_ms());
+    // args->serial->printf("drive stall timer: %d ms\r\n", args->receiver[1].channel[4]->stallTimer.read_ms());
+    // args->serial->printf("drive stall timer: %d ms\r\n", args->receiver[1].channel[5]->stallTimer.read_ms());
+    // args->serial->printf("weapon stall timer: %d ms\r\n", args->receiver[0].channel[0]->stallTimer.read_ms());
+    // args->serial->printf("weapon stall timer: %d ms\r\n", args->receiver[0].channel[1]->stallTimer.read_ms());
+    // args->serial->printf("weapon stall timer: %d ms\r\n", args->receiver[0].channel[2]->stallTimer.read_ms());
+    // args->serial->printf("weapon stall timer: %d ms\r\n", args->receiver[0].channel[3]->stallTimer.read_ms());
+    // args->serial->printf("weapon stall timer: %d ms\r\n", args->receiver[0].channel[4]->stallTimer.read_ms());
+    // args->serial->printf("weapon stall timer: %d ms\r\n", args->receiver[0].channel[5]->stallTimer.read_ms());
   }
 }
 #endif
