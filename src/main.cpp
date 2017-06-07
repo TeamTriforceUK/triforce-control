@@ -52,6 +52,9 @@
 #include "return_codes.h"
 #include "task.h"
 
+// For memory debugging
+// #include "mbed_memory_status.h"
+
 
 /* Set up logging */
 LocalFileSystem local("local");
@@ -91,7 +94,7 @@ int main() {
   targs->serial = serial;
   serial_ptr = serial;
 
-
+  //For memory debugging
   // print_all_thread_info();
   // print_heap_and_isr_stack_info();
 
@@ -126,6 +129,45 @@ int main() {
     RECV_W_CHAN_5_PIN,
     RECV_W_CHAN_6_PIN
   };
+
+  /* Set and print channel limits, these can be modified at runtime using the
+  calibrate command. */
+
+  targs->channel_limits[0][0].min = RC_0_CHAN_1_MIN;
+  targs->channel_limits[0][0].max = RC_0_CHAN_1_MAX;
+
+  targs->channel_limits[0][1].min = RC_0_CHAN_2_MIN;
+  targs->channel_limits[0][1].max = RC_0_CHAN_2_MAX;
+
+  targs->channel_limits[0][2].min = RC_0_CHAN_3_MIN;
+  targs->channel_limits[0][2].max = RC_0_CHAN_3_MAX;
+
+  targs->channel_limits[0][3].min = RC_0_CHAN_4_MIN;
+  targs->channel_limits[0][3].max = RC_0_CHAN_4_MAX;
+
+  targs->channel_limits[0][4].min = RC_0_CHAN_5_MIN;
+  targs->channel_limits[0][4].max = RC_0_CHAN_5_MAX;
+
+  targs->channel_limits[0][5].min = RC_0_CHAN_6_MIN;
+  targs->channel_limits[0][5].max = RC_0_CHAN_6_MAX;
+
+  targs->channel_limits[1][0].min = RC_1_CHAN_1_MIN;
+  targs->channel_limits[1][0].max = RC_1_CHAN_1_MAX;
+
+  targs->channel_limits[1][1].min = RC_1_CHAN_2_MIN;
+  targs->channel_limits[1][1].max = RC_1_CHAN_2_MAX;
+
+  targs->channel_limits[1][2].min = RC_1_CHAN_3_MIN;
+  targs->channel_limits[1][2].max = RC_1_CHAN_3_MAX;
+
+  targs->channel_limits[1][3].min = RC_1_CHAN_4_MIN;
+  targs->channel_limits[1][3].max = RC_1_CHAN_4_MAX;
+
+  targs->channel_limits[1][4].min = RC_1_CHAN_5_MIN;
+  targs->channel_limits[1][4].max = RC_1_CHAN_5_MAX;
+
+  targs->channel_limits[1][5].min = RC_1_CHAN_6_MIN;
+  targs->channel_limits[1][5].max = RC_1_CHAN_6_MAX;
 
   int chan;
   // while(1) {
@@ -188,20 +230,68 @@ int main() {
 
   targs->serial->printf("init(): Starting %d Tasks\r\n", NUM_TASKS);
 
-  //Allow access to tasks from threads
+  // Allow access to tasks from threads
   targs->tasks = (task_t *) &tasks;
 
-  Thread threads[NUM_TASKS];
+  Thread threads[NUM_TASKS] = {
+#ifdef TASK_READ_SERIAL
+    {tasks[TASK_READ_SERIAL_ID].priority, tasks[TASK_READ_SERIAL_ID].stack_size},
+#endif
+#ifdef TASK_PROCESS_COMMANDS
+    {tasks[TASK_PROCESS_COMMANDS_ID].priority, tasks[TASK_PROCESS_COMMANDS_ID].stack_size},
+#endif
+#ifdef TASK_LED_STATE
+    {tasks[TASK_LED_STATE_ID].priority, tasks[TASK_LED_STATE_ID].stack_size},
+#endif
+#ifdef TASK_READ_RECEIVERS
+    {tasks[TASK_READ_RECEIVERS_ID].priority, tasks[TASK_READ_RECEIVERS_ID].stack_size},
+#endif
+#ifdef TASK_ARMING
+    {tasks[TASK_ARMING_ID].priority, tasks[TASK_ARMING_ID].stack_size},
+#endif
+#ifdef TASK_FAILSAFE
+    {tasks[TASK_FAILSAFE_ID].priority, tasks[TASK_FAILSAFE_ID].stack_size},
+#endif
+#ifdef TASK_SET_ESCS
+    {tasks[TASK_SET_ESCS_ID].priority, tasks[TASK_SET_ESCS_ID].stack_size},
+#endif
+#ifdef TASK_CALC_ORIENTATION
+    {tasks[TASK_CALC_ORIENTATION_ID].priority, tasks[TASK_CALC_ORIENTATION_ID].stack_size},
+#endif
+#ifdef TASK_COLLECT_TELEMETRY
+    {tasks[TASK_COLLECT_TELEMETRY_ID].priority, tasks[TASK_COLLECT_TELEMETRY_ID].stack_size},
+#endif
+#ifdef TASK_STREAM_TELEMETRY
+    {tasks[TASK_STREAM_TELEMETRY_ID].priority, tasks[TASK_STREAM_TELEMETRY_ID].stack_size},
+#endif
+#ifdef TASK_CALIBRATE_CHANNELS
+    {tasks[TASK_CALIBRATE_CHANNELS_ID].priority, tasks[TASK_CALIBRATE_CHANNELS_ID].stack_size}
+#endif
+  };
+  // Allow access to Thread objects thread thread_args
+  targs->threads = (Thread*) &threads;
 
-  // Start all tasks
+  // Print all tasks and their properties
   int t;
   for (t = 0; t < NUM_TASKS; t++) {
+    targs->serial->printf("\rinit(): Task %d (%s) active: %s, stack: %d\r\n", tasks[t].id, tasks[t].name, tasks[t].active ? "Yes" : "No", tasks[t].stack_size);
+  }
+
+  // Start all tasks
+  for (t = 0; t < NUM_TASKS; t++) {
+    // Print amount of heap used
+    // print_heap_and_isr_stack_info();
+
     targs->serial->printf("\rinit(): Starting %s (%d) active?: %s\r\n", tasks[t].name, tasks[t].id, tasks[t].active ? "Yes" : "No");
     tasks[t].args = targs;
-    threads[t].set_priority(tasks[t].priority);
+    // threads[t].set_priority(tasks[t].priority);
     threads[t].start(callback(tasks[t].func, tasks[t].args));
-    //The task ID must correspond with its position within the task array
+
+    // The task ID must correspond with its position within the task array
     assert(t == tasks[t].id);
+
+    // Print amount of heap used
+    // print_heap_and_isr_stack_info();
   }
 
   // Wait for all tasks to complete

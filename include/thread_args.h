@@ -41,6 +41,7 @@
 typedef struct {
 
   task_t *tasks;
+  Thread *threads;
 
   state_t state;
 

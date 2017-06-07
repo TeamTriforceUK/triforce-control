@@ -37,7 +37,9 @@
 #include "tele_params.h"
 
 void task_start(thread_args_t *targs, unsigned task_id) {
-  targs->serial->printf("Task %d (\"%s\") started.\r\n", task_id, tasks[task_id].name);
+  targs->serial->printf("started task %d (%s)\tstack [alloc: %d, used: %d, free: %d]\r\n", task_id, tasks[task_id].name, targs->threads[task_id].stack_size(), targs->threads[task_id].used_stack(), targs->threads[task_id].free_stack());
+
+  // targs->serial->printf("Using %d bytes of stack.\r\n", task_id, tasks[task_id].name);
 }
 
 /**
@@ -187,22 +189,38 @@ void task_state_leds(const void *targs){
 */
 #ifdef TASK_READ_RECEIVERS
 void task_read_receiver(const void *targs) {
-  // thread_args_t * args = (thread_args_t *) targs;
-  // task_start(args, TASK_READ_RECEIVERS_ID);
-  // int controller, channel;
-  // float v, min, max;
-  // while (args->active) {
-  //   if (args->tasks[TASK_READ_RECEIVERS_ID].active) {
-  //     for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
-  //       for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++) {
-  //         // v = args->receiver[controller].channel[channel]->pulsewidth();
-  //         // min = args->channel_limits[controller][channel].min;
-  //         // max = args->channel_limits[controller][channel].max;
-  //         // args->controls[controller].channel[channel] = (v - min) / (max - min);
-  //       }
-  //     }
-  //   }
-  // }
+  thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_READ_RECEIVERS_ID);
+  int controller, channel;
+  float pw, v, min, max;
+  while (args->active) {
+    if (args->tasks[TASK_READ_RECEIVERS_ID].active) {
+      for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
+        for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++) {
+          // Read raw pulse width
+          pw = args->receiver[controller].channel[channel]->pulsewidth();
+
+          // Get min and max pulsewidths fot this channel
+          min = args->channel_limits[controller][channel].min;
+          max = args->channel_limits[controller][channel].max;
+
+          // Make sure pw doesn't leave bounds due to imperfect calibration
+          pw = clamp(pw, min, max);
+
+          // Convert into float value between 0 and 100, based on max and min
+          v = ( (pw - min) / (max - min) ) * 100.0f;
+
+          // Set the control value for otehr threads to use
+          args->controls[controller].channel[channel] = v;
+
+          // For debugging purposes
+          // args->serial->printf("con %d chan %d: [pw: %.0f, min: %.0f, max: %.0f, v: %.0f]\r\n", controller, channel, pw, min, max, v);
+        }
+      }
+    }
+    // For debugging purposes
+    // Thread::wait(1000);
+  }
 }
 #endif
 
@@ -219,20 +237,24 @@ void task_arming(const void *targs) {
 
   while (args->active) {
     if (args->tasks[TASK_ARMING_ID].active) {
-      drive_switch = (args->controls[0].channel[3] > RC_SWITCH_MIDPOINT);
-      weapon_switch = (args->controls[1].channel[3] > RC_SWITCH_MIDPOINT);
-
-      drive_arm = drive_switch &&
-        BETWEEN(args->controls[0].channel[0], 45, 55) &&
-        BETWEEN(args->controls[0].channel[1], 45, 55) &&
-        (args->controls[0].channel[2] < RC_ARM_CHANNEL_3) &&
-        BETWEEN(args->controls[0].channel[3], 45, 55);
+      weapon_switch = (args->controls[0].channel[RC_0_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
+      drive_switch = (args->controls[1].channel[RC_1_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
 
       weapon_arm = weapon_switch &&
-        BETWEEN(args->controls[1].channel[0], 45, 55) &&
-        BETWEEN(args->controls[1].channel[1], 45, 55) &&
-        (args->controls[1].channel[2] < RC_ARM_CHANNEL_3) &&
-        BETWEEN(args->controls[1].channel[3], 45, 55);
+        BETWEEN(args->controls[0].channel[RC_0_THROTTLE], 0, 2) &&
+        BETWEEN(args->controls[0].channel[RC_0_ELEVATION], 45, 55) &&
+        BETWEEN(args->controls[0].channel[RC_0_RUDDER], 45, 55) &&
+        BETWEEN(args->controls[0].channel[RC_0_AILERON], 45, 55);
+
+      drive_arm = drive_switch &&
+        BETWEEN(args->controls[1].channel[RC_1_THROTTLE], 0, 2) &&
+        BETWEEN(args->controls[1].channel[RC_1_ELEVATION], 45, 55) &&
+        BETWEEN(args->controls[1].channel[RC_1_RUDDER], 45, 55) &&
+        BETWEEN(args->controls[1].channel[RC_1_AILERON], 45, 55);
+
+      //Debug: Print RX values
+      // args->serial->printf("drive_switch : %.0f (%s)\r\n", args->controls[0].channel[RC_0_ARM_SWITCH], drive_switch ? "On" : "Off");
+      // args->serial->printf("weapon_switch: %.0f (%s)\r\n", args->controls[1].channel[RC_1_ARM_SWITCH], weapon_switch ? "On" : "Off");
 
       switch (args->state) {
         /* From the fully armed state we can only decrease the arm state,
@@ -270,6 +292,7 @@ void task_arming(const void *targs) {
           }
       }
     }
+    Thread::wait(1000);
   }
 }
 #endif

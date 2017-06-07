@@ -17,6 +17,7 @@ typedef struct {
   void (*func)(const void*);
   void * args;
   osPriority priority;
+  uint32_t stack_size;
   volatile bool active;
 } task_t;
 

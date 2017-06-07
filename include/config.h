@@ -32,11 +32,11 @@
 /* The following macros are used to enable and disable tasks at
    preprocessing time. */
 
-#define TASK_READ_SERIAL
-#define TASK_PROCESS_COMMANDS
+// #define TASK_READ_SERIAL
+// #define TASK_PROCESS_COMMANDS
 #define TASK_LED_STATE
-// #define TASK_READ_RECEIVERS
-// #define TASK_ARMING
+#define TASK_READ_RECEIVERS
+#define TASK_ARMING
 // #define TASK_FAILSAFE
 // #define TASK_SET_ESCS
 // #define TASK_CALC_ORIENTATION
@@ -90,7 +90,7 @@
 #define RC_ON_THRES 70 // ON threshold for switches
 #define RC_OFF_THRES 30 // OFF threshold for switches
 #define RC_FAILSAFE_THRES 150 // FAILSAFE threshold
-#define RC_SWITCH_MIDPOINT 50
+#define RC_SWITCH_MIDPOINT 50.0f
 
 
 #define COMMAND_QUEUE_LEN 100
@@ -98,6 +98,59 @@
 #define MAIL_TIMEOUT_MS 1
 
 #define NUM_SURFACE_LEDS 4
+
+// Default channel limits (RC0/Weapon)
+#define RC_0_CHAN_1_MIN   1069.0f
+#define RC_0_CHAN_1_MAX   1895.0f
+
+#define RC_0_CHAN_2_MIN   1043.0f
+#define RC_0_CHAN_2_MAX   1871.0f
+
+#define RC_0_CHAN_3_MIN   1014.0f
+#define RC_0_CHAN_3_MAX   1839.0f
+
+#define RC_0_CHAN_4_MIN   1030.0f
+#define RC_0_CHAN_4_MAX   1854.0f
+
+#define RC_0_CHAN_5_MIN   1030.0f
+#define RC_0_CHAN_5_MAX   1857.0f
+
+#define RC_0_CHAN_6_MIN   1041.0f
+#define RC_0_CHAN_6_MAX   1857.0f
+
+// Default channel limits (RC1/Drive)
+#define RC_1_CHAN_1_MIN   1202.0f
+#define RC_1_CHAN_1_MAX   1896.0f
+
+#define RC_1_CHAN_2_MIN   1092.0f
+#define RC_1_CHAN_2_MAX   1896.0f
+
+#define RC_1_CHAN_3_MIN   1092.0f
+#define RC_1_CHAN_3_MAX   1895.0f
+
+#define RC_1_CHAN_4_MIN   1093.0f
+#define RC_1_CHAN_4_MAX   1896.0f
+
+#define RC_1_CHAN_5_MIN   1092.0f
+#define RC_1_CHAN_5_MAX   1892.0f
+
+#define RC_1_CHAN_6_MIN   1092.0f
+#define RC_1_CHAN_6_MAX   1894.0f
+
+//Define purpose of each channel for readability
+
+
+#define RC_0_AILERON      0
+#define RC_0_ELEVATION    1
+#define RC_0_THROTTLE     2
+#define RC_0_RUDDER       3
+#define RC_0_ARM_SWITCH   4 // Channel 5 [0 --> 5]
+
+#define RC_1_AILERON      1
+#define RC_1_ELEVATION    2
+#define RC_1_THROTTLE     0
+#define RC_1_RUDDER       3
+#define RC_1_ARM_SWITCH   4 // Channel 5 [0 --> 5]
 
 
 #endif //TC_CONFIG_H

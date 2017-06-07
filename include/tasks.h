@@ -137,37 +137,37 @@ void task_print_channels(const void *targs);
 
 static volatile task_t tasks[] = {
 #ifdef TASK_READ_SERIAL
-  {.id = TASK_READ_SERIAL_ID,        .name = "Read Serial",        .func = task_read_serial,        .args = NULL, .priority = osPriorityRealtime, .active = true},
+  {.id = TASK_READ_SERIAL_ID,        .name = "Read Serial",        .func = task_read_serial,        .args = NULL, .priority = osPriorityRealtime, .stack_size = 1024, .active = true},
 #endif
 #ifdef TASK_PROCESS_COMMANDS
-  {.id = TASK_PROCESS_COMMANDS_ID,   .name = "Process Commands",   .func = task_process_commands,   .args = NULL, .priority = osPriorityHigh,     .active = true},
+  {.id = TASK_PROCESS_COMMANDS_ID,   .name = "Process Commands",   .func = task_process_commands,   .args = NULL, .priority = osPriorityHigh,     .stack_size = 2048, .active = true},
 #endif
 #ifdef TASK_LED_STATE
-  {.id = TASK_LED_STATE_ID,          .name = "LED State",          .func = task_state_leds,         .args = NULL, .priority = osPriorityNormal,   .active = true},
+  {.id = TASK_LED_STATE_ID,          .name = "LED State",          .func = task_state_leds,         .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,   .active = true},
 #endif
 #ifdef TASK_READ_RECEIVERS
-  {.id = TASK_READ_RECEIVERS_ID,     .name = "Read RX",            .func = task_read_receiver,      .args = NULL, .priority = osPriorityNormal,   .active = true},
+  {.id = TASK_READ_RECEIVERS_ID,     .name = "Read RX",            .func = task_read_receiver,      .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,   .active = true},
 #endif
 #ifdef TASK_ARMING
-  {.id = TASK_ARMING_ID,             .name = "Arming" ,            .func = task_arming,             .args = NULL, .priority = osPriorityNormal,   .active = false},
+  {.id = TASK_ARMING_ID,             .name = "Arming" ,            .func = task_arming,             .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,   .active = true},
 #endif
 #ifdef TASK_FAILSAFE
-  {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal,   .active = false},
+  {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
 #endif
 #ifdef TASK_SET_ESCS
-  {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal,   .active = false},
+  {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
 #endif
 #ifdef TASK_CALC_ORIENTATION
-  {.id = TASK_CALC_ORIENTATION_ID,   .name = "Calc Orientation",   .func = task_calc_orientation,   .args = NULL, .priority = osPriorityNormal,   .active = false},
+  {.id = TASK_CALC_ORIENTATION_ID,   .name = "Calc Orientation",   .func = task_calc_orientation,   .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
 #endif
 #ifdef TASK_COLLECT_TELEMETRY
-  {.id = TASK_COLLECT_TELEMETRY_ID,  .name = "Collect Telemetry",  .func = task_collect_telemetry,  .args = NULL, .priority = osPriorityNormal,   .active = true},
+  {.id = TASK_COLLECT_TELEMETRY_ID,  .name = "Collect Telemetry",  .func = task_collect_telemetry,  .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_STREAM_TELEMETRY
-  {.id = TASK_STREAM_TELEMETRY_ID,   .name = "Stream Telemetry",   .func = task_stream_telemetry,   .args = NULL, .priority = osPriorityNormal,   .active = true},
+  {.id = TASK_STREAM_TELEMETRY_ID,   .name = "Stream Telemetry",   .func = task_stream_telemetry,   .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_CALIBRATE_CHANNELS
-  {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal,   .active = false}
+  {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false}
 #endif
 };
 
