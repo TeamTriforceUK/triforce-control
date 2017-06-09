@@ -205,6 +205,9 @@ int main() {
   ESC esc_weapon_2(WEAPON_ESC_OUT_2_PIN);
   targs->escs.weapon[1] = &esc_weapon_2;
 
+  ESC esc_weapon_3(WEAPON_ESC_OUT_3_PIN);
+  targs->escs.weapon[2] = &esc_weapon_3;
+
   targs->serial->puts("init(): onboard LEDS\r\n");
 
   /* LEDs */

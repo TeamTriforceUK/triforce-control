@@ -368,14 +368,84 @@ void task_set_escs(const void *targs) {
 
   while(args->active) {
     if (args->tasks[TASK_SET_ESCS_ID].active) {
+      // Calculate output values
+      // args->outputs.wheel_1 = args->controls[1].channel[RC_1_THROTTLE];
+      // args->outputs.wheel_2 = args->controls[1].channel[RC_1_THROTTLE];
+      // args->outputs.wheel_3 = args->controls[1].channel[RC_1_THROTTLE];
+
+    // Set weapon motor ESCs
+    args->outputs.weapon_motor_1 = args->controls[0].channel[RC_0_THROTTLE];
+    args->outputs.weapon_motor_2 = args->controls[0].channel[RC_0_THROTTLE];
+    args->outputs.weapon_motor_3 = args->controls[0].channel[RC_0_THROTTLE];
+
+
+
+    float x = args->controls[1].channel[RC_1_AILERON] - 50.0f;
+    float y = args->controls[1].channel[RC_1_ELEVATION] - 50.0f;
+
+    float theta = (float)atan2((double)x, (double)y);
+    float magnitude = (float)sqrt((double)((x*x)+(y*y)));
+
+    if(magnitude > 5.0f) {
+
+        float vx = magnitude * sin(theta);
+        float vy = magnitude * cos(theta);
+        const float sqrt3o2 = 1.0*sqrt(3.0)/2.0;
+
+        float w0 = -vx;                   // v dot [-1, 0] / 25mm
+        float w1 = 0.5*vx - sqrt3o2 * vy; // v dot [1/2, -sqrt(3)/2] / 25mm
+        float w2 = 0.5*vx + sqrt3o2 * vy; // v dot [1/2, +sqrt(3)/2] / 25mm
+        // #if defined (PC_DEBUGGING) && defined (DEBUG_CONTROLS)
+        // pc.printf("Calculated Controls: (%7.2f) \t (%7.2f) \t (%7.2f) \r\n", w0, w1, w2);
+        // #endif
+        float w0_speed =  map(w0, -70, 70, 0, 100);
+        float w1_speed =  map(w1, -70, 70, 0, 100);
+        float w2_speed =  map(w2, -70, 70, 0, 100);
+
+        /* Add in rotation */
+        // #if defined (PC_DEBUGGING) && defined (DEBUG_CONTROLS)
+        // pc.printf("Mapped Controls: (%7.2f) \t (%7.2f) \t (%7.2f) \r\n", w0_speed, w1_speed, w2_speed);
+        // #endif
+        args->outputs.wheel_1 += w0_speed -50;
+        args->outputs.wheel_2 += w1_speed -50;
+        args->outputs.wheel_3 += w2_speed -50;
+
+
+    } else {
+        args->outputs.wheel_1 = 50;
+        args->outputs.wheel_2 = 50;
+        args->outputs.wheel_3 = 50;
+    }
+
+     args->outputs.wheel_1 += args->controls[1].channel[RC_1_RUDDER] - 50;
+     args->outputs.wheel_2 += args->controls[1].channel[RC_1_RUDDER] - 50;
+     args->outputs.wheel_3 += args->controls[1].channel[RC_1_RUDDER] - 50;
+
+
+
+    /* Clamp outputs to correct range */
+    args->outputs.wheel_1 = clamp(args->outputs.wheel_1, 0, 100);
+    args->outputs.wheel_2 = clamp(args->outputs.wheel_2, 0, 100);
+    args->outputs.wheel_3 = clamp(args->outputs.wheel_3, 0, 100);
+
       switch (args->state) {
         case STATE_FULLY_ARMED:
           args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
           args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
+          args->escs.weapon[2]->setThrottle(args->outputs.weapon_motor_3);
+          args->escs.drive[0]->setThrottle(args->outputs.wheel_1);
+          args->escs.drive[1]->setThrottle(args->outputs.wheel_2);
+          args->escs.drive[2]->setThrottle(args->outputs.wheel_3);
+          break;
         case STATE_DRIVE_ONLY:
           args->escs.drive[0]->setThrottle(args->outputs.wheel_1);
           args->escs.drive[1]->setThrottle(args->outputs.wheel_2);
           args->escs.drive[2]->setThrottle(args->outputs.wheel_3);
+          break;
+        case STATE_WEAPON_ONLY:
+          args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
+          args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
+          args->escs.weapon[2]->setThrottle(args->outputs.weapon_motor_3);
           break;
         case STATE_DISARMED:
           args->escs.drive[0]->failsafe();
@@ -383,6 +453,7 @@ void task_set_escs(const void *targs) {
           args->escs.drive[2]->failsafe();
           args->escs.weapon[0]->failsafe();
           args->escs.weapon[1]->failsafe();
+          args->escs.weapon[2]->failsafe();
       }
     }
   }

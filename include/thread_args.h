@@ -74,7 +74,7 @@ typedef struct {
 
   struct {
     ESC *drive[3];
-    ESC *weapon[2];
+    ESC *weapon[3];
   } escs;
 
   orientation_t orientation_detected;

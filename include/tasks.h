@@ -146,7 +146,7 @@ static volatile task_t tasks[] = {
   {.id = TASK_LED_STATE_ID,          .name = "LED State",          .func = task_state_leds,         .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,   .active = true},
 #endif
 #ifdef TASK_READ_RECEIVERS
-  {.id = TASK_READ_RECEIVERS_ID,     .name = "Read RX",            .func = task_read_receiver,      .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,   .active = true},
+  {.id = TASK_READ_RECEIVERS_ID,     .name = "Read RX",            .func = task_read_receiver,      .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,   .active = true},
 #endif
 #ifdef TASK_ARMING
   {.id = TASK_ARMING_ID,             .name = "Arming" ,            .func = task_arming,             .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,   .active = true},
@@ -155,7 +155,7 @@ static volatile task_t tasks[] = {
   {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_SET_ESCS
-  {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
+  {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = true},
 #endif
 #ifdef TASK_CALC_ORIENTATION
   {.id = TASK_CALC_ORIENTATION_ID,   .name = "Calc Orientation",   .func = task_calc_orientation,   .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},

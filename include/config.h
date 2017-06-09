@@ -38,8 +38,8 @@
 #define TASK_READ_RECEIVERS
 #define TASK_ARMING
 #define TASK_FAILSAFE
-// #define TASK_SET_ESCS
-// #define TASK_CALC_ORIENTATION
+#define TASK_SET_ESCS
+#define TASK_CALC_ORIENTATION
 #define TASK_COLLECT_TELEMETRY
 #define TASK_STREAM_TELEMETRY
 #define TASK_CALIBRATE_CHANNELS
@@ -65,6 +65,7 @@
 
 #define WEAPON_ESC_OUT_1_PIN p24
 #define WEAPON_ESC_OUT_2_PIN p25
+#define WEAPON_ESC_OUT_3_PIN p26 // Extra pin if we add 3rd motor
 
 #define ESP_TX p28
 #define ESP_RX p27

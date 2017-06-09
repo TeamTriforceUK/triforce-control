@@ -27,6 +27,7 @@ struct rc_outputs{
     int wheel_3;
     int weapon_motor_1;
     int weapon_motor_2;
+    int weapon_motor_3;
 };
 
 /* Ring definition */
