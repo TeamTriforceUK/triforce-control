@@ -3,13 +3,6 @@
 [![Documentation](https://codedocs.xyz/TeamTriforceUK/triforce-control.svg)](https://codedocs.xyz/TeamTriforceUK/triforce-control/)
 
 ## Introduction
-This software is used on the Triforce robot to translate trasnsmitter PPM signals to ESC PWM signals.
-The translation involves determining the speeds of the three drive motors so that the robot moves in the direction of the transmitter joystick.
-
-
-# triforce-control
-
-## Introduction
 
 
 ### Repository Navigation
@@ -17,11 +10,11 @@ This repository is one of two repositories hosting the codebase for the Triforce
 
 #### [Triforce Control](https://github.com/TeamTriforceUK/triforce-control)
 
-The Trforce Control firmware (mbed OS) runs on an LPC1768 (ARM Cortex M3). The firmware is reposnsible for controlling the robot.
+The Trforce Control firmware (mbed OS) runs on an LPC1768 (ARM Cortex M3). The firmware is responsible for controlling the robot.
 
 #### [Triforce Telemetry](https://github.com/TeamTriforceUK/triforce-telemetry)
 
-The Triforce Telemetry repositiry hosts firmware (FreeRTOS) for the ESP8266 WiFi chip. This microcontroller works alongside the mbed to provide telemetry functionality via an HTTP server.
+The Triforce Telemetry repository hosts firmware (FreeRTOS) for the ESP8266 WiFi chip. This microcontroller works alongside the mbed to provide telemetry functionality via an HTTP server.
 
 The ESP8266 allows us to communicate telemetry from Triforce to connected mobile devices (tablets, laptops, mobile phones). We also control non-safety critical settings such as LED lights from the mobile device.
 
