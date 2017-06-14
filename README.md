@@ -2,6 +2,8 @@
 
 [![Documentation](https://codedocs.xyz/TeamTriforceUK/triforce-control.svg)](https://codedocs.xyz/TeamTriforceUK/triforce-control/)
 
+[![Build Status](https://travis-ci.org/TeamTriforceUK/triforce-control.svg?branch=master)](https://travis-ci.org/TeamTriforceUK/triforce-control)
+
 ## Introduction
 
 
@@ -10,7 +12,7 @@ This repository is one of two repositories hosting the codebase for the Triforce
 
 #### [Triforce Control](https://github.com/TeamTriforceUK/triforce-control)
 
-The Trforce Control firmware (mbed OS) runs on an LPC1768 (ARM Cortex M3). The firmware is responsible for controlling the robot.
+The Triforce Control firmware (mbed OS) runs on an LPC1768 (ARM Cortex M3). The firmware is responsible for controlling the robot.
 
 #### [Triforce Telemetry](https://github.com/TeamTriforceUK/triforce-telemetry)
 
