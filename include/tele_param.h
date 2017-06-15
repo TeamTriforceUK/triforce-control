@@ -70,4 +70,6 @@ typedef struct {
 
 } tele_command_t;
 
+const char *unit_to_str(tele_command_unit_t unit);
+
 #endif  // INCLUDE_TELE_PARAM_H_

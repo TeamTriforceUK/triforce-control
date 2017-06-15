@@ -61,8 +61,32 @@ LocalFileSystem local("local");
 Serial *serial_ptr;
 
 int esp8266_wait_until_ready(thread_args_t *args) {
+  unsigned esp8266_init_attempts = 0;
   while (!args->esp_ready_pin->read()) {
     wait(0.5);
+    esp8266_init_attempts++;
+    if(esp8266_init_attempts > 5) {
+      // Disable tasks that require the BNO055
+#ifdef TASK_STREAM_TELEMETRY
+      args->tasks[TASK_STREAM_TELEMETRY_ID].active = false;
+#endif
+      return RET_ERROR;
+    }
+  }
+  return RET_OK;
+}
+
+int bno055_wait_until_ready(thread_args_t *args) {
+  unsigned bno055_init_attempts = 0;
+  while (!bno055_init()) {
+    bno055_init_attempts++;
+    if(bno055_init_attempts > 5) {
+      // Disable tasks that require the BNO055
+#ifdef TASK_COLLECT_TELEMETRY
+      args->tasks[TASK_COLLECT_TELEMETRY_ID].active = false;
+#endif
+      return RET_ERROR;
+    }
   }
   return RET_OK;
 }
@@ -89,10 +113,12 @@ int main() {
   // Set up ready line, so the ESP8266 can tell when it's ready.
   targs->esp_ready_pin = new DigitalIn(ESP8266_READY_PIN);
 
-
   //Set baud rate for USB serial
   targs->serial = serial;
   serial_ptr = serial;
+
+  // Allow access to tasks from threads
+  targs->tasks = (task_t *) &tasks;
 
   //For memory debugging
   // print_all_thread_info();
@@ -104,10 +130,15 @@ int main() {
   targs->serial->puts("\r\n");
 
   targs->serial->puts("init(): BNO055\r\n");
-  while (!bno055_init()) {}
+  if (!bno055_wait_until_ready(targs)){
+    targs->serial->printf("\tBNO055 not in use.\r\n");
+  };
+
 
   targs->serial->puts("init(): ESP8266\r\n");
-  while (!esp8266_wait_until_ready(targs)) {}
+  if (!esp8266_wait_until_ready(targs)) {
+    targs->serial->printf("\tESP8266 not in use.\r\n");
+  }
 
   targs->serial->puts("init(): PWM inputs\r\n");
 
@@ -232,9 +263,6 @@ int main() {
   targs->mutex.pc_serial = new Mutex();
 
   targs->serial->printf("init(): Starting %d Tasks\r\n", NUM_TASKS);
-
-  // Allow access to tasks from threads
-  targs->tasks = (task_t *) &tasks;
 
   Thread threads[NUM_TASKS] = {
 #ifdef TASK_READ_SERIAL

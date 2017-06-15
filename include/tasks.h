@@ -80,6 +80,10 @@ static const unsigned TASK_STREAM_TELEMETRY_ID = __COUNTER__;
 static const unsigned TASK_CALIBRATE_CHANNELS_ID = __COUNTER__;
 #endif
 
+#ifdef TASK_DATALOGGER
+static const unsigned TASK_DATALOGGER_ID = __COUNTER__;
+#endif
+
 static const unsigned NUM_TASKS = __COUNTER__;
 
 
@@ -132,6 +136,10 @@ void task_stream_telemetry(const void *targs);
 void task_calibrate_channels(const void *targs);
 #endif
 
+#ifdef TASK_DATALOGGER
+void task_datalogger(const void *targs);
+#endif
+
 // Debug tasks
 void task_print_channels(const void *targs);
 
@@ -167,7 +175,10 @@ static volatile task_t tasks[] = {
   {.id = TASK_STREAM_TELEMETRY_ID,   .name = "Stream Telemetry",   .func = task_stream_telemetry,   .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_CALIBRATE_CHANNELS
-  {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false}
+  {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false},
+#endif
+#ifdef TASK_DATALOGGER
+  {.id = TASK_DATALOGGER_ID,         .name = "Datalogger",         .func = task_datalogger,         .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true}
 #endif
 };
 
