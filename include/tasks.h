@@ -163,10 +163,10 @@ static volatile task_t tasks[] = {
   {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_SET_ESCS
-  {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = true},
+  {.id = TASK_SET_ESCS_ID,           .name = "Set ESCs",           .func = task_set_escs,           .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_CALC_ORIENTATION
-  {.id = TASK_CALC_ORIENTATION_ID,   .name = "Calc Orientation",   .func = task_calc_orientation,   .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
+  {.id = TASK_CALC_ORIENTATION_ID,   .name = "Calc Orientation",   .func = task_calc_orientation,   .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false},
 #endif
 #ifdef TASK_COLLECT_TELEMETRY
   {.id = TASK_COLLECT_TELEMETRY_ID,  .name = "Collect Telemetry",  .func = task_collect_telemetry,  .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
@@ -178,7 +178,7 @@ static volatile task_t tasks[] = {
   {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false},
 #endif
 #ifdef TASK_DATALOGGER
-  {.id = TASK_DATALOGGER_ID,         .name = "Datalogger",         .func = task_datalogger,         .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = true}
+  {.id = TASK_DATALOGGER_ID,         .name = "Datalogger",         .func = task_datalogger,         .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true}
 #endif
 };
 
