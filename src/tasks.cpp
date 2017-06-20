@@ -703,21 +703,46 @@ void task_calibrate_channels(const void *targs) {
 void task_datalogger(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   int i;
+  time_t current_time;
 
   while (args->active) {
     // args->serial->printf("t %d is %s\r\n", TASK_CALIBRATE_CHANNELS, args->tasks[TASK_CALIBRATE_CHANNELS].active ? "true" : "false");
     if (args->tasks[TASK_DATALOGGER_ID].active == true) {
-      FILE *fp = fopen("/local/datalog.csv","a");
+      // Get the current time
+      current_time = time(NULL);
+
+      // Open the log file for appending
+      FILE *fp = fopen(DATALOG_FILE_NAME, "a");
+
+      // Log data with timestamp
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch(tele_commands[i].type) {
           case CT_FLOAT:
-            fprintf(fp, "%s, %.4f, %s\r\n", tele_commands[i].name, tele_commands[i].param.f, unit_to_str(tele_commands[i].unit));
+            fprintf(fp,
+              "%s, %.4f, %s, %s\r\n",
+              tele_commands[i].name,
+              tele_commands[i].param.f,
+              unit_to_str(tele_commands[i].unit),
+              ctime(&current_time)
+            );
             break;
           case CT_INT:
-            fprintf(fp, "%s, %d, %s\r\n", tele_commands[i].name, tele_commands[i].param.i, unit_to_str(tele_commands[i].unit));
+            fprintf(fp,
+              "%s, %d, %s, %s\r\n",
+              tele_commands[i].name,
+              tele_commands[i].param.i,
+              unit_to_str(tele_commands[i].unit),
+              ctime(&current_time)
+            );
             break;
           case CT_BOOLEAN:
-            fprintf(fp, "%s, %s %s\r\n", tele_commands[i].name, tele_commands[i].param.b ? "on" : "off", unit_to_str(tele_commands[i].unit));
+            fprintf(fp,
+              "%s, %s %s, %s\r\n",
+              tele_commands[i].name,
+              tele_commands[i].param.b ? "on" : "off",
+              unit_to_str(tele_commands[i].unit),
+              ctime(&current_time)
+            );
             break;
           default:
             break;

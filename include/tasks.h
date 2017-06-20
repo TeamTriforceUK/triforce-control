@@ -178,7 +178,7 @@ static volatile task_t tasks[] = {
   {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false},
 #endif
 #ifdef TASK_DATALOGGER
-  {.id = TASK_DATALOGGER_ID,         .name = "Datalogger",         .func = task_datalogger,         .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true}
+  {.id = TASK_DATALOGGER_ID,         .name = "Datalogger",         .func = task_datalogger,         .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = true}
 #endif
 };
 

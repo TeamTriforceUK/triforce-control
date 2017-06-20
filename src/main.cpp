@@ -42,6 +42,7 @@
 #include "esc.h"
 #include "PwmIn.h"
 #include "assert.h"
+#include <errno.h>
 
 #include "bno055.h"
 #include "tmath.h"
@@ -106,16 +107,48 @@ int main() {
   memset(targs, 0x00, sizeof(thread_args_t));
   thread_args_init(targs);
 
+  // Point targs->serial at something useful
+  targs->serial = serial;
+  serial_ptr = serial;
+
+  // Print initial messsage inidicating start of new process
+  targs->serial->puts("Triforce Control System v");
+  targs->serial->puts(VERSION);
+  targs->serial->puts("\r\n");
+
+  targs->serial->puts("init(): Creating log files.\r\n");
+
+  // Create log files
+  FILE *datalog_file = fopen(DATALOG_FILE_NAME, "w");
+  if(!datalog_file) {
+    targs->serial->printf("\tFailed to create data log file: %s\r\n", strerror(errno));
+  } else {
+    fprintf(datalog_file, DATALOG_FILE_HEADER);
+    fclose(datalog_file);
+  }
+
+  FILE *log_file = fopen(LOG_FILE_NAME, "w");
+  if(!log_file) {
+    targs->serial->printf("\tFailed to create log file: %s\r\n", strerror(errno));
+  } else {
+    fclose(log_file);
+  }
+
+  /* Currently we don't have a always-on RTC, so set time to something close
+     The time can be updated via serial interface. */
+  set_time(1497874653);
+  time_t last_known_time = time(NULL);
+  targs->serial->printf("init(): Set time to %s\r\n", ctime(&last_known_time));
+
+  // Clear log files
+  // fclose(fopen(LOG_FILE_NAME, "w"));
+
   // Configure serial connection to ESP8266
   targs->esp_serial = new Serial(ESP_TX, ESP_RX);
   targs->esp_serial->baud(115200);
 
   // Set up ready line, so the ESP8266 can tell when it's ready.
   targs->esp_ready_pin = new DigitalIn(ESP8266_READY_PIN);
-
-  //Set baud rate for USB serial
-  targs->serial = serial;
-  serial_ptr = serial;
 
   // Allow access to tasks from threads
   targs->tasks = (task_t *) &tasks;
@@ -124,10 +157,7 @@ int main() {
   // print_all_thread_info();
   // print_heap_and_isr_stack_info();
 
-  // Print initial messsage inidicating start of new process
-  targs->serial->puts("Triforce Control System v");
-  targs->serial->puts(VERSION);
-  targs->serial->puts("\r\n");
+
 
   targs->serial->puts("init(): BNO055\r\n");
   if (!bno055_wait_until_ready(targs)){

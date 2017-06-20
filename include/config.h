@@ -154,5 +154,9 @@
 #define RC_1_RUDDER       3
 #define RC_1_ARM_SWITCH   4 // Channel 5 [0 --> 5]
 
+#define LOG_FILE_NAME         "/local/all.log"
+#define DATALOG_FILE_NAME     "/local/datalog.csv"
+#define DATALOG_FILE_HEADER   "key, value, units, timestamp\r\n"
+
 
 #endif //TC_CONFIG_H
