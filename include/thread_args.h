@@ -37,6 +37,7 @@
 #include "bno055.h"
 #include "command.h"
 #include "task.h"
+#include "utilc-logging.h"
 
 typedef struct {
 
@@ -63,6 +64,9 @@ typedef struct {
   /*! Serial connection to ESP8266 */
   Serial *esp_serial;
   DigitalIn *esp_ready_pin;
+
+  /*! Logger structure */
+  struct ucl_s logger;
 
   /*! Stores telemetry values */
   /* TODO(camieac): Telemetry parameters should only be accessible

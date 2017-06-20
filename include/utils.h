@@ -41,6 +41,12 @@
       typeof (b) _b = (b); \
     _a < _b ? _a : _b; })
 
+#define LOG_INFO(args...) \
+  ucl_log(&targs->logger, UCL_LL_INFO, args); \
+
+#define LOG_ERROR(args...) \
+  ucl_log(&targs->logger, UCL_LL_ERROR, args); \
+
 bool is_drive_stalled(thread_args_t *args);
 bool is_weapon_stalled(thread_args_t *args);
 

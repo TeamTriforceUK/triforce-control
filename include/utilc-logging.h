@@ -24,6 +24,9 @@ extern Serial *serial_ptr;
 
 #define UCL_FLAGS_DEST_ENABLED (1 << 2)
 
+#define MSG_TIMESTAMP_BYTES 29
+#define NULL_TERMINATOR 1
+
 //Legacy function, TODO: remove
 #define LOG( args...) \
   serial_ptr->printf(args); \
@@ -90,6 +93,6 @@ uint32_t ucl_log(ucl_h ucl, enum ucl_log_level_e log_level, const char *message,
 ucl_dest_h ucl_add_dest(ucl_h ucl, enum ucl_dest_type_e dest_type, ...);
 uint32_t ucl_disable_dest(ucl_dest_h dest);
 uint32_t ucl_free(ucl_h ucl);
-//uint32_t ucl_log_error(ucl_h ucl);
+const char * ucl_err_to_string(enum ucl_error_code_e err);
 
 #endif

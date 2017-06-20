@@ -52,6 +52,7 @@
 #include "utilc-logging.h"
 #include "return_codes.h"
 #include "task.h"
+#include "utils.h"
 
 // For memory debugging
 // #include "mbed_memory_status.h"
@@ -107,21 +108,39 @@ int main() {
   memset(targs, 0x00, sizeof(thread_args_t));
   thread_args_init(targs);
 
+  /* Currently we don't have a always-on RTC, so set time to something close
+     The time can be updated via serial interface. */
+  set_time(1497874653);
+  time_t last_known_time = time(NULL);
+
   // Point targs->serial at something useful
   targs->serial = serial;
   serial_ptr = serial;
 
-  // Print initial messsage inidicating start of new process
-  targs->serial->puts("Triforce Control System v");
-  targs->serial->puts(VERSION);
-  targs->serial->puts("\r\n");
+  // Initialise logging structure
+  ucl_init(&targs->logger);
 
-  targs->serial->puts("init(): Creating log files.\r\n");
+  // Adding destinations to logger
+  ucl_dest_h dest1 = ucl_add_dest(&targs->logger, UCL_DEST_STDOUT);
+  ucl_dest_h dest2 = ucl_add_dest(&targs->logger, UCL_DEST_FILE, LOG_FILE_NAME);
+
+  // Testing logger
+  uint32_t err = ucl_log(&targs->logger, UCL_LL_INFO, "init(): Testing logger.\r\n");
+  if (err != UCL_OK) {
+    targs->serial->printf("Error: %s\r\n", ucl_err_to_string((ucl_error_code_e) err));
+    exit(EXIT_FAILURE);
+  }
+
+  // Print initial messsage inidicating start of new process
+  LOG_INFO("Triforce Control System v %s\r\n", VERSION);
+
+  LOG_INFO("init(): Creating log files.\r\n");
 
   // Create log files
   FILE *datalog_file = fopen(DATALOG_FILE_NAME, "w");
   if(!datalog_file) {
-    targs->serial->printf("\tFailed to create data log file: %s\r\n", strerror(errno));
+    LOG_ERROR("\tFailed to create data log file: %s\r\n", strerror(errno));
+    exit(EXIT_FAILURE);
   } else {
     fprintf(datalog_file, DATALOG_FILE_HEADER);
     fclose(datalog_file);
@@ -129,19 +148,16 @@ int main() {
 
   FILE *log_file = fopen(LOG_FILE_NAME, "w");
   if(!log_file) {
-    targs->serial->printf("\tFailed to create log file: %s\r\n", strerror(errno));
+    LOG_ERROR("\tFailed to create log file: %s\r\n", strerror(errno));
+    exit(EXIT_FAILURE);
   } else {
     fclose(log_file);
   }
 
-  /* Currently we don't have a always-on RTC, so set time to something close
-     The time can be updated via serial interface. */
-  set_time(1497874653);
-  time_t last_known_time = time(NULL);
-  targs->serial->printf("init(): Set time to %s\r\n", ctime(&last_known_time));
-
-  // Clear log files
-  // fclose(fopen(LOG_FILE_NAME, "w"));
+  /* Although we set the time a many lines ago, we couldn't log at the time
+     because the logger wasn't initialised. Doing things in this weird order
+     means that all logs use the same (incorrect) timestamp. */
+  LOG_INFO("init(): Set time to %s\r\n", ctime(&last_known_time));
 
   // Configure serial connection to ESP8266
   targs->esp_serial = new Serial(ESP_TX, ESP_RX);
@@ -157,20 +173,17 @@ int main() {
   // print_all_thread_info();
   // print_heap_and_isr_stack_info();
 
-
-
-  targs->serial->puts("init(): BNO055\r\n");
+  LOG_INFO("init(): BNO055\r\n");
   if (!bno055_wait_until_ready(targs)){
-    targs->serial->printf("\tBNO055 not in use.\r\n");
+    LOG_INFO("\tBNO055 not in use.\r\n");
   };
 
-
-  targs->serial->puts("init(): ESP8266\r\n");
+  LOG_INFO("init(): ESP8266\r\n");
   if (!esp8266_wait_until_ready(targs)) {
-    targs->serial->printf("\tESP8266 not in use.\r\n");
+    LOG_INFO("\tESP8266 not in use.\r\n");
   }
 
-  targs->serial->puts("init(): PWM inputs\r\n");
+  LOG_INFO("init(): PWM inputs\r\n");
 
   /* RC inputs from two reveiver units */
   PwmIn rx_drive[RC_NUMBER_CHANNELS] = {
@@ -231,24 +244,21 @@ int main() {
   targs->channel_limits[1][5].max = RC_1_CHAN_6_MAX;
 
   int chan;
-  // while(1) {
-    for (chan= 0; chan < RC_NUMBER_CHANNELS; chan++) {
-      targs->receiver[0].channel[chan] = &rx_drive[chan];
-      targs->receiver[1].channel[chan] = &rx_weapon[chan];
-      // A test read ensures PwmIn is configured correctly
-      targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
-        0, chan,
-        convert_pulsewidth(
-          targs->receiver[0].channel[chan]->pulsewidth()));
-      targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
-        1, chan,
-        convert_pulsewidth(
-          targs->receiver[1].channel[chan]->pulsewidth()));
-    }
-    // Thread::wait(500);
-  // }
+  for (chan= 0; chan < RC_NUMBER_CHANNELS; chan++) {
+    targs->receiver[0].channel[chan] = &rx_drive[chan];
+    targs->receiver[1].channel[chan] = &rx_weapon[chan];
+    // A test read ensures PwmIn is configured correctly
+    LOG_INFO("\tinit(): RX %d channel %d: %d\r\n",
+      0, chan,
+      convert_pulsewidth(
+        targs->receiver[0].channel[chan]->pulsewidth()));
+    LOG_INFO("\tinit(): RX %d channel %d: %d\r\n",
+      1, chan,
+      convert_pulsewidth(
+        targs->receiver[1].channel[chan]->pulsewidth()));
+  }
 
-  targs->serial->puts("init(): PWM Outputs\r\n");
+  LOG_INFO("init(): PWM Outputs\r\n");
 
   /* 5 channel ESC output */
   ESC esc_omni_1(DRIVE_ESC_OUT_1_PIN, 20, 1500);
@@ -269,7 +279,7 @@ int main() {
   ESC esc_weapon_3(WEAPON_ESC_OUT_3_PIN);
   targs->escs.weapon[2] = &esc_weapon_3;
 
-  targs->serial->puts("init(): onboard LEDS\r\n");
+  LOG_INFO("init(): onboard LEDS\r\n");
 
   /* LEDs */
   DigitalOut led[NUM_SURFACE_LEDS] = {
@@ -284,15 +294,15 @@ int main() {
     targs->leds[l] = &led[l];
   }
 
-  targs->serial->puts("init(): Command Queue\r\n");
+  LOG_INFO("init(): Command Queue\r\n");
 
   Mail<command_t, COMMAND_QUEUE_LEN> *command_queue = new Mail<command_t, COMMAND_QUEUE_LEN>();
   targs->command_queue = command_queue;
 
-  targs->serial->puts("init(): Mutexes\r\n");
+  LOG_INFO("init(): Mutexes\r\n");
   targs->mutex.pc_serial = new Mutex();
 
-  targs->serial->printf("init(): Starting %d Tasks\r\n", NUM_TASKS);
+  LOG_INFO("init(): Starting %d Tasks\r\n", NUM_TASKS);
 
   Thread threads[NUM_TASKS] = {
 #ifdef TASK_READ_SERIAL
@@ -335,7 +345,7 @@ int main() {
   // Print all tasks and their properties
   int t;
   for (t = 0; t < NUM_TASKS; t++) {
-    targs->serial->printf("\rinit(): Task %d (%s) active: %s, stack: %d\r\n", tasks[t].id, tasks[t].name, tasks[t].active ? "Yes" : "No", tasks[t].stack_size);
+    LOG_INFO("\rinit(): Task %d (%s) active: %s, stack: %d\r\n", tasks[t].id, tasks[t].name, tasks[t].active ? "Yes" : "No", tasks[t].stack_size);
   }
 
   // Start all tasks
@@ -343,7 +353,7 @@ int main() {
     // Print amount of heap used
     // print_heap_and_isr_stack_info();
 
-    targs->serial->printf("\rinit(): Starting %s (%d) active?: %s\r\n", tasks[t].name, tasks[t].id, tasks[t].active ? "Yes" : "No");
+    LOG_INFO("\rinit(): Starting %s (%d) active?: %s\r\n", tasks[t].name, tasks[t].id, tasks[t].active ? "Yes" : "No");
     tasks[t].args = targs;
     // threads[t].set_priority(tasks[t].priority);
     threads[t].start(callback(tasks[t].func, tasks[t].args));
@@ -360,6 +370,7 @@ int main() {
     threads[t].join();
   }
 
+  ucl_free(&targs->logger);
   free(targs);
   delete(targs->esp_ready_pin);
   delete(command_queue);
