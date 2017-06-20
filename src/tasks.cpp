@@ -750,7 +750,9 @@ void task_datalogger(const void *targs) {
       }
       fclose(fp);
     }
-    args->serial->printf("Logging Data.\r\n");
+
+    // For debugging purposes
+    // args->serial->printf("Logging Data.\r\n");
     Thread::wait(500);
   }
 }
