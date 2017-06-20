@@ -125,12 +125,9 @@ static uint32_t dest_log(ucl_h ucl, ucl_dest_h dest, struct ucl_message_s *messa
 	switch(dest->type){
 		case UCL_DEST_FILE:
 			filename = dest->conf.file.filename;
-			printf("filename: %s\n", filename);
 			log_file = fopen(filename, "a");
-      printf("opened\r\n", filename);
 			vfprintf(log_file, msg_full, message->args);
 			fclose(log_file);
-      printf("done\r\n", filename);
 			break;
 		case UCL_DEST_STDOUT:
 			vfprintf(stdout, msg_full, message->args);
