@@ -383,10 +383,14 @@ void task_set_escs(const void *targs) {
 
     // Set weapon motor ESCs
     args->mutex.controls->lock();
-    args->outputs.weapon_motor_1 = args->controls[0].channel[RC_0_THROTTLE];
-    args->outputs.weapon_motor_2 = args->controls[0].channel[RC_0_THROTTLE];
-    args->outputs.weapon_motor_3 = args->controls[0].channel[RC_0_THROTTLE];
+    float weapon_ctrl_val = args->controls[0].channel[RC_0_THROTTLE];
     args->mutex.controls->unlock();
+
+    args->mutex.outputs->lock();
+    args->outputs.weapon_motor_1 = weapon_ctrl_val;
+    args->outputs.weapon_motor_2 = weapon_ctrl_val;
+    args->outputs.weapon_motor_3 = weapon_ctrl_val;
+    args->mutex.outputs->unlock();
 
 
     args->mutex.controls->lock();
@@ -417,30 +421,39 @@ void task_set_escs(const void *targs) {
         // #if defined (PC_DEBUGGING) && defined (DEBUG_CONTROLS)
         // pc.printf("Mapped Controls: (%7.2f) \t (%7.2f) \t (%7.2f) \r\n", w0_speed, w1_speed, w2_speed);
         // #endif
+        args->mutex.outputs->lock();
         args->outputs.wheel_1 += w0_speed -50;
         args->outputs.wheel_2 += w1_speed -50;
         args->outputs.wheel_3 += w2_speed -50;
+        args->mutex.outputs->unlock();
 
 
     } else {
+        args->mutex.outputs->lock();
         args->outputs.wheel_1 = 50;
         args->outputs.wheel_2 = 50;
         args->outputs.wheel_3 = 50;
+        args->mutex.outputs->unlock();
     }
 
     args->mutex.controls->lock();
-    args->outputs.wheel_1 += args->controls[1].channel[RC_1_RUDDER] - 50;
-    args->outputs.wheel_2 += args->controls[1].channel[RC_1_RUDDER] - 50;
-    args->outputs.wheel_3 += args->controls[1].channel[RC_1_RUDDER] - 50;
+    float rudder_ctrl_val = args->controls[1].channel[RC_1_RUDDER] - 50;
     args->mutex.controls->unlock();
 
-
+    args->mutex.outputs->lock();
+    args->outputs.wheel_1 += rudder_ctrl_val;
+    args->outputs.wheel_2 += rudder_ctrl_val;
+    args->outputs.wheel_3 += rudder_ctrl_val;
+    args->mutex.outputs->unlock();
 
     /* Clamp outputs to correct range */
+    args->mutex.outputs->lock();
     args->outputs.wheel_1 = clamp(args->outputs.wheel_1, 0, 100);
     args->outputs.wheel_2 = clamp(args->outputs.wheel_2, 0, 100);
     args->outputs.wheel_3 = clamp(args->outputs.wheel_3, 0, 100);
+    args->mutex.outputs->unlock();
 
+    args->mutex.outputs->lock();
       switch (args->state) {
         case STATE_FULLY_ARMED:
           args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
@@ -468,6 +481,7 @@ void task_set_escs(const void *targs) {
           args->escs.weapon[1]->failsafe();
           args->escs.weapon[2]->failsafe();
       }
+    args->mutex.outputs->unlock();
     }
   }
 }

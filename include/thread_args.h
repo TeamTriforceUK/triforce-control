@@ -88,6 +88,7 @@ typedef struct {
   struct {
     Mutex *pc_serial;
     Mutex *controls;
+    Mutex *outputs;
   } mutex;
 
 
