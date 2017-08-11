@@ -212,8 +212,10 @@ void task_read_receiver(const void *targs) {
           // Convert into float value between 0 and 100, based on max and min
           v = ( (pw - min) / (max - min) ) * 100.0f;
 
-          // Set the control value for otehr threads to use
+          // Set the control value for other threads to use
+          args->mutex.controls->lock();
           args->controls[controller].channel[channel] = v;
+          args->mutex.controls->unlock();
 
           // For debugging purposes
           // args->serial->printf("con %d chan %d: [pw: %.0f, min: %.0f, max: %.0f, v: %.0f]\r\n", controller, channel, pw, min, max, v);
@@ -239,8 +241,10 @@ void task_arming(const void *targs) {
 
   while (args->active) {
     if (args->tasks[TASK_ARMING_ID].active) {
+      args->mutex.controls->lock();
       weapon_switch = (args->controls[0].channel[RC_0_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
       drive_switch = (args->controls[1].channel[RC_1_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
+      args->mutex.controls->unlock();
 
       /* If a transmitter is lost (turned off/out of range),
          disable arming for that TX.
@@ -248,17 +252,21 @@ void task_arming(const void *targs) {
       drive_stalled = is_drive_stalled(args);
       weapon_stalled = is_weapon_stalled(args);
 
+      args->mutex.controls->lock();
       weapon_arm = weapon_switch && !weapon_stalled &&
         BETWEEN(args->controls[0].channel[RC_0_THROTTLE], 0, 2) &&
         BETWEEN(args->controls[0].channel[RC_0_ELEVATION], 45, 55) &&
         BETWEEN(args->controls[0].channel[RC_0_RUDDER], 45, 55) &&
         BETWEEN(args->controls[0].channel[RC_0_AILERON], 45, 55);
+      args->mutex.controls->unlock();
 
+      args->mutex.controls->lock();
       drive_arm = drive_switch && !drive_stalled &&
         BETWEEN(args->controls[1].channel[RC_1_THROTTLE], 0, 2) &&
         BETWEEN(args->controls[1].channel[RC_1_ELEVATION], 45, 55) &&
         BETWEEN(args->controls[1].channel[RC_1_RUDDER], 45, 55) &&
         BETWEEN(args->controls[1].channel[RC_1_AILERON], 45, 55);
+      args->mutex.controls->unlock();
 
       //Debug: Print RX values
       // args->serial->printf("drive_switch : %.0f (%s)\r\n", args->controls[0].channel[RC_0_ARM_SWITCH], drive_switch ? "On" : "Off");
@@ -374,14 +382,17 @@ void task_set_escs(const void *targs) {
       // args->outputs.wheel_3 = args->controls[1].channel[RC_1_THROTTLE];
 
     // Set weapon motor ESCs
+    args->mutex.controls->lock();
     args->outputs.weapon_motor_1 = args->controls[0].channel[RC_0_THROTTLE];
     args->outputs.weapon_motor_2 = args->controls[0].channel[RC_0_THROTTLE];
     args->outputs.weapon_motor_3 = args->controls[0].channel[RC_0_THROTTLE];
+    args->mutex.controls->unlock();
 
 
-
+    args->mutex.controls->lock();
     float x = args->controls[1].channel[RC_1_AILERON] - 50.0f;
     float y = args->controls[1].channel[RC_1_ELEVATION] - 50.0f;
+    args->mutex.controls->unlock();
 
     float theta = (float)atan2((double)x, (double)y);
     float magnitude = (float)sqrt((double)((x*x)+(y*y)));
@@ -417,9 +428,11 @@ void task_set_escs(const void *targs) {
         args->outputs.wheel_3 = 50;
     }
 
-     args->outputs.wheel_1 += args->controls[1].channel[RC_1_RUDDER] - 50;
-     args->outputs.wheel_2 += args->controls[1].channel[RC_1_RUDDER] - 50;
-     args->outputs.wheel_3 += args->controls[1].channel[RC_1_RUDDER] - 50;
+    args->mutex.controls->lock();
+    args->outputs.wheel_1 += args->controls[1].channel[RC_1_RUDDER] - 50;
+    args->outputs.wheel_2 += args->controls[1].channel[RC_1_RUDDER] - 50;
+    args->outputs.wheel_3 += args->controls[1].channel[RC_1_RUDDER] - 50;
+    args->mutex.controls->unlock();
 
 
 

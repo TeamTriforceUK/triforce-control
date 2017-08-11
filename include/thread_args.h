@@ -83,8 +83,11 @@ typedef struct {
   bool inverted;
   bool active;
 
+  /* These mutexes protect accesses to the fields within thread_args_t.
+  */
   struct {
     Mutex *pc_serial;
+    Mutex *controls;
   } mutex;
 
 
