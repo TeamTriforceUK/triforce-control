@@ -32,8 +32,8 @@
 /* The following macros are used to enable and disable tasks at
    preprocessing time. */
 
-// #define TASK_READ_SERIAL
-// #define TASK_PROCESS_COMMANDS
+#define TASK_READ_SERIAL
+#define TASK_PROCESS_COMMANDS
 #define TASK_LED_STATE
 #define TASK_READ_RECEIVERS
 #define TASK_ARMING

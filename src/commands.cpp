@@ -263,6 +263,17 @@ int command_get_param(command_t *command, thread_args_t *targs) {
         tele_commands[command->tele_param->id].name,
         state_to_str(targs->state));
       break;
+    case CID_ROBOT_TIME:
+      time_t t;
+      char buffer[26];
+      struct tm *tm_info;
+
+      time(&t);
+      tm_info = localtime(&t);
+
+      strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+      puts(buffer);
+      break;
   }
   return RET_OK;
 }
@@ -287,6 +298,9 @@ int command_set_param(command_t *command, thread_args_t *targs) {
     case CID_ARM_STATUS:
       printf("Use arming commands to set arm_state!\r\n");
       return RET_ERROR;
+    case CID_ROBOT_TIME:
+      tele_commands[command->tele_param->id].param.i = command->value.i;
+      break;
   }
   return RET_OK;
 }

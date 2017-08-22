@@ -26,6 +26,7 @@ static tele_command_t tele_commands[] = {
   {.id = CID_AMBIENT_TEMP, .name = "temp", .unit = CU_CELCIUS, .type = CT_INT},
   {.id = CID_ESP_LED, .name = "esp_led", .unit = CU_NONE, .type = CT_BOOLEAN},
   {.id = CID_ARM_STATUS, .name = "arm_status", .unit = CU_NONE, .type = CT_INT},
+  {.id = CID_ROBOT_TIME, .name = "robot_time", .unit = CU_NONE, .type = CT_INT},
 };
 
 #define NUM_TELE_COMMANDS (sizeof(tele_commands) / sizeof(tele_command_t))

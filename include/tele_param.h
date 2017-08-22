@@ -51,6 +51,7 @@ typedef enum tele_command_id_t {
   CID_AMBIENT_TEMP,
   CID_ESP_LED,
   CID_ARM_STATUS,
+  CID_ROBOT_TIME,
 };
 
 typedef struct {
