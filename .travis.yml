@@ -28,5 +28,5 @@ before_script:
 script:
   # Compile project
   - mbed compile -t GCC_ARM -m lpc1768
-  - ../style-checker/nsiqcppstyle -f `pwd`/filefilter.txt src/ || :
-  - ../style-checker/nsiqcppstyle -f `pwd`/filefilter.txt include/ || :
+  - ../style-checker/nsiqcppstyle -f `pwd`/filefilter.txt src/ || `:`
+  - ../style-checker/nsiqcppstyle -f `pwd`/filefilter.txt include/ || `:`
