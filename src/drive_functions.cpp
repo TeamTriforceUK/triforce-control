@@ -101,15 +101,15 @@ void drive_2_wheel_differential(const void * targs) {
 
   args->mutex.controls->lock();
   /* Channel values are between 0 and 100. */
-  throttle = args->controls[1].channel[RC_1_ELEVATION] - 50;//args->controls[1].channel[RC_1_ELEVATION];
+  throttle = args->controls[1].channel[RC_1_ELEVATION] - 50.0f;//args->controls[1].channel[RC_1_ELEVATION];
   /* Get steering value between -50 (full left) and +50 (full right). */
   steering = args->controls[1].channel[RC_1_AILERON] - 50.0f;
   args->mutex.controls->unlock();
 
   /* Spin on the spot when throttle is ~zero */
-  if(BETWEEN(throttle, 49, 51)) {
-    left_wheel = steering;
-    right_wheel = -steering;
+  if(BETWEEN(throttle, -1.0f, 1.0f)) {
+    left_wheel = 50.0f + steering;
+    right_wheel = 50.0f - steering;
 
   /*  When throttle is applied, wheels only move in the direction of travel. */
   } else {
@@ -118,12 +118,15 @@ void drive_2_wheel_differential(const void * targs) {
     right_wheel = throttle;
     //TODO: Will need to handle reversing once we have revesible ESCs for testing
     // If we want to turn right
-    if(steering > 0) {
-      left_wheel -= (abs(steering) / 50.0f) * throttle;
+    if(steering < 0) {
+      left_wheel -= (abs(steering) / 50.0f) * abs(throttle);
     // If we want to turn left
-    } else if (steering < 0) {
-      right_wheel -= (abs(steering) / 50.0f) * throttle;
+    } else if (steering > 0) {
+      right_wheel -= (abs(steering) / 50.0f) * abs(throttle);
     }
+    // Undo the offset we done at the start to make the maths make more sense
+    left_wheel += 50.0f;
+    right_wheel += 50.0f;
   }
 
   args->mutex.outputs->lock();
