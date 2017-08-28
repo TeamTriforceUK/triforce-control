@@ -22,6 +22,11 @@ before_script:
   # Download dependencies
   - mbed deploy
   - sudo pip install -r mbed-os/requirements.txt
+  # Fetch nsiqcppstyle checker
+  - git clone https://github.com/camieac/nsiqcppstyle.git ../style-checker
+
 script:
   # Compile project
   - mbed compile -t GCC_ARM -m lpc1768
+  - ../style-checker/nsiqcppstyle -f `pwd`/filefilter.txt src/ || `:`
+  - ../style-checker/nsiqcppstyle -f `pwd`/filefilter.txt include/ || `:`

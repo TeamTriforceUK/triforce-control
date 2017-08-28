@@ -38,6 +38,7 @@
 #include "command.h"
 #include "task.h"
 #include "utilc-logging.h"
+#include "drive_mode.h"
 
 typedef struct {
 
@@ -45,6 +46,12 @@ typedef struct {
   Thread *threads;
 
   state_t state;
+
+  /*! Drive mode in use. */
+  drive_mode_t *drive_mode;
+
+  /*! Weapon mode in use */
+  weapon_mode_t *weapon_mode;
 
   /*! Channel values for multiple controllers. */
   rc_controls_t controls[RC_NUMBER_CONTROLLERS];
@@ -87,8 +94,12 @@ typedef struct {
   bool inverted;
   bool active;
 
+  /* These mutexes protect accesses to the fields within thread_args_t.
+  */
   struct {
     Mutex *pc_serial;
+    Mutex *controls;
+    Mutex *outputs;
   } mutex;
 
 

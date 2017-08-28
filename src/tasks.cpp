@@ -212,8 +212,10 @@ void task_read_receiver(const void *targs) {
           // Convert into float value between 0 and 100, based on max and min
           v = ( (pw - min) / (max - min) ) * 100.0f;
 
-          // Set the control value for otehr threads to use
+          // Set the control value for other threads to use
+          args->mutex.controls->lock();
           args->controls[controller].channel[channel] = v;
+          args->mutex.controls->unlock();
 
           // For debugging purposes
           // args->serial->printf("con %d chan %d: [pw: %.0f, min: %.0f, max: %.0f, v: %.0f]\r\n", controller, channel, pw, min, max, v);
@@ -239,8 +241,10 @@ void task_arming(const void *targs) {
 
   while (args->active) {
     if (args->tasks[TASK_ARMING_ID].active) {
+      args->mutex.controls->lock();
       weapon_switch = (args->controls[0].channel[RC_0_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
       drive_switch = (args->controls[1].channel[RC_1_ARM_SWITCH] > RC_SWITCH_MIDPOINT);
+      args->mutex.controls->unlock();
 
       /* If a transmitter is lost (turned off/out of range),
          disable arming for that TX.
@@ -248,17 +252,21 @@ void task_arming(const void *targs) {
       drive_stalled = is_drive_stalled(args);
       weapon_stalled = is_weapon_stalled(args);
 
+      args->mutex.controls->lock();
       weapon_arm = weapon_switch && !weapon_stalled &&
         BETWEEN(args->controls[0].channel[RC_0_THROTTLE], 0, 2) &&
         BETWEEN(args->controls[0].channel[RC_0_ELEVATION], 45, 55) &&
         BETWEEN(args->controls[0].channel[RC_0_RUDDER], 45, 55) &&
         BETWEEN(args->controls[0].channel[RC_0_AILERON], 45, 55);
+      args->mutex.controls->unlock();
 
+      args->mutex.controls->lock();
       drive_arm = drive_switch && !drive_stalled &&
         BETWEEN(args->controls[1].channel[RC_1_THROTTLE], 0, 2) &&
         BETWEEN(args->controls[1].channel[RC_1_ELEVATION], 45, 55) &&
         BETWEEN(args->controls[1].channel[RC_1_RUDDER], 45, 55) &&
         BETWEEN(args->controls[1].channel[RC_1_AILERON], 45, 55);
+      args->mutex.controls->unlock();
 
       //Debug: Print RX values
       // args->serial->printf("drive_switch : %.0f (%s)\r\n", args->controls[0].channel[RC_0_ARM_SWITCH], drive_switch ? "On" : "Off");
@@ -337,6 +345,8 @@ void task_failsafe(const void *targs) {
             args->state = STATE_DISARMED;
           }
           break;
+        default:
+          break;
       }
     }
     // For debugging purposes
@@ -368,66 +378,28 @@ void task_set_escs(const void *targs) {
 
   while(args->active) {
     if (args->tasks[TASK_SET_ESCS_ID].active) {
-      // Calculate output values
-      // args->outputs.wheel_1 = args->controls[1].channel[RC_1_THROTTLE];
-      // args->outputs.wheel_2 = args->controls[1].channel[RC_1_THROTTLE];
-      // args->outputs.wheel_3 = args->controls[1].channel[RC_1_THROTTLE];
+      /* What we do for the drive motors depends on the configured drive mode.
+         Drive maths is handled by the assigned drive mode function.
+      */
+    args->drive_mode->drive(args);
 
-    // Set weapon motor ESCs
-    args->outputs.weapon_motor_1 = args->controls[0].channel[RC_0_THROTTLE];
-    args->outputs.weapon_motor_2 = args->controls[0].channel[RC_0_THROTTLE];
-    args->outputs.weapon_motor_3 = args->controls[0].channel[RC_0_THROTTLE];
+    /* The motors currently operate in one mode: manual throttle control. */
+    args->weapon_mode->weapon(args);
 
-
-
-    float x = args->controls[1].channel[RC_1_AILERON] - 50.0f;
-    float y = args->controls[1].channel[RC_1_ELEVATION] - 50.0f;
-
-    float theta = (float)atan2((double)x, (double)y);
-    float magnitude = (float)sqrt((double)((x*x)+(y*y)));
-
-    if(magnitude > 5.0f) {
-
-        float vx = magnitude * sin(theta);
-        float vy = magnitude * cos(theta);
-        const float sqrt3o2 = 1.0*sqrt(3.0)/2.0;
-
-        float w0 = -vx;                   // v dot [-1, 0] / 25mm
-        float w1 = 0.5*vx - sqrt3o2 * vy; // v dot [1/2, -sqrt(3)/2] / 25mm
-        float w2 = 0.5*vx + sqrt3o2 * vy; // v dot [1/2, +sqrt(3)/2] / 25mm
-        // #if defined (PC_DEBUGGING) && defined (DEBUG_CONTROLS)
-        // pc.printf("Calculated Controls: (%7.2f) \t (%7.2f) \t (%7.2f) \r\n", w0, w1, w2);
-        // #endif
-        float w0_speed =  map(w0, -70, 70, 0, 100);
-        float w1_speed =  map(w1, -70, 70, 0, 100);
-        float w2_speed =  map(w2, -70, 70, 0, 100);
-
-        /* Add in rotation */
-        // #if defined (PC_DEBUGGING) && defined (DEBUG_CONTROLS)
-        // pc.printf("Mapped Controls: (%7.2f) \t (%7.2f) \t (%7.2f) \r\n", w0_speed, w1_speed, w2_speed);
-        // #endif
-        args->outputs.wheel_1 += w0_speed -50;
-        args->outputs.wheel_2 += w1_speed -50;
-        args->outputs.wheel_3 += w2_speed -50;
-
-
-    } else {
-        args->outputs.wheel_1 = 50;
-        args->outputs.wheel_2 = 50;
-        args->outputs.wheel_3 = 50;
-    }
-
-     args->outputs.wheel_1 += args->controls[1].channel[RC_1_RUDDER] - 50;
-     args->outputs.wheel_2 += args->controls[1].channel[RC_1_RUDDER] - 50;
-     args->outputs.wheel_3 += args->controls[1].channel[RC_1_RUDDER] - 50;
-
-
-
-    /* Clamp outputs to correct range */
+    /* No matter what drive mode we use, ensure outputs
+       are within the valid range. */
+    args->mutex.outputs->lock();
     args->outputs.wheel_1 = clamp(args->outputs.wheel_1, 0, 100);
     args->outputs.wheel_2 = clamp(args->outputs.wheel_2, 0, 100);
     args->outputs.wheel_3 = clamp(args->outputs.wheel_3, 0, 100);
+    args->outputs.weapon_motor_1 = clamp(args->outputs.weapon_motor_1, 0, 100);
+    args->outputs.weapon_motor_2 = clamp(args->outputs.weapon_motor_2, 0, 100);
+    args->outputs.weapon_motor_3 = clamp(args->outputs.weapon_motor_3, 0, 100);
+    args->mutex.outputs->unlock();
 
+    /* Now that we have valid output parameters, we can set the ESCs. */
+
+    args->mutex.outputs->lock();
       switch (args->state) {
         case STATE_FULLY_ARMED:
           args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
@@ -455,6 +427,7 @@ void task_set_escs(const void *targs) {
           args->escs.weapon[1]->failsafe();
           args->escs.weapon[2]->failsafe();
       }
+    args->mutex.outputs->unlock();
     }
   }
 }
@@ -497,7 +470,7 @@ void task_collect_telemetry(const void *targs) {
   task_start(args, TASK_COLLECT_TELEMETRY_ID);
 
   euler_t e;
-  int i;
+  unsigned i;
   while (args->active) {
     if (args->tasks[TASK_COLLECT_TELEMETRY_ID].active) {
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
@@ -565,7 +538,7 @@ void task_stream_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_STREAM_TELEMETRY_ID);
 
-  int i = 0;
+  unsigned i = 0;
   while (args->active) {
     /* The ESP looks for a carriage return character to delimit a command. */
     if (args->tasks[TASK_STREAM_TELEMETRY_ID].active) {

@@ -53,6 +53,8 @@
 #include "return_codes.h"
 #include "task.h"
 #include "utils.h"
+#include "drive_mode.h"
+#include "drive_modes.h"
 
 // For memory debugging
 // #include "mbed_memory_status.h"
@@ -172,6 +174,11 @@ int main() {
   //For memory debugging
   // print_all_thread_info();
   // print_heap_and_isr_stack_info();
+
+  // Print initial messsage inidicating start of new process
+  targs->serial->puts("Triforce Control System v");
+  targs->serial->puts(VERSION);
+  targs->serial->puts("\r\n");
 
   LOG_INFO("init(): BNO055\r\n");
   if (!bno055_wait_until_ready(targs)){
@@ -294,6 +301,11 @@ int main() {
     targs->leds[l] = &led[l];
   }
 
+  //Set drive mode
+  //TODO(camieac): Make drive & weapon mode configurable
+  targs->drive_mode = (drive_mode_t*) &drive_modes[DM_2_WHEEL_DIFFERENTIAL];
+  targs->weapon_mode = (weapon_mode_t*) &weapon_modes[WM_MANUAL_THROTTLE];
+
   LOG_INFO("init(): Command Queue\r\n");
 
   Mail<command_t, COMMAND_QUEUE_LEN> *command_queue = new Mail<command_t, COMMAND_QUEUE_LEN>();
@@ -301,6 +313,8 @@ int main() {
 
   LOG_INFO("init(): Mutexes\r\n");
   targs->mutex.pc_serial = new Mutex();
+  targs->mutex.controls = new Mutex();
+  targs->mutex.outputs = new Mutex();
 
   LOG_INFO("init(): Starting %d Tasks\r\n", NUM_TASKS);
 
@@ -371,8 +385,14 @@ int main() {
   }
 
   ucl_free(&targs->logger);
-  free(targs);
+
+  delete(targs->mutex.pc_serial);
+  delete(targs->mutex.controls);
+  delete(targs->mutex.outputs);
+
   delete(targs->esp_ready_pin);
   delete(command_queue);
   delete(serial);
+
+  free(targs);
 }
