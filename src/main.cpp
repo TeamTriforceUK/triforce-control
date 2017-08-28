@@ -51,6 +51,8 @@
 #include "utilc-logging.h"
 #include "return_codes.h"
 #include "task.h"
+#include "drive_mode.h"
+#include "drive_modes.h"
 
 // For memory debugging
 // #include "mbed_memory_status.h"
@@ -61,8 +63,32 @@ LocalFileSystem local("local");
 Serial *serial_ptr;
 
 int esp8266_wait_until_ready(thread_args_t *args) {
+  unsigned esp8266_init_attempts = 0;
   while (!args->esp_ready_pin->read()) {
     wait(0.5);
+    esp8266_init_attempts++;
+    if(esp8266_init_attempts > 5) {
+      // Disable tasks that require the BNO055
+#ifdef TASK_STREAM_TELEMETRY
+      args->tasks[TASK_STREAM_TELEMETRY_ID].active = false;
+#endif
+      return RET_ERROR;
+    }
+  }
+  return RET_OK;
+}
+
+int bno055_wait_until_ready(thread_args_t *args) {
+  unsigned bno055_init_attempts = 0;
+  while (!bno055_init()) {
+    bno055_init_attempts++;
+    if(bno055_init_attempts > 5) {
+      // Disable tasks that require the BNO055
+#ifdef TASK_COLLECT_TELEMETRY
+      args->tasks[TASK_COLLECT_TELEMETRY_ID].active = false;
+#endif
+      return RET_ERROR;
+    }
   }
   return RET_OK;
 }
@@ -103,11 +129,15 @@ int main() {
   targs->serial->puts(VERSION);
   targs->serial->puts("\r\n");
 
-  targs->serial->puts("init(): BNO055\r\n");
-  while (!bno055_init()) {}
+  targs->serial->printf("init(): BNO055\r\n");
+  if (!bno055_wait_until_ready(targs)){
+    targs->serial->printf("\tBNO055 not in use.\r\n");
+  };
 
-  targs->serial->puts("init(): ESP8266\r\n");
-  while (!esp8266_wait_until_ready(targs)) {}
+  targs->serial->printf("init(): ESP8266\r\n");
+  if (!esp8266_wait_until_ready(targs)) {
+    targs->serial->printf("\tESP8266 not in use.\r\n");
+  }
 
   targs->serial->puts("init(): PWM inputs\r\n");
 
@@ -222,6 +252,11 @@ int main() {
   for (l = 0; l < NUM_SURFACE_LEDS; l++){
     targs->leds[l] = &led[l];
   }
+
+  //Set drive mode
+  //TODO(camieac): Make drive & weapon mode configurable
+  targs->drive_mode = (drive_mode_t*) &drive_modes[DM_2_WHEEL_DIFFERENTIAL];
+  targs->weapon_mode = (weapon_mode_t*) &weapon_modes[WM_MANUAL_THROTTLE];
 
   targs->serial->puts("init(): Command Queue\r\n");
 
