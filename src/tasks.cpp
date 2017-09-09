@@ -36,6 +36,7 @@
 #include "return_codes.h"
 #include "tele_params.h"
 #include "utils.h"
+#include "task_utils.h"
 
 void task_start(thread_args_t *targs, unsigned task_id) {
   targs->serial->printf("started task %d (%s)\tstack [alloc: %d, used: %d, free: %d]\r\n", task_id, tasks[task_id].name, targs->threads[task_id].stack_size(), targs->threads[task_id].used_stack(), targs->threads[task_id].free_stack());
@@ -186,44 +187,30 @@ void task_state_leds(const void *targs){
 #endif
 
 /**
-* @brief Convert receiver signals into commands and add to the command queue.
+* @brief Convert receiver PWM inputs into PWM outputs to ESCs.
+* @note We want this thread to be super fast, to minimise the lag
+*       between controller and ESC signals.
 * @param [in/out] targs Thread arguments.
 */
-#ifdef TASK_READ_RECEIVERS
-void task_read_receiver(const void *targs) {
+#ifdef TASK_MOTOR_DRIVE
+void task_motor_drive(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
-  task_start(args, TASK_READ_RECEIVERS_ID);
-  int controller, channel;
-  float pw, v, min, max;
+  task_start(args, TASK_MOTOR_DRIVE_ID);
+
   while (args->active) {
-    if (args->tasks[TASK_READ_RECEIVERS_ID].active) {
-      for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
-        for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++) {
-          // Read raw pulse width
-          pw = args->receiver[controller].channel[channel]->pulsewidth();
+    if (args->tasks[TASK_MOTOR_DRIVE_ID].active) {
+      // Read pusle width from receiver
+      read_recv_pw(args);
 
-          // Get min and max pulsewidths fot this channel
-          min = args->channel_limits[controller][channel].min;
-          max = args->channel_limits[controller][channel].max;
+      // Calculate drive motor output pulse widths
+      args->drive_mode->drive(args);
 
-          // Make sure pw doesn't leave bounds due to imperfect calibration
-          pw = clamp(pw, min, max);
+      // Calculate weapon motor output pulse widths
+      args->weapon_mode->weapon(args);
 
-          // Convert into float value between 0 and 100, based on max and min
-          v = ( (pw - min) / (max - min) ) * 100.0f;
-
-          // Set the control value for other threads to use
-          args->mutex.controls->lock();
-          args->controls[controller].channel[channel] = v;
-          args->mutex.controls->unlock();
-
-          // For debugging purposes
-          // args->serial->printf("con %d chan %d: [pw: %.0f, min: %.0f, max: %.0f, v: %.0f]\r\n", controller, channel, pw, min, max, v);
-        }
-      }
+      // Set PWM outputs to ESCs
+      set_output_escs(args);
     }
-    // For debugging purposes
-    // Thread::wait(1000);
   }
 }
 #endif
@@ -367,71 +354,6 @@ void task_failsafe(const void *targs) {
 }
 #endif
 
-/** Output to OmniMixer and ESCs
- *
- * Sends calculated output values to devices
- */
-#ifdef TASK_SET_ESCS
-void task_set_escs(const void *targs) {
-  thread_args_t * args = (thread_args_t *) targs;
-  task_start(args, TASK_SET_ESCS_ID);
-
-  while(args->active) {
-    if (args->tasks[TASK_SET_ESCS_ID].active) {
-      /* What we do for the drive motors depends on the configured drive mode.
-         Drive maths is handled by the assigned drive mode function.
-      */
-    args->drive_mode->drive(args);
-
-    /* The motors currently operate in one mode: manual throttle control. */
-    args->weapon_mode->weapon(args);
-
-    /* No matter what drive mode we use, ensure outputs
-       are within the valid range. */
-    args->mutex.outputs->lock();
-    args->outputs.wheel_1 = clamp(args->outputs.wheel_1, 0, 100);
-    args->outputs.wheel_2 = clamp(args->outputs.wheel_2, 0, 100);
-    args->outputs.wheel_3 = clamp(args->outputs.wheel_3, 0, 100);
-    args->outputs.weapon_motor_1 = clamp(args->outputs.weapon_motor_1, 0, 100);
-    args->outputs.weapon_motor_2 = clamp(args->outputs.weapon_motor_2, 0, 100);
-    args->outputs.weapon_motor_3 = clamp(args->outputs.weapon_motor_3, 0, 100);
-    args->mutex.outputs->unlock();
-
-    /* Now that we have valid output parameters, we can set the ESCs. */
-
-    args->mutex.outputs->lock();
-      switch (args->state) {
-        case STATE_FULLY_ARMED:
-          args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
-          args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
-          args->escs.weapon[2]->setThrottle(args->outputs.weapon_motor_3);
-          args->escs.drive[0]->setThrottle(args->outputs.wheel_1);
-          args->escs.drive[1]->setThrottle(args->outputs.wheel_2);
-          args->escs.drive[2]->setThrottle(args->outputs.wheel_3);
-          break;
-        case STATE_DRIVE_ONLY:
-          args->escs.drive[0]->setThrottle(args->outputs.wheel_1);
-          args->escs.drive[1]->setThrottle(args->outputs.wheel_2);
-          args->escs.drive[2]->setThrottle(args->outputs.wheel_3);
-          break;
-        case STATE_WEAPON_ONLY:
-          args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
-          args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
-          args->escs.weapon[2]->setThrottle(args->outputs.weapon_motor_3);
-          break;
-        case STATE_DISARMED:
-          args->escs.drive[0]->failsafe();
-          args->escs.drive[1]->failsafe();
-          args->escs.drive[2]->failsafe();
-          args->escs.weapon[0]->failsafe();
-          args->escs.weapon[1]->failsafe();
-          args->escs.weapon[2]->failsafe();
-      }
-    args->mutex.outputs->unlock();
-    }
-  }
-}
-#endif
 
 #ifdef TASK_CALC_ORIENTATION
 void task_calc_orientation(const void *targs) {

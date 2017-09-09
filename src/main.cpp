@@ -283,17 +283,14 @@ int main() {
 #ifdef TASK_LED_STATE
     {tasks[TASK_LED_STATE_ID].priority, tasks[TASK_LED_STATE_ID].stack_size},
 #endif
-#ifdef TASK_READ_RECEIVERS
-    {tasks[TASK_READ_RECEIVERS_ID].priority, tasks[TASK_READ_RECEIVERS_ID].stack_size},
+#ifdef TASK_MOTOR_DRIVE
+    {tasks[TASK_MOTOR_DRIVE_ID].priority, tasks[TASK_MOTOR_DRIVE_ID].stack_size},
 #endif
 #ifdef TASK_ARMING
     {tasks[TASK_ARMING_ID].priority, tasks[TASK_ARMING_ID].stack_size},
 #endif
 #ifdef TASK_FAILSAFE
     {tasks[TASK_FAILSAFE_ID].priority, tasks[TASK_FAILSAFE_ID].stack_size},
-#endif
-#ifdef TASK_SET_ESCS
-    {tasks[TASK_SET_ESCS_ID].priority, tasks[TASK_SET_ESCS_ID].stack_size},
 #endif
 #ifdef TASK_CALC_ORIENTATION
     {tasks[TASK_CALC_ORIENTATION_ID].priority, tasks[TASK_CALC_ORIENTATION_ID].stack_size},
