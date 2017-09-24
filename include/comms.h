@@ -17,27 +17,44 @@
  */
 
 /**
-* @file task.h
+* @file comms.h
 * @author Cameron A. Craig
-* @date 1 Jun 2017
+* @date 23 Sep 2017
 * @copyright 2017 Cameron A. Craig
-* @brief Defines a task structure.
+* @brief Generic structure to offer many communcation methods within
+*        the single structure.
 */
 
-#ifndef INCLUDE_TASK_H_
-#define INCLUDE_TASK_H_
+#ifndef TC_COMMS_H
+#define TC_COMMS_H
 
-#include "mbed.h"
-#include <stdint.h>
+#include "stdint.h"
+
+#define COMMS_OUTPUT_DRIVE_1 0U
+#define COMMS_OUTPUT_DRIVE_2 1U
+#define COMMS_OUTPUT_DRIVE_3 2U
+#define COMMS_OUTPUT_WEAPON_1 3U
+#define COMMS_OUTPUT_WEAPON_2 4U
+#define COMMS_OUTPUT_WEAPON_3 5U
+
+typedef uint32_t comms_esc_id_t;
 
 typedef struct {
-  uint32_t id;
-  const char *name;
-  void (*func)(const void*);
-  void * args;
-  osPriority priority;
-  uint32_t stack_size;
-  volatile bool active;
-} task_t;
+  comms_esc_id_t id;
+  const char *str;
+} comms_esc_t;
 
-#endif  // INCLUDE_TASK_H_
+typedef uint32_t comms_impl_id_t;
+
+typedef struct {
+  comms_impl_id_t impl_id;
+  const char *str;
+  void (*init_comms)();
+  void (*init_esc)(comms_esc_t *esc, comms_esc_id_t id);
+  void (*set_speed)(comms_esc_t *esc, uint32_t speed);
+  void (*get_speed)(const void*);
+  void (*get_status)(const void*);
+  void (*stop)(comms_esc_t *esc);
+} comms_impl_t;
+
+#endif //TC_COMMS_PWM_H

@@ -26,6 +26,7 @@
 
 #include "thread_args.h"
 #include "tmath.h"
+#include "comms.h"
 
 void read_recv_pw(thread_args_t *args) {
   int controller, channel;
@@ -70,40 +71,39 @@ void set_output_escs(thread_args_t *args) {
   args->mutex.outputs->unlock();
 
   /* Now that we have valid output parameters, we can set the ESCs. */
-
   args->mutex.outputs->lock();
     switch (args->state) {
       case STATE_FULLY_ARMED:
-        args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
-        args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
-        args->escs.weapon[2]->setThrottle(args->outputs.weapon_motor_3);
-        args->escs.drive[0]->setThrottle(args->outputs.wheel_1);
-        args->escs.drive[1]->setThrottle(args->outputs.wheel_2);
-        args->escs.drive[2]->setThrottle(args->outputs.wheel_3);
+        args->comms_impl->set_speed(&args->escs.weapon[0], args->outputs.weapon_motor_1);
+        args->comms_impl->set_speed(&args->escs.weapon[1], args->outputs.weapon_motor_2);
+        args->comms_impl->set_speed(&args->escs.weapon[2], args->outputs.weapon_motor_3);
+        args->comms_impl->set_speed(&args->escs.drive[0], args->outputs.wheel_1);
+        args->comms_impl->set_speed(&args->escs.drive[1], args->outputs.wheel_2);
+        args->comms_impl->set_speed(&args->escs.drive[2], args->outputs.wheel_3);
         break;
       case STATE_DRIVE_ONLY:
-        args->escs.drive[0]->setThrottle(args->outputs.wheel_1);
-        args->escs.drive[1]->setThrottle(args->outputs.wheel_2);
-        args->escs.drive[2]->setThrottle(args->outputs.wheel_3);
-        args->escs.weapon[0]->failsafe();
-        args->escs.weapon[1]->failsafe();
-        args->escs.weapon[2]->failsafe();
+        args->comms_impl->set_speed(&args->escs.drive[0], args->outputs.wheel_1);
+        args->comms_impl->set_speed(&args->escs.drive[1], args->outputs.wheel_2);
+        args->comms_impl->set_speed(&args->escs.drive[2], args->outputs.wheel_3);
+        args->comms_impl->stop(&args->escs.weapon[0]);
+        args->comms_impl->stop(&args->escs.weapon[1]);
+        args->comms_impl->stop(&args->escs.weapon[2]);
         break;
       case STATE_WEAPON_ONLY:
-        args->escs.weapon[0]->setThrottle(args->outputs.weapon_motor_1);
-        args->escs.weapon[1]->setThrottle(args->outputs.weapon_motor_2);
-        args->escs.weapon[2]->setThrottle(args->outputs.weapon_motor_3);
-        args->escs.drive[0]->failsafe();
-        args->escs.drive[1]->failsafe();
-        args->escs.drive[2]->failsafe();
+        args->comms_impl->set_speed(&args->escs.weapon[0], args->outputs.weapon_motor_1);
+        args->comms_impl->set_speed(&args->escs.weapon[1], args->outputs.weapon_motor_2);
+        args->comms_impl->set_speed(&args->escs.weapon[2], args->outputs.weapon_motor_3);
+        args->comms_impl->stop(&args->escs.drive[0]);
+        args->comms_impl->stop(&args->escs.drive[1]);
+        args->comms_impl->stop(&args->escs.drive[2]);
         break;
       case STATE_DISARMED:
-        args->escs.drive[0]->failsafe();
-        args->escs.drive[1]->failsafe();
-        args->escs.drive[2]->failsafe();
-        args->escs.weapon[0]->failsafe();
-        args->escs.weapon[1]->failsafe();
-        args->escs.weapon[2]->failsafe();
+        args->comms_impl->stop(&args->escs.drive[0]);
+        args->comms_impl->stop(&args->escs.drive[1]);
+        args->comms_impl->stop(&args->escs.drive[2]);
+        args->comms_impl->stop(&args->escs.weapon[0]);
+        args->comms_impl->stop(&args->escs.weapon[1]);
+        args->comms_impl->stop(&args->escs.weapon[2]);
     }
   args->mutex.outputs->unlock();
 }

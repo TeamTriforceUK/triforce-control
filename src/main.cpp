@@ -53,10 +53,15 @@
 #include "task.h"
 #include "drive_mode.h"
 #include "drive_modes.h"
+#include "comms_pwm.h"
+#include "comms_vesc_can.h"
+
+/* Make available the ESC comms implementations */
+extern comms_impl_t comms_impl_pwm;
+extern comms_impl_t comms_impl_vesc_can;
 
 // For memory debugging
 // #include "mbed_memory_status.h"
-
 
 /* Set up logging */
 LocalFileSystem local("local");
@@ -199,44 +204,20 @@ int main() {
   targs->channel_limits[1][5].min = RC_1_CHAN_6_MIN;
   targs->channel_limits[1][5].max = RC_1_CHAN_6_MAX;
 
-  int chan;
-  // while(1) {
-    for (chan= 0; chan < RC_NUMBER_CHANNELS; chan++) {
-      targs->receiver[0].channel[chan] = &rx_drive[chan];
-      targs->receiver[1].channel[chan] = &rx_weapon[chan];
-      // A test read ensures PwmIn is configured correctly
-      targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
-        0, chan,
-        convert_pulsewidth(
-          targs->receiver[0].channel[chan]->pulsewidth()));
-      targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
-        1, chan,
-        convert_pulsewidth(
-          targs->receiver[1].channel[chan]->pulsewidth()));
-    }
-    // Thread::wait(500);
-  // }
-
-  targs->serial->puts("init(): PWM Outputs\r\n");
-
-  /* 5 channel ESC output */
-  ESC esc_omni_1(DRIVE_ESC_OUT_1_PIN, 20, 1500);
-  targs->escs.drive[0] = &esc_omni_1;
-
-  ESC esc_omni_2(DRIVE_ESC_OUT_2_PIN, 20, 1500);
-  targs->escs.drive[1] = &esc_omni_2;
-
-  ESC esc_omni_3(DRIVE_ESC_OUT_3_PIN, 20, 1500);
-  targs->escs.drive[2] = &esc_omni_3;
-
-  ESC esc_weapon_1(WEAPON_ESC_OUT_1_PIN);
-  targs->escs.weapon[0] = &esc_weapon_1;
-
-  ESC esc_weapon_2(WEAPON_ESC_OUT_2_PIN);
-  targs->escs.weapon[1] = &esc_weapon_2;
-
-  ESC esc_weapon_3(WEAPON_ESC_OUT_3_PIN);
-  targs->escs.weapon[2] = &esc_weapon_3;
+  uint32_t chan;
+  for (chan= 0; chan < RC_NUMBER_CHANNELS; chan++) {
+    targs->receiver[0].channel[chan] = &rx_drive[chan];
+    targs->receiver[1].channel[chan] = &rx_weapon[chan];
+    // A test read ensures PwmIn is configured correctly
+    targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
+      0, chan,
+      convert_pulsewidth(
+        targs->receiver[0].channel[chan]->pulsewidth()));
+    targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
+      1, chan,
+      convert_pulsewidth(
+        targs->receiver[1].channel[chan]->pulsewidth()));
+  }
 
   targs->serial->puts("init(): onboard LEDS\r\n");
 
@@ -248,7 +229,7 @@ int main() {
     LED4
   };
 
-  int l;
+  uint32_t l;
   for (l = 0; l < NUM_SURFACE_LEDS; l++){
     targs->leds[l] = &led[l];
   }
@@ -257,6 +238,22 @@ int main() {
   //TODO(camieac): Make drive & weapon mode configurable
   targs->drive_mode = (drive_mode_t*) &drive_modes[DM_2_WHEEL_DIFFERENTIAL];
   targs->weapon_mode = (weapon_mode_t*) &weapon_modes[WM_MANUAL_THROTTLE];
+
+  targs->serial->puts("init(): PWM Outputs\r\n");
+
+  //Set ESC comms implementation
+  targs->comms_impl = (comms_impl_t *) &comms_impl_pwm;
+
+  /* Initialise comms outputs to ESCS */
+  targs->comms_impl->init_comms();
+
+  /* Configure each ESC */
+  targs->comms_impl->init_esc(&targs->escs.drive[0], COMMS_OUTPUT_DRIVE_1);
+  targs->comms_impl->init_esc(&targs->escs.drive[1], COMMS_OUTPUT_DRIVE_2);
+  targs->comms_impl->init_esc(&targs->escs.drive[2], COMMS_OUTPUT_DRIVE_3);
+  targs->comms_impl->init_esc(&targs->escs.weapon[0], COMMS_OUTPUT_WEAPON_1);
+  targs->comms_impl->init_esc(&targs->escs.weapon[1], COMMS_OUTPUT_WEAPON_2);
+  targs->comms_impl->init_esc(&targs->escs.weapon[2], COMMS_OUTPUT_WEAPON_3);
 
   targs->serial->puts("init(): Command Queue\r\n");
 
@@ -309,7 +306,7 @@ int main() {
   targs->threads = (Thread*) &threads;
 
   // Print all tasks and their properties
-  int t;
+  uint32_t t;
   for (t = 0; t < NUM_TASKS; t++) {
     targs->serial->printf("\rinit(): Task %d (%s) active: %s, stack: %d\r\n", tasks[t].id, tasks[t].name, tasks[t].active ? "Yes" : "No", tasks[t].stack_size);
   }

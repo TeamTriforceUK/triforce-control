@@ -31,13 +31,13 @@
 #include "rtos.h"
 #include "types.h"
 #include "config.h"
-#include "esc.h"
 #include "PwmIn.h"
 #include "states.h"
 #include "bno055.h"
 #include "command.h"
 #include "task.h"
 #include "drive_mode.h"
+#include "comms.h"
 
 typedef struct {
 
@@ -51,6 +51,9 @@ typedef struct {
 
   /*! Weapon mode in use */
   weapon_mode_t *weapon_mode;
+
+  /*! Wrapper to allow selection of ESC comms method */
+  comms_impl_t *comms_impl;
 
   /*! Channel values for multiple controllers. */
   rc_controls_t controls[RC_NUMBER_CONTROLLERS];
@@ -80,8 +83,8 @@ typedef struct {
   struct direction_vector direction;
 
   struct {
-    ESC *drive[3];
-    ESC *weapon[3];
+    comms_esc_t drive[3];
+    comms_esc_t weapon[3];
   } escs;
 
   orientation_t orientation_detected;

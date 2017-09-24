@@ -17,27 +17,26 @@
  */
 
 /**
-* @file task.h
+* @file comms_pwm.h
 * @author Cameron A. Craig
-* @date 1 Jun 2017
+* @date 23 Sep 2017
 * @copyright 2017 Cameron A. Craig
-* @brief Defines a task structure.
+* @brief Implements PWM communication for ESC control.
 */
 
-#ifndef INCLUDE_TASK_H_
-#define INCLUDE_TASK_H_
+#ifndef TC_COMMS_PWM_H
+#define TC_COMMS_PWM_H
 
-#include "mbed.h"
-#include <stdint.h>
+#include "comms.h"
 
-typedef struct {
-  uint32_t id;
-  const char *name;
-  void (*func)(const void*);
-  void * args;
-  osPriority priority;
-  uint32_t stack_size;
-  volatile bool active;
-} task_t;
+//Make sure that IDs are unique when adding new comms implememnations!
+#define COMMS_IMPL_PWM 0
 
-#endif  // INCLUDE_TASK_H_
+void comms_impl_pwm_init_comms();
+void comms_impl_pwm_init_esc(comms_esc_t *esc, comms_esc_id_t id);
+void comms_impl_pwm_set_speed(comms_esc_t *esc, uint32_t speed);
+void comms_impl_pwm_stop(comms_esc_t *esc);
+
+
+
+#endif //TC_COMMS_PWM_H
