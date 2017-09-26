@@ -60,12 +60,12 @@ void comms_impl_pwm_init_esc(comms_esc_t *esc, comms_esc_id_t id){
 }
 
 void comms_impl_pwm_set_speed(comms_esc_t *esc, uint32_t speed) {
-    lookup_table[COMMS_OUTPUT_DRIVE_1].setThrottle(speed);
+    lookup_table[esc->id].setThrottle(speed);
 }
 
 void comms_impl_pwm_stop(comms_esc_t *esc) {
   // The failsafe function just sets the throttle to 0
   // TODO: Is the failsafe function really necessary?
   // Could just do setThrottle(0), which is arguably more readable?
-  lookup_table[COMMS_OUTPUT_DRIVE_1].failsafe();
+  lookup_table[esc->id].failsafe();
 }
