@@ -17,46 +17,20 @@
  */
 
 /**
-* @file comms.h
+* @file comms.cpp
 * @author Cameron A. Craig
-* @date 23 Sep 2017
+* @date 27 Sep 2017
 * @copyright 2017 Cameron A. Craig
-* @brief Generic structure to offer many communcation methods within
-*        the single structure.
+* @brief Implements any functions that are shared amongst comms implementations.
 */
 
-#ifndef TC_COMMS_H
-#define TC_COMMS_H
+#include "comms.h"
 
-#include "stdint.h"
-
-#define COMMS_OUTPUT_DRIVE_1 0U
-#define COMMS_OUTPUT_DRIVE_2 1U
-#define COMMS_OUTPUT_DRIVE_3 2U
-#define COMMS_OUTPUT_WEAPON_1 3U
-#define COMMS_OUTPUT_WEAPON_2 4U
-#define COMMS_OUTPUT_WEAPON_3 5U
-
-typedef uint32_t comms_esc_id_t;
-
-typedef struct {
-  comms_esc_id_t id;
-  const char *str;
-} comms_esc_t;
-
-typedef uint32_t comms_impl_id_t;
-
-typedef struct {
-  comms_impl_id_t impl_id;
-  const char *str;
-  void (*init_comms)(void);
-  void (*init_esc)(comms_esc_t *esc, comms_esc_id_t);
-  void (*set_speed)(comms_esc_t *esc, uint32_t speed);
-  void (*get_speed)(const void*);
-  void (*get_status)(const void*);
-  void (*stop)(comms_esc_t *esc);
-} comms_impl_t;
-
-void comms_init_esc(comms_esc_t *esc, comms_esc_id_t id);
-
-#endif //TC_COMMS_PWM_H
+/**
+* @brief Set struct id.
+* @param [in/out] esc Pointer to comms_esc_t struct to set.
+* @param [in] id ID to assign to esc->id.
+*/
+void comms_init_esc(comms_esc_t *esc, comms_esc_id_t id) {
+  esc->id = id;
+}

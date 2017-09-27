@@ -20,6 +20,7 @@
 #include <vector>
 #include "mbed.h"
 #include "esc.h"
+#include "comms.h"
 #include "comms_pwm.h"
 #include "config.h"
 
@@ -31,14 +32,13 @@
 * @brief Implements PWM communication for ESC control.
 */
 
-static std::vector<ESC> lookup_table;
+static std::vector<ESC> pwm_esc_array;
 
-/* The various drive configurations are available in docs/drive_modes. */
 volatile comms_impl_t comms_impl_pwm = {
   .impl_id = COMMS_IMPL_PWM,
   .str = "PWM",
   .init_comms = comms_impl_pwm_init_comms,
-  .init_esc = comms_impl_pwm_init_esc,
+  .init_esc = comms_init_esc,
   .set_speed = comms_impl_pwm_set_speed,
   .get_speed = NULL,
   .get_status = NULL,
@@ -46,26 +46,36 @@ volatile comms_impl_t comms_impl_pwm = {
 };
 
 
-void comms_impl_pwm_init_comms() {
-  lookup_table.push_back(ESC(DRIVE_ESC_OUT_1_PIN, 20, 1500));
-  lookup_table.push_back(ESC(DRIVE_ESC_OUT_2_PIN, 20, 1500));
-  lookup_table.push_back(ESC(DRIVE_ESC_OUT_3_PIN, 20, 1500));
-  lookup_table.push_back(ESC(WEAPON_ESC_OUT_1_PIN));
-  lookup_table.push_back(ESC(WEAPON_ESC_OUT_2_PIN));
-  lookup_table.push_back(ESC(WEAPON_ESC_OUT_3_PIN));
+/**
+* @brief Initialise static vector array of ESCs, one for each motor.
+*/
+void comms_impl_pwm_init_comms(void) {
+  pwm_esc_array.push_back(ESC(DRIVE_ESC_OUT_1_PIN, 20, 1500));
+  pwm_esc_array.push_back(ESC(DRIVE_ESC_OUT_2_PIN, 20, 1500));
+  pwm_esc_array.push_back(ESC(DRIVE_ESC_OUT_3_PIN, 20, 1500));
+  pwm_esc_array.push_back(ESC(WEAPON_ESC_OUT_1_PIN));
+  pwm_esc_array.push_back(ESC(WEAPON_ESC_OUT_2_PIN));
+  pwm_esc_array.push_back(ESC(WEAPON_ESC_OUT_3_PIN));
 }
 
-void comms_impl_pwm_init_esc(comms_esc_t *esc, comms_esc_id_t id){
-  esc->id = id;
-}
 
+/**
+* @brief Set PWM output to set ESC throttle value.
+* @param [in] esc The ESC to set.
+* @param [in] speed Throttle value betwesen 0 and 100.
+*/
 void comms_impl_pwm_set_speed(comms_esc_t *esc, uint32_t speed) {
-    lookup_table[esc->id].setThrottle(speed);
+    pwm_esc_array[esc->id].setThrottle(speed);
 }
 
-void comms_impl_pwm_stop(comms_esc_t *esc) {
+
+/**
+* @brief Stop the ESC (Thrttle zero)
+* @param [in] esc The ESC to stop.
+*/
+void comms_impl_pwm_stop(comms_esc_t *esc){
   // The failsafe function just sets the throttle to 0
   // TODO: Is the failsafe function really necessary?
   // Could just do setThrottle(0), which is arguably more readable?
-  lookup_table[esc->id].failsafe();
+  pwm_esc_array[esc->id].failsafe();
 }

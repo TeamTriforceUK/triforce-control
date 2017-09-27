@@ -32,11 +32,8 @@
 //Make sure that IDs are unique when adding new comms implememnations!
 #define COMMS_IMPL_PWM 0
 
-void comms_impl_pwm_init_comms();
-void comms_impl_pwm_init_esc(comms_esc_t *esc, comms_esc_id_t id);
+void comms_impl_pwm_init_comms(void);
 void comms_impl_pwm_set_speed(comms_esc_t *esc, uint32_t speed);
 void comms_impl_pwm_stop(comms_esc_t *esc);
-
-
 
 #endif //TC_COMMS_PWM_H
