@@ -27,7 +27,6 @@
 ~ RULE_6_1_G_write_less_than_200_lines_for_function
 ~ RULE_6_4_B_initialize_first_item_of_enum
 ~ RULE_6_5_B_do_not_use_lowercase_for_macro_constants
-~ RULE_6_5_B_do_not_use_macro_for_constants
 ~ RULE_7_1_B_A_do_not_use_double_assignment
 ~ RULE_7_2_B_do_not_use_goto_statement
 ~ RULE_8_1_A_provide_file_info_comment
