@@ -31,4 +31,4 @@ script:
   # Compile project
   - mbed compile -t GCC_ARM -m lpc1768
   # Run static analysis and style checker
-  - make --filename=triforce.mk ci
+  - make --makefile=triforce.mk ci
