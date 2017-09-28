@@ -34,6 +34,9 @@ enum state_t {
   STATE_FULLY_ARMED
 };
 
+/**
+* @brief Return meaningful string name of state.
+*/
 const char * state_to_str(state_t state);
 
 #endif //TC_STATES_T

@@ -31,17 +31,24 @@
 #include "thread_args.h"
 #include "config.h"
 
-#define MAX(a,b) \
+#define MAX(a, b) \
   ({ typeof (a) _a = (a); \
      typeof (b) _b = (b); \
    _a > _b ? _a : _b; })
 
-#define MIN(a,b) \
+#define MIN(a, b) \
   ({ typeof (a) _a = (a); \
       typeof (b) _b = (b); \
     _a < _b ? _a : _b; })
 
+/**
+* @brief Check if drive reciever is stalled.
+*/
 bool is_drive_stalled(thread_args_t *args);
+
+/**
+* @brief Check if weapon reciever is stalled.
+*/
 bool is_weapon_stalled(thread_args_t *args);
 
 #endif //TC_UTILS_H

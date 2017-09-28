@@ -30,6 +30,9 @@
 
 #include "./tele_param.h"
 
+/**
+ * Available commands (used for serial interface).
+ */
 typedef enum  {
   FULLY_DISARM = 0,
   PARTIAL_DISARM,
@@ -41,14 +44,21 @@ typedef enum  {
   CALIBRATE_CHANNELS
 } command_id_t;
 
-
+/**
+ * Stores command parameters.
+ */
 typedef struct {
   command_id_t id;
   const char *name;
 
-  /*! Used if the command gets or sets a parameter. */
+  /**
+   * Used if the command gets or sets a parameter.
+   */
   tele_command_t *tele_param;
 
+  /**
+   * Stores a value as one of a number of types.
+   */
   union {
     float f;
     int i;

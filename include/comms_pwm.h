@@ -32,8 +32,19 @@
 //Make sure that IDs are unique when adding new comms implememnations!
 #define COMMS_IMPL_PWM 0
 
+/**
+* @brief Initialise classes required for use of PWM comms mode.
+*/
 void comms_impl_pwm_init_comms(void);
+
+/**
+* @brief Set speed of ESC.
+*/
 void comms_impl_pwm_set_speed(comms_esc_t *esc, uint32_t speed);
+
+/**
+* @brief Stop ESC
+*/
 void comms_impl_pwm_stop(comms_esc_t *esc);
 
 #endif //TC_COMMS_PWM_H

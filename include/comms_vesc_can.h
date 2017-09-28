@@ -32,12 +32,25 @@
 //Make sure that IDs are unique when adding new comms implememnations!
 #define COMMS_IMPL_VESC_CAN 0
 
+/**
+* @brief Initiales classes required for the use of CAN comms mode.
+*/
 void comms_impl_vesc_can_init_comms();
-void comms_impl_vesc_can_init_esc(comms_esc_t *esc, comms_esc_id_t id);
-void comms_impl_vesc_can_set_speed(comms_esc_t *esc, uint32_t speed);
-void comms_impl_vesc_can_get_speed(const void *args);
-void comms_impl_vesc_can_stop(comms_esc_t *esc);
 
+/**
+* @brief Set speed of ESC.
+*/
+void comms_impl_vesc_can_set_speed(comms_esc_t *esc, uint32_t speed);
+
+/**
+* @brief Get speed of ESC.
+*/
+void comms_impl_vesc_can_get_speed(const void *args);
+
+/**
+* @brief Stop ESC.
+*/
+void comms_impl_vesc_can_stop(comms_esc_t *esc);
 
 
 #endif //TC_COMMS_VESC_CAN_H

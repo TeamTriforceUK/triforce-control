@@ -14,15 +14,16 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file tasks.h
+ * @author Cameron A. Craig, Euan W. Mutch
+ * @date 15 May 2017
+ * @copyright 2017 Cameron A. Craig, Euan W. Mutch
+ * @brief Defines struct to share data between threads.
+ *
+ * -- RULE_5_3_A_provide_doxygen_function_comment_on_function_in_header
+ * -- RULE_4_4_A_do_not_write_over_120_columns_per_line
  */
-
-/**
-* @file tasks.h
-* @author Cameron A. Craig, Euan W. Mutch
-* @date 15 May 2017
-* @copyright 2017 Cameron A. Craig, Euan W. Mutch
-* @brief Defines struct to share data between threads.
-*/
 
 #ifndef INCLUDE_TASKS_H_
 #define INCLUDE_TASKS_H_

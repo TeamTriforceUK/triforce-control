@@ -29,12 +29,21 @@
 
 /* Drive */
 
+/**
+* @brief Run a tick of holonomic drive mode.
+*/
 void drive_3_wheel_holonomic(const void * targs);
 
+/**
+* @brief Run a tick of differential drive mode.
+*/
 void drive_2_wheel_differential(const void * targs);
 
 /* Weapon */
 
+/**
+* @brief Run a tick of manual throttle weapon mode.
+*/
 void weapon_manual_throttle(const void * targs);
 
 #endif

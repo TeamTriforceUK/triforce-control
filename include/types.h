@@ -31,23 +31,34 @@
 #include "PwmIn.h"
 #include "config.h"
 
-/* Positions of controls */
+/**
+ * Positions of controls
+ */
 typedef struct {
     float channel[RC_NUMBER_CHANNELS];
 } rc_controls_t;
 
+/**
+ * Stores all channels of a receiver.
+ * TODO: Currently limited to use two receivers with same number of channels,
+ * remove this restriction.
+ */
 typedef struct {
   PwmIn *channel[RC_NUMBER_CHANNELS];
 } rc_receiver_t;
 
-/* Current movement command */
+/**
+ * Current movement command
+ */
 struct direction_vector{
     float rotation;
     float x_translation;
     float y_translation;
 };
 
-/* Outputs for devices */
+/**
+ * Outputs for devices
+ */
 struct rc_outputs{
     int wheel_1;
     int wheel_2;
@@ -57,7 +68,9 @@ struct rc_outputs{
     int weapon_motor_3;
 };
 
-/* Ring definition */
+/**
+ *  Ring definition
+ */
 struct ring{
     const int max_rpm;
     int rpm;
@@ -65,7 +78,9 @@ struct ring{
     float energy;
 };
 
-/* Battery definition */
+/**
+ * Battery definition
+ */
 struct battery{
     int capacity;
     int used_capacity;
@@ -77,7 +92,9 @@ struct battery{
     int temperature;
 };
 
-/* Motor definition */
+/**
+ * Motor definition
+ */
 struct motor{
     const int max_rpm;
     int rpm;
@@ -91,23 +108,36 @@ struct motor{
     int temperature;
 };
 
-/* Distance sensor definition */
+/**
+ * Distance sensor definition
+ */
 struct distance_sensor{
     int id;
     const float max_range;
     float range;
 };
 
+/**
+ * Supported orientations, unfortunately we can only operate upright or
+ * inverted, anything in between is not yet supported :)
+ */
 enum orientation_t {
   UPRIGHT = 0,
   INVERTED
 };
 
+/**
+ * Defines the upper and lower limits of a PWM channel. TODO: Document units.
+ */
 typedef struct {
   float min;
   float max;
 } channel_limits_t;
 
+/**
+* @param [in] orientation
+* @return orientation as a string.
+*/
 const char * orientation_to_str(orientation_t orientation);
 
 #endif //TC_TYPES_H

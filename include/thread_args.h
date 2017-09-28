@@ -39,6 +39,10 @@
 #include "drive_mode.h"
 #include "comms.h"
 
+/**
+ * Shared variables between tasks, made availbale through the first and only
+ * argument into task(thread) functions.
+ */
 typedef struct {
 
   task_t *tasks;
@@ -82,6 +86,9 @@ typedef struct {
 
   struct direction_vector direction;
 
+  /**
+   * Drive and weapon ESCS.
+   */
   struct {
     comms_esc_t drive[3];
     comms_esc_t weapon[3];
@@ -93,7 +100,8 @@ typedef struct {
   bool inverted;
   bool active;
 
-  /* These mutexes protect accesses to the fields within thread_args_t.
+  /**
+  These mutexes protect accesses to the fields within thread_args_t.
   */
   struct {
     Mutex *pc_serial;
@@ -112,6 +120,10 @@ typedef struct {
 
 } thread_args_t;
 
+/**
+* @brief Initialise structures within args.
+* @param [in] args Pointer to structure to initialise.
+*/
 void thread_args_init(thread_args_t *args);
 
 

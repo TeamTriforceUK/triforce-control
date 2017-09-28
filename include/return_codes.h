@@ -45,6 +45,9 @@ static const char * ret_str[] = {
   "Disarm before running this command"
 };
 
+/**
+* @brief Return meaningful string describing error code.
+*/
 const char * err_to_str(int err);
 
 #endif  // INCLUDE_RETURN_CODES_H_

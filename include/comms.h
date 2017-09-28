@@ -37,15 +37,27 @@
 #define COMMS_OUTPUT_WEAPON_2 4U
 #define COMMS_OUTPUT_WEAPON_3 5U
 
+/**
+ * Allow up to 2^32 ESCS!
+ */
 typedef uint32_t comms_esc_id_t;
 
+/**
+ * Allows representation of many ESCs.
+ */
 typedef struct {
   comms_esc_id_t id;
   const char *str;
 } comms_esc_t;
 
+/**
+ * Allow up to 2^32 methods of communication!
+ */
 typedef uint32_t comms_impl_id_t;
 
+/**
+ * Provides functions and parameters related to a particular comms implementation.
+ */
 typedef struct {
   comms_impl_id_t impl_id;
   const char *str;
@@ -56,6 +68,10 @@ typedef struct {
   void (*get_status)(const void*);
   void (*stop)(comms_esc_t *esc);
 } comms_impl_t;
+
+/**
+* @brief This should be the same for each impl, so defined here.
+*/
 
 void comms_init_esc(comms_esc_t *esc, comms_esc_id_t id);
 

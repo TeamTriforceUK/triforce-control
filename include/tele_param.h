@@ -32,6 +32,9 @@
    telemetry value. And a pointer to this function stored in tele_command_t.
 */
 
+/**
+ * Supported types that can be passed as a value in a telemetry parameter.
+ */
 typedef enum {
   CT_INT = 0,
   CT_FLOAT,
@@ -40,6 +43,9 @@ typedef enum {
   CT_NONE
 } tele_command_type_t;
 
+/**
+ * Supported units that can be associated with a telemetry parameter.
+ */
 typedef enum {
   CU_RPM = 0,
   CU_RPS,
@@ -50,10 +56,11 @@ typedef enum {
   CU_NONE
 } tele_command_unit_t;
 
-/* For ease of access, the command ID (CID) value should correspond with its
-   position within the tele_commands array below
-*/
-
+/**
+ * Defines all telemetry parameters.
+ * Note: For ease of access, the command ID (CID) value should correspond with its
+ * position within the tele_commands array (tele_params.h).
+ */
 typedef enum tele_command_id_t {
   CID_RING_RPM = 0,
   CID_CON_1_RPM,
@@ -71,6 +78,9 @@ typedef enum tele_command_id_t {
   CID_ARM_STATUS,
 };
 
+/**
+ * This info stores the name and value of a parameter to be sent to ESP8266.
+ */
 typedef struct {
   tele_command_id_t id;
 
@@ -78,6 +88,9 @@ typedef struct {
   tele_command_unit_t unit;
   tele_command_type_t type;
 
+  /**
+   * Allow one of many types to be used.
+   */
   union {
     float f;
     int i;

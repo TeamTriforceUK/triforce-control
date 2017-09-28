@@ -29,11 +29,17 @@
 
 /* Drive */
 
+/**
+ * Supported drive configurations.
+ */
 typedef enum {
   DM_3_WHEEL_HOLONOMIC = 0,
   DM_2_WHEEL_DIFFERENTIAL
 } drive_mode_id_t;
 
+/**
+ * Stores the parameters of a drive mode.
+ */
 typedef struct {
   drive_mode_id_t id;
   const char *name;
@@ -43,10 +49,16 @@ typedef struct {
 
 /* Weapon */
 
+/**
+ * Available weapon control modes.
+ */
 typedef enum {
   WM_MANUAL_THROTTLE = 0
 } weapon_mode_id_t;
 
+/**
+ * Stores the parameters of a weapon control mode.
+ */
 typedef struct {
   weapon_mode_id_t id;
   const char *name;

@@ -26,5 +26,12 @@
 
 #include "thread_args.h"
 
+/**
+* @brief Read PWM values from receiver.
+*/
 void read_recv_pw(thread_args_t *args);
+
+/**
+* @brief Set value of output ESC using configured comms method.
+*/
 void set_output_escs(thread_args_t *args);
