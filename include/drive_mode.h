@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file drive_mode.h
+ * @author Cameron A. Craig
+ * @date 25 Aug 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines structures used to store driving modes.
  */
-
-/**
-* @file drive_mode.h
-* @author Cameron A. Craig
-* @date 25 Aug 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines structures used to store driving modes.
-*/
 
 #ifndef TC_DRIVE_MODE_H_
 #define TC_DRIVE_MODE_H_

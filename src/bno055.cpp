@@ -15,15 +15,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file bno055.cpp
+ * @author Simon Scott, Euan W. Mutch, Cameron A. Craig
+ * @date 13 May 2017
+ * @copyright 2015 Simon Scott, 2017 Euan W. Mutch, Cameron A. Craig
+ * @brief Interfaces with BNO055 via mbed I2C.
  */
-
-/**
-* @file bno055.cpp
-* @author Simon Scott, Euan W. Mutch, Cameron A. Craig
-* @date 13 May 2017
-* @copyright 2015 Simon Scott, 2017 Euan W. Mutch, Cameron A. Craig
-* @brief Interfaces with BNO055 via mbed I2C.
-*/
 
 #include <stdint.h>
 #include "mbed.h"

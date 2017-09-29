@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file task.h
+ * @author Cameron A. Craig
+ * @date 1 Jun 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines a task structure.
  */
-
-/**
-* @file task.h
-* @author Cameron A. Craig
-* @date 1 Jun 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines a task structure.
-*/
 
 #ifndef INCLUDE_TASK_H_
 #define INCLUDE_TASK_H_
@@ -30,6 +28,9 @@
 #include "mbed.h"
 #include <stdint.h>
 
+/**
+ * Stores task parameters.
+ */
 typedef struct {
   uint32_t id;
   const char *name;

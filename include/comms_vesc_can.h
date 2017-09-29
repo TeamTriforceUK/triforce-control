@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file comms_vesc_can.h
+ * @author Cameron A. Craig
+ * @date 23 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Implements CAN communication with VESC.
  */
-
-/**
-* @file comms_vesc_can.h
-* @author Cameron A. Craig
-* @date 23 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Implements CAN communication with VESC.
-*/
 
 #ifndef TC_COMMS_VESC_CAN_H
 #define TC_COMMS_VESC_CAN_H

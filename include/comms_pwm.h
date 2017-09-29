@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file comms_pwm.h
+ * @author Cameron A. Craig
+ * @date 23 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Implements PWM communication for ESC control.
  */
-
-/**
-* @file comms_pwm.h
-* @author Cameron A. Craig
-* @date 23 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Implements PWM communication for ESC control.
-*/
 
 #ifndef TC_COMMS_PWM_H
 #define TC_COMMS_PWM_H

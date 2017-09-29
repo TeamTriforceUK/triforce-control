@@ -14,16 +14,15 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file types.h
+ * @author Cameron A. Craig
+ * @date 9 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines various structs, used throughout the project.
+ *
+ * -- RULE_3_2_F_use_representitive_classname_for_cpp_filename
  */
-
-/**
-* @file types.h
-* @author Cameron A. Craig
-* @date 9 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines various structs, used throughout the project.
-*
-*/
 
 #ifndef TC_TYPES_H
 #define TC_TYPES_H
@@ -50,7 +49,7 @@ typedef struct {
 /**
  * Current movement command
  */
-struct direction_vector{
+struct direction_vector_t {
     float rotation;
     float x_translation;
     float y_translation;
@@ -59,7 +58,7 @@ struct direction_vector{
 /**
  * Outputs for devices
  */
-struct rc_outputs{
+struct rc_outputs_t {
     int wheel_1;
     int wheel_2;
     int wheel_3;
@@ -71,7 +70,7 @@ struct rc_outputs{
 /**
  *  Ring definition
  */
-struct ring{
+struct ring_t {
     const int max_rpm;
     int rpm;
     const int max_energy;
@@ -81,7 +80,7 @@ struct ring{
 /**
  * Battery definition
  */
-struct battery{
+struct battery_t {
     int capacity;
     int used_capacity;
     const float max_voltage;
@@ -95,7 +94,7 @@ struct battery{
 /**
  * Motor definition
  */
-struct motor{
+struct motor_t {
     const int max_rpm;
     int rpm;
     const int max_power;
@@ -111,7 +110,7 @@ struct motor{
 /**
  * Distance sensor definition
  */
-struct distance_sensor{
+struct distance_sensor_t {
     int id;
     const float max_range;
     float range;

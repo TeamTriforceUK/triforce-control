@@ -14,16 +14,14 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file command.h
+ * @author Cameron A. Craig
+ * @date 18 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines command structs, see also commands.h
+ *        for definition of available commands.
  */
-
-/**
-* @file command.h
-* @author Cameron A. Craig
-* @date 18 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines command structs, see also commands.h
-*        for definition of available commands.
-*/
 
 #ifndef INCLUDE_COMMAND_H_
 #define INCLUDE_COMMAND_H_

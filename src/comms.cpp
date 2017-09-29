@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file comms.cpp
+ * @author Cameron A. Craig
+ * @date 27 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Implements any functions that are shared amongst comms implementations.
  */
-
-/**
-* @file comms.cpp
-* @author Cameron A. Craig
-* @date 27 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Implements any functions that are shared amongst comms implementations.
-*/
 
 #include "comms.h"
 

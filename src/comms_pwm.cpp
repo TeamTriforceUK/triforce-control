@@ -14,6 +14,12 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file comms_pwm.cpp
+ * @author Cameron A. Craig
+ * @date 23 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Implements PWM communication for ESC control.
  */
 
 #include <stdlib.h>
@@ -23,14 +29,6 @@
 #include "comms.h"
 #include "comms_pwm.h"
 #include "config.h"
-
-/**
-* @file comms_pwm.cpp
-* @author Cameron A. Craig
-* @date 23 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Implements PWM communication for ESC control.
-*/
 
 static std::vector<ESC> pwm_esc_array;
 

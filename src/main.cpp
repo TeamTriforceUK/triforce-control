@@ -14,25 +14,23 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ *
+ * @file main.cpp
+ * @author Euan W. Mutch, Cameron A. Craig
+ * @date 13 May 2017
+ * @copyright 2017 Euan W. Mutch, Cameron A. Craig
+ * @brief Drives ESCs for Triforce fighting robot based on PWM signals from receiver.
+ * @mainpage Triforce Control
+   @section intro_sec Introduction
+     This documentation has been generated from the Doxygen comments within the source
+     code of this project. This is a useful developers reference.
 
-/**
-* @file main.cpp
-* @author Euan W. Mutch, Cameron A. Craig
-* @date 13 May 2017
-* @copyright 2017 Euan W. Mutch, Cameron A. Craig
-* @brief Drives ESCs for Triforce fighting robot based on PWM signals from receiver.
-* @mainpage Triforce Control
-  @section intro_sec Introduction
-  This documentation has been generated from the Doxygen comments within the source
-  code of this project. This is a useful developers reference.
-
-  @section install_sec Installation
+   @section install_sec Installation
      @code{.unparsed}
-      git clone https://github.com/TeamTriforceUK/triforce-control.git
-      cd triforce-control
-      mbed deploy
-      mbed compile -t GCC_ARM -m lpc1768
+       git clone https://github.com/TeamTriforceUK/triforce-control.git
+       cd triforce-control
+       mbed deploy
+       mbed compile -t GCC_ARM -m lpc1768
      @endcode
 */
 
@@ -253,7 +251,7 @@ int main() {
   targs->comms_impl->init_esc(&targs->escs.drive[2], COMMS_OUTPUT_DRIVE_3);
   targs->comms_impl->init_esc(&targs->escs.weapon[0], COMMS_OUTPUT_WEAPON_1);
   targs->comms_impl->init_esc(&targs->escs.weapon[1], COMMS_OUTPUT_WEAPON_2);
-  targs->comms_impl->init_esc(&targs->escs.weapon[2], COMMS_OUTPUT_WEAPON_3);
+  targs->comms_impl->init_esc(&targs->escs.weapon[2], COMMS_OUTPUT_WEAPON_1);
 
   targs->serial->puts("init(): Command Queue\r\n");
 

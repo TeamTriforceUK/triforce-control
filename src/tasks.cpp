@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file tasks.cpp
+ * @author Cameron A. Craig, Euan W. Mutch
+ * @date 15 May 2017
+ * @copyright 2017 Cameron A. Craig, Euan W. Mutch
+ * @brief Defines struct to share data between threads.
  */
-
-/**
-* @file tasks.cpp
-* @author Cameron A. Craig, Euan W. Mutch
-* @date 15 May 2017
-* @copyright 2017 Cameron A. Craig, Euan W. Mutch
-* @brief Defines struct to share data between threads.
-*/
 
 #include "mbed.h"
 #include "tasks.h"
