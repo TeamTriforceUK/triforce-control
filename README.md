@@ -1,7 +1,6 @@
 # triforce-control
 
 [![Documentation](https://codedocs.xyz/TeamTriforceUK/triforce-control.svg)](https://codedocs.xyz/TeamTriforceUK/triforce-control/)
-
 [![Build Status](https://travis-ci.org/TeamTriforceUK/triforce-control.svg?branch=master)](https://travis-ci.org/TeamTriforceUK/triforce-control)
 
 ## Introduction
