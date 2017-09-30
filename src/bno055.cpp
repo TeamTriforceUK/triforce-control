@@ -21,6 +21,7 @@
  * @date 13 May 2017
  * @copyright 2015 Simon Scott, 2017 Euan W. Mutch, Cameron A. Craig
  * @brief Interfaces with BNO055 via mbed I2C.
+ *
  */
 
 #include <stdint.h>

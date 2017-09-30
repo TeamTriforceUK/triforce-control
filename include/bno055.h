@@ -21,6 +21,11 @@
  * @date 13 May 2017
  * @copyright 2015 Simon Scott, 2017 Euan W. Mutch, Cameron A. Craig
  * @brief Interfaces with BNO055 via mbed I2C.
+ *
+ * -- RULE_5_2_C_provide_doxygen_struct_comment_on_struct_def
+ * -- RULE_5_3_A_provide_doxygen_function_comment_on_function_in_header
+ * -- RULE_5_3_A_provide_doxygen_function_comment_on_function_in_header
+ * -- RULE_3_3_A_start_function_name_with_is_or_has_when_return_bool
  */
 
 #ifndef TC_BNO055_H

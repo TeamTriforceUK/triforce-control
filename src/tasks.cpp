@@ -104,9 +104,12 @@ void task_read_serial(const void *targs){
 
           pos = -1;
         }
-        if (buffer[pos] == '\b') {
-          buffer[pos] = NULL;
-          pos--;
+        //TODO: This function needs looking at.
+        if(pos > 0 ) {
+          if (buffer[pos] == '\b') {
+            buffer[pos] = NULL;
+            pos--;
+          }
         }
         buffer[pos+1] = NULL;
         LOG("\r$ %s", buffer);

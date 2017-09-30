@@ -19,7 +19,9 @@ STATIC_CHECK_REPORT_DIR=static.txt
 ci: check_style check_static
 
 check_style:
+	@echo "Starting style checker...\r\n"
 	$(STYLE_CHECK_PATH) --ci -o $(STYLE_CHECK_OUTPUT_PATH) -f $(STYLE_CHECK_FILEFILTER) $(STYLE_CHECK_SRC_DIR)
 
 check_static:
-	$(STATIC_CHECK_PATH) $(STATIC_CHECK_SRC_DIR) -I $(STATIC_CHECK_INC_DIR) 2> $(STATIC_CHECK_REPORT_DIR)
+	@echo "Starting static analysis...\r\n"
+	$(STATIC_CHECK_PATH) $(STATIC_CHECK_SRC_DIR) -I $(STATIC_CHECK_INC_DIR) 2> $(STATIC_CHECK_REPORT_DIR) --error-exitcode=1
