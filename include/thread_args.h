@@ -38,6 +38,7 @@
 #include "task.h"
 #include "drive_mode.h"
 #include "comms.h"
+#include "i2c_device.h"
 
 typedef struct {
 
@@ -73,6 +74,9 @@ typedef struct {
   /*! Serial connection to ESP8266 */
   Serial *esp_serial;
   DigitalIn *esp_ready_pin;
+
+  /* I2C devices */
+  i2c_device_t *bno055;
 
   /*! Stores telemetry values */
   /* TODO(camieac): Telemetry parameters should only be accessible

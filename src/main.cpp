@@ -43,7 +43,7 @@
 #include "PwmIn.h"
 #include "assert.h"
 
-#include "bno055.h"
+#include "drv_bno055.h"
 #include "tmath.h"
 #include "thread_args.h"
 #include "config.h"
@@ -85,7 +85,7 @@ int esp8266_wait_until_ready(thread_args_t *args) {
 
 int bno055_wait_until_ready(thread_args_t *args) {
   unsigned bno055_init_attempts = 0;
-  while (!bno055_init()) {
+  while (bno055_init(args->bno055, BNO055_SDA_PIN, BNO055_SCL_PIN) != RET_OK) {
     bno055_init_attempts++;
     if(bno055_init_attempts > 5) {
       // Disable tasks that require the BNO055

@@ -34,7 +34,8 @@ enum return_codes_t {
   RET_OK,
   RET_ALREADY_DISARMED,
   RET_ALREADY_ARMED,
-  RET_DISARM_FIRST
+  RET_DISARM_FIRST,
+  RET_INIT_WRONG_DEVICE
 };
 
 static const char * ret_str[] = {
@@ -42,7 +43,8 @@ static const char * ret_str[] = {
   "Ok",
   "Already disarmed",
   "Already armed",
-  "Disarm before running this command"
+  "Disarm before running this command",
+  "I2C device ID mismatch"
 };
 
 const char * err_to_str(int err);
