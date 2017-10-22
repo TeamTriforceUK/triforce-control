@@ -594,3 +594,29 @@ void task_calibrate_channels(const void *targs) {
   }
 }
 #endif
+
+#ifdef TASK_DEBUG
+void task_debug(const void *targs) {
+  thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_DEBUG_ID);
+
+  int controller, channel;
+  float tmp;
+
+  while (args->active) {
+    args->serial->printf("Debug\r\n");
+    // args->serial->printf("t %d is %s\r\n", TASK_CALIBRATE_CHANNELS, args->tasks[TASK_CALIBRATE_CHANNELS].active ? "true" : "false");
+    if (args->tasks[TASK_DEBUG_ID].active == true) {
+      for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
+        for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++) {
+          tmp = args->receiver[controller].channel[channel]->pulsewidth();
+          printf("ctrl'r: %d, chan: %d, pulse: %.0f\r\n", controller, channel, tmp);
+        }
+      }
+    }
+
+    // No need to poll continuously
+    Thread::wait(1000);
+  }
+}
+#endif

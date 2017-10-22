@@ -204,8 +204,8 @@ int main() {
 
   uint32_t chan;
   for (chan= 0; chan < RC_NUMBER_CHANNELS; chan++) {
-    targs->receiver[0].channel[chan] = &rx_drive[chan];
-    targs->receiver[1].channel[chan] = &rx_weapon[chan];
+    targs->receiver[0].channel[chan] = &rx_weapon[chan];
+    targs->receiver[1].channel[chan] = &rx_drive[chan];
     // A test read ensures PwmIn is configured correctly
     targs->serial->printf("\tinit(): RX %d channel %d: %d\r\n",
       0, chan,

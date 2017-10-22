@@ -40,21 +40,24 @@
 #define TASK_COLLECT_TELEMETRY
 #define TASK_STREAM_TELEMETRY
 #define TASK_CALIBRATE_CHANNELS
+//#define TASK_DEBUG
 
 /* Pin Assignments */
-#define RECV_D_CHAN_1_PIN p5
-#define RECV_D_CHAN_2_PIN p6
-#define RECV_D_CHAN_3_PIN p7
-#define RECV_D_CHAN_4_PIN p8
-#define RECV_D_CHAN_5_PIN p11
-#define RECV_D_CHAN_6_PIN p12
+#define RECV_D_CHAN_1_PIN p18
+#define RECV_D_CHAN_2_PIN p17
+#define RECV_D_CHAN_3_PIN p16
+#define RECV_D_CHAN_4_PIN p15
+#define RECV_D_CHAN_5_PIN p14
+#define RECV_D_CHAN_6_PIN p13
 
-#define RECV_W_CHAN_1_PIN p13
-#define RECV_W_CHAN_2_PIN p14
-#define RECV_W_CHAN_3_PIN p15
-#define RECV_W_CHAN_4_PIN p16
-#define RECV_W_CHAN_5_PIN p17
-#define RECV_W_CHAN_6_PIN p18
+#define RECV_W_CHAN_1_PIN p5
+#define RECV_W_CHAN_2_PIN p6
+#define RECV_W_CHAN_3_PIN p7
+#define RECV_W_CHAN_4_PIN p8
+#define RECV_W_CHAN_5_PIN p11
+#define RECV_W_CHAN_6_PIN p12
+
+#define ESP8266_READY_PIN p19
 
 #define DRIVE_ESC_OUT_1_PIN p21
 #define DRIVE_ESC_OUT_2_PIN p22
@@ -66,8 +69,6 @@
 
 #define ESP_TX p28
 #define ESP_RX p27
-
-#define ESP8266_READY_PIN p29
 
 /* End of Pin Assignments */
 
