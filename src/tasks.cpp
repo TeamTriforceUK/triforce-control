@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file tasks.cpp
+ * @author Cameron A. Craig, Euan W. Mutch
+ * @date 15 May 2017
+ * @copyright 2017 Cameron A. Craig, Euan W. Mutch
+ * @brief Defines struct to share data between threads.
  */
-
-/**
-* @file tasks.cpp
-* @author Cameron A. Craig, Euan W. Mutch
-* @date 15 May 2017
-* @copyright 2017 Cameron A. Craig, Euan W. Mutch
-* @brief Defines struct to share data between threads.
-*/
 
 #include "mbed.h"
 #include "tasks.h"
@@ -106,9 +104,12 @@ void task_read_serial(const void *targs){
 
           pos = -1;
         }
-        if (buffer[pos] == '\b') {
-          buffer[pos] = NULL;
-          pos--;
+        //TODO: This function needs looking at.
+        if(pos > 0 ) {
+          if (buffer[pos] == '\b') {
+            buffer[pos] = NULL;
+            pos--;
+          }
         }
         buffer[pos+1] = NULL;
         LOG("\r$ %s", buffer);
@@ -590,6 +591,32 @@ void task_calibrate_channels(const void *targs) {
 
     // No need to poll continuously
     Thread::wait(500);
+  }
+}
+#endif
+
+#ifdef TASK_DEBUG
+void task_debug(const void *targs) {
+  thread_args_t * args = (thread_args_t *) targs;
+  task_start(args, TASK_DEBUG_ID);
+
+  int controller, channel;
+  float tmp;
+
+  while (args->active) {
+    args->serial->printf("Debug\r\n");
+    // args->serial->printf("t %d is %s\r\n", TASK_CALIBRATE_CHANNELS, args->tasks[TASK_CALIBRATE_CHANNELS].active ? "true" : "false");
+    if (args->tasks[TASK_DEBUG_ID].active == true) {
+      for (controller = 0; controller < RC_NUMBER_CONTROLLERS; controller++) {
+        for (channel = 0; channel < RC_NUMBER_CHANNELS; channel++) {
+          tmp = args->receiver[controller].channel[channel]->pulsewidth();
+          printf("ctrl'r: %d, chan: %d, pulse: %.0f\r\n", controller, channel, tmp);
+        }
+      }
+    }
+
+    // No need to poll continuously
+    Thread::wait(1000);
   }
 }
 #endif

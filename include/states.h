@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file states.h
+ * @author Cameron A. Craig
+ * @date 15 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief State machine
  */
-
-/**
-* @file states.h
-* @author Cameron A. Craig
-* @date 15 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief State machine
-*/
 
 #ifndef TC_STATES_T
 #define TC_STATES_T
@@ -34,6 +32,9 @@ enum state_t {
   STATE_FULLY_ARMED
 };
 
+/**
+* @brief Return meaningful string name of state.
+*/
 const char * state_to_str(state_t state);
 
 #endif //TC_STATES_T

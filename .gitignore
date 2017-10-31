@@ -41,3 +41,6 @@ mbed-os
 triforce-esc
 triforce-ppm
 docs/_build
+
+#Static analysis and style checker results
+static.txt

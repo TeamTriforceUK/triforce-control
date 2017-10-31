@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file thread_args.h
+ * @author Cameron A. Craig
+ * @date 15 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines thread_args_t structure.
  */
-
-/**
-* @file thread_args.h
-* @author Cameron A. Craig
-* @date 15 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines thread_args_t structure.
-*/
 
 #ifndef TC_THREAD_ARGS_H
 #define TC_THREAD_ARGS_H
@@ -39,6 +37,10 @@
 #include "drive_mode.h"
 #include "comms.h"
 
+/**
+ * Shared variables between tasks, made availbale through the first and only
+ * argument into task(thread) functions.
+ */
 typedef struct {
 
   task_t *tasks;
@@ -78,10 +80,13 @@ typedef struct {
   /* TODO(camieac): Telemetry parameters should only be accessible
       through thread_args_t. */
 
-  struct rc_outputs outputs;
+  struct rc_outputs_t outputs;
 
-  struct direction_vector direction;
+  struct direction_vector_t direction;
 
+  /**
+   * Drive and weapon ESCS.
+   */
   struct {
     comms_esc_t drive[3];
     comms_esc_t weapon[3];
@@ -93,7 +98,8 @@ typedef struct {
   bool inverted;
   bool active;
 
-  /* These mutexes protect accesses to the fields within thread_args_t.
+  /**
+  These mutexes protect accesses to the fields within thread_args_t.
   */
   struct {
     Mutex *pc_serial;
@@ -112,6 +118,10 @@ typedef struct {
 
 } thread_args_t;
 
+/**
+* @brief Initialise structures within args.
+* @param [in] args Pointer to structure to initialise.
+*/
 void thread_args_init(thread_args_t *args);
 
 

@@ -14,17 +14,22 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file task_utils.h
+ * @author Cameron A. Craig
+ * @date 9 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief These functions are used within tasks.cpp.
  */
-
-/**
-* @file task_utils.h
-* @author Cameron A. Craig
-* @date 9 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief These functions are used within tasks.cpp.
-*/
 
 #include "thread_args.h"
 
+/**
+* @brief Read PWM values from receiver.
+*/
 void read_recv_pw(thread_args_t *args);
+
+/**
+* @brief Set value of output ESC using configured comms method.
+*/
 void set_output_escs(thread_args_t *args);

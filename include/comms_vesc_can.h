@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file comms_vesc_can.h
+ * @author Cameron A. Craig
+ * @date 23 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Implements CAN communication with VESC.
  */
-
-/**
-* @file comms_vesc_can.h
-* @author Cameron A. Craig
-* @date 23 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Implements CAN communication with VESC.
-*/
 
 #ifndef TC_COMMS_VESC_CAN_H
 #define TC_COMMS_VESC_CAN_H
@@ -32,12 +30,25 @@
 //Make sure that IDs are unique when adding new comms implememnations!
 #define COMMS_IMPL_VESC_CAN 0
 
+/**
+* @brief Initiales classes required for the use of CAN comms mode.
+*/
 void comms_impl_vesc_can_init_comms();
-void comms_impl_vesc_can_init_esc(comms_esc_t *esc, comms_esc_id_t id);
-void comms_impl_vesc_can_set_speed(comms_esc_t *esc, uint32_t speed);
-void comms_impl_vesc_can_get_speed(const void *args);
-void comms_impl_vesc_can_stop(comms_esc_t *esc);
 
+/**
+* @brief Set speed of ESC.
+*/
+void comms_impl_vesc_can_set_speed(comms_esc_t *esc, uint32_t speed);
+
+/**
+* @brief Get speed of ESC.
+*/
+void comms_impl_vesc_can_get_speed(const void *args);
+
+/**
+* @brief Stop ESC.
+*/
+void comms_impl_vesc_can_stop(comms_esc_t *esc);
 
 
 #endif //TC_COMMS_VESC_CAN_H

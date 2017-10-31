@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file utils.h
+ * @author Cameron A. Craig
+ * @date 18 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Useful utility functions and macros.
  */
-
-/**
-* @file utils.h
-* @author Cameron A. Craig
-* @date 18 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Useful utility functions and macros.
-*/
 
 
 #ifndef TC_UTILS_H
@@ -31,17 +29,24 @@
 #include "thread_args.h"
 #include "config.h"
 
-#define MAX(a,b) \
+#define MAX(a, b) \
   ({ typeof (a) _a = (a); \
      typeof (b) _b = (b); \
    _a > _b ? _a : _b; })
 
-#define MIN(a,b) \
+#define MIN(a, b) \
   ({ typeof (a) _a = (a); \
       typeof (b) _b = (b); \
     _a < _b ? _a : _b; })
 
+/**
+* @brief Check if drive reciever is stalled.
+*/
 bool is_drive_stalled(thread_args_t *args);
+
+/**
+* @brief Check if weapon reciever is stalled.
+*/
 bool is_weapon_stalled(thread_args_t *args);
 
 #endif //TC_UTILS_H

@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file telemetry_param.h
+ * @author Cameron A. Craig
+ * @date 28 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines all parameters avaiable for telemetry.
  */
-
-/**
-* @file telemetry_param.h
-* @author Cameron A. Craig
-* @date 28 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines all parameters avaiable for telemetry.
-*/
 
 #ifndef INCLUDE_TELE_PARAM_H_
 #define INCLUDE_TELE_PARAM_H_
@@ -32,6 +30,9 @@
    telemetry value. And a pointer to this function stored in tele_command_t.
 */
 
+/**
+ * Supported types that can be passed as a value in a telemetry parameter.
+ */
 typedef enum {
   CT_INT = 0,
   CT_FLOAT,
@@ -40,6 +41,9 @@ typedef enum {
   CT_NONE
 } tele_command_type_t;
 
+/**
+ * Supported units that can be associated with a telemetry parameter.
+ */
 typedef enum {
   CU_RPM = 0,
   CU_RPS,
@@ -50,10 +54,11 @@ typedef enum {
   CU_NONE
 } tele_command_unit_t;
 
-/* For ease of access, the command ID (CID) value should correspond with its
-   position within the tele_commands array below
-*/
-
+/**
+ * Defines all telemetry parameters.
+ * Note: For ease of access, the command ID (CID) value should correspond with its
+ * position within the tele_commands array (tele_params.h).
+ */
 typedef enum tele_command_id_t {
   CID_RING_RPM = 0,
   CID_CON_1_RPM,
@@ -71,6 +76,9 @@ typedef enum tele_command_id_t {
   CID_ARM_STATUS,
 };
 
+/**
+ * This info stores the name and value of a parameter to be sent to ESP8266.
+ */
 typedef struct {
   tele_command_id_t id;
 
@@ -78,6 +86,9 @@ typedef struct {
   tele_command_unit_t unit;
   tele_command_type_t type;
 
+  /**
+   * Allow one of many types to be used.
+   */
   union {
     float f;
     int i;

@@ -14,15 +14,13 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file tele_params.h
+ * @author Cameron A. Craig
+ * @date 30 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines the telemetry parameters.
  */
-
-/**
-* @file tele_params.h
-* @author Cameron A. Craig
-* @date 30 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines the telemetry parameters.
-*/
 
 #ifndef INCLUDE_TELE_PARAMS_H_
 #define INCLUDE_TELE_PARAMS_H_

@@ -14,16 +14,14 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file return_codes.h
+ * @author Cameron A. Craig
+ * @date 18 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines return codes that are used to propogate errors to the user.
+ *
  */
-
-/**
-* @file return_codes.h
-* @author Cameron A. Craig
-* @date 18 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines return codes that are used to propogate errors to the user.
-*
-*/
 
 
 #ifndef INCLUDE_RETURN_CODES_H_
@@ -45,6 +43,9 @@ static const char * ret_str[] = {
   "Disarm before running this command"
 };
 
+/**
+* @brief Return meaningful string describing error code.
+*/
 const char * err_to_str(int err);
 
 #endif  // INCLUDE_RETURN_CODES_H_

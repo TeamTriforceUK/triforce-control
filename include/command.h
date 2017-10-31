@@ -14,22 +14,23 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file command.h
+ * @author Cameron A. Craig
+ * @date 18 May 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Defines command structs, see also commands.h
+ *        for definition of available commands.
  */
-
-/**
-* @file command.h
-* @author Cameron A. Craig
-* @date 18 May 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Defines command structs, see also commands.h
-*        for definition of available commands.
-*/
 
 #ifndef INCLUDE_COMMAND_H_
 #define INCLUDE_COMMAND_H_
 
 #include "./tele_param.h"
 
+/**
+ * Available commands (used for serial interface).
+ */
 typedef enum  {
   FULLY_DISARM = 0,
   PARTIAL_DISARM,
@@ -41,14 +42,21 @@ typedef enum  {
   CALIBRATE_CHANNELS
 } command_id_t;
 
-
+/**
+ * Stores command parameters.
+ */
 typedef struct {
   command_id_t id;
   const char *name;
 
-  /*! Used if the command gets or sets a parameter. */
+  /**
+   * Used if the command gets or sets a parameter.
+   */
   tele_command_t *tele_param;
 
+  /**
+   * Stores a value as one of a number of types.
+   */
   union {
     float f;
     int i;

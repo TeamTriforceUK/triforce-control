@@ -14,15 +14,16 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file tasks.h
+ * @author Cameron A. Craig, Euan W. Mutch
+ * @date 15 May 2017
+ * @copyright 2017 Cameron A. Craig, Euan W. Mutch
+ * @brief Defines struct to share data between threads.
+ *
+ * -- RULE_5_3_A_provide_doxygen_function_comment_on_function_in_header
+ * -- RULE_4_4_A_do_not_write_over_120_columns_per_line
  */
-
-/**
-* @file tasks.h
-* @author Cameron A. Craig, Euan W. Mutch
-* @date 15 May 2017
-* @copyright 2017 Cameron A. Craig, Euan W. Mutch
-* @brief Defines struct to share data between threads.
-*/
 
 #ifndef INCLUDE_TASKS_H_
 #define INCLUDE_TASKS_H_
@@ -76,6 +77,10 @@ static const unsigned TASK_STREAM_TELEMETRY_ID = __COUNTER__;
 static const unsigned TASK_CALIBRATE_CHANNELS_ID = __COUNTER__;
 #endif
 
+#ifdef TASK_DEBUG
+static const unsigned TASK_DEBUG_ID = __COUNTER__;
+#endif
+
 static const unsigned NUM_TASKS = __COUNTER__;
 
 
@@ -124,6 +129,10 @@ void task_stream_telemetry(const void *targs);
 void task_calibrate_channels(const void *targs);
 #endif
 
+#ifdef TASK_CALIBRATE_CHANNELS
+void task_debug(const void *targs);
+#endif
+
 // Debug tasks
 void task_print_channels(const void *targs);
 
@@ -156,7 +165,10 @@ static volatile task_t tasks[] = {
   {.id = TASK_STREAM_TELEMETRY_ID,   .name = "Stream Telemetry",   .func = task_stream_telemetry,   .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_CALIBRATE_CHANNELS
-  {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false}
+  {.id = TASK_CALIBRATE_CHANNELS_ID, .name = "Calibrate Channels", .func = task_calibrate_channels, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = false},
+#endif
+#ifdef TASK_DEBUG
+  {.id = TASK_DEBUG_ID, .name = "Debug", .func = task_debug, .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true}
 #endif
 };
 

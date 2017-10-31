@@ -14,16 +14,14 @@
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @file comms.h
+ * @author Cameron A. Craig
+ * @date 23 Sep 2017
+ * @copyright 2017 Cameron A. Craig
+ * @brief Generic structure to offer many communcation methods within
+ *        the single structure.
  */
-
-/**
-* @file comms.h
-* @author Cameron A. Craig
-* @date 23 Sep 2017
-* @copyright 2017 Cameron A. Craig
-* @brief Generic structure to offer many communcation methods within
-*        the single structure.
-*/
 
 #ifndef TC_COMMS_H
 #define TC_COMMS_H
@@ -37,15 +35,27 @@
 #define COMMS_OUTPUT_WEAPON_2 4U
 #define COMMS_OUTPUT_WEAPON_3 5U
 
+/**
+ * Allow up to 2^32 ESCS!
+ */
 typedef uint32_t comms_esc_id_t;
 
+/**
+ * Allows representation of many ESCs.
+ */
 typedef struct {
   comms_esc_id_t id;
   const char *str;
 } comms_esc_t;
 
+/**
+ * Allow up to 2^32 methods of communication!
+ */
 typedef uint32_t comms_impl_id_t;
 
+/**
+ * Provides functions and parameters related to a particular comms implementation.
+ */
 typedef struct {
   comms_impl_id_t impl_id;
   const char *str;
@@ -56,6 +66,10 @@ typedef struct {
   void (*get_status)(const void*);
   void (*stop)(comms_esc_t *esc);
 } comms_impl_t;
+
+/**
+* @brief This should be the same for each impl, so defined here.
+*/
 
 void comms_init_esc(comms_esc_t *esc, comms_esc_id_t id);
 
