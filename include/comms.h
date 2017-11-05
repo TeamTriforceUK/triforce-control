@@ -46,6 +46,14 @@ typedef uint32_t comms_esc_id_t;
 typedef struct {
   comms_esc_id_t id;
   const char *str;
+
+  /*! Parameters received from motor controller */
+  struct {
+    int32_t rpm;
+    float current;
+    float duty_cycle;
+  } params;
+
 } comms_esc_t;
 
 /**
@@ -59,6 +67,7 @@ typedef uint32_t comms_impl_id_t;
 typedef struct {
   comms_impl_id_t impl_id;
   const char *str;
+
   void (*init_comms)(void);
   void (*init_esc)(comms_esc_t *esc, comms_esc_id_t);
   void (*set_speed)(comms_esc_t *esc, uint32_t speed);

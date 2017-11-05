@@ -70,6 +70,9 @@
 #define ESP_TX p28
 #define ESP_RX p27
 
+#define CANBUS_RX p30
+#define CANBUS_TX p29
+
 /* End of Pin Assignments */
 
 #define RC_NUMBER_CHANNELS 6

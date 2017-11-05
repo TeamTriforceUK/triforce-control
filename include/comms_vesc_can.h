@@ -30,6 +30,36 @@
 //Make sure that IDs are unique when adding new comms implememnations!
 #define COMMS_IMPL_VESC_CAN 0
 
+typedef enum {
+    CAN_PACKET_SET_DUTY = 0,
+    CAN_PACKET_SET_CURRENT,
+    CAN_PACKET_SET_CURRENT_BRAKE,
+    CAN_PACKET_SET_RPM,
+    CAN_PACKET_SET_POS,
+    CAN_PACKET_FILL_RX_BUFFER,
+    CAN_PACKET_FILL_RX_BUFFER_LONG,
+    CAN_PACKET_PROCESS_RX_BUFFER,
+    CAN_PACKET_PROCESS_SHORT_BUFFER,
+    CAN_PACKET_STATUS,
+    CAN_PACKET_SET_CURRENT_REL,
+    CAN_PACKET_SET_CURRENT_BRAKE_REL
+} can_vesc_command_t;
+
+static const char *can_vesc_commands[] = {
+    "SET DUTY",
+    "SET CURRENT",
+    "SET CURRENT_BRAKE"
+    "SET RPM",
+    "SET POS",
+    "FILL RX BUFFER",
+    "FILL RX BUFFER LONG",
+    "PROCESS RX BUFFER",
+    "PROCESS SHORT BUFFER",
+    "STATUS",
+    "SET CURRENT REL",
+    "SET CURRRENT BRAKE REL"
+};
+
 /**
 * @brief Initiales classes required for the use of CAN comms mode.
 */
@@ -49,6 +79,8 @@ void comms_impl_vesc_can_get_speed(const void *args);
 * @brief Stop ESC.
 */
 void comms_impl_vesc_can_stop(comms_esc_t *esc);
+
+const char * can_vesc_command_to_string(uint8_t id);
 
 
 #endif //TC_COMMS_VESC_CAN_H

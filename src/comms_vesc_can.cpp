@@ -60,3 +60,10 @@ void comms_impl_vesc_can_get_speed(const void *args) {
 void comms_impl_vesc_can_stop(comms_esc_t *esc) {
 
 }
+
+const char * can_vesc_command_to_string(uint8_t id) {
+    if ((id > 0) && (id < sizeof(can_vesc_commands)/sizeof(char *))) {
+        return can_vesc_commands[id - 1];
+    }
+    return "UNKNOWN COMMAND";
+}

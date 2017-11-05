@@ -72,6 +72,9 @@ typedef struct {
   /*! USB serial port */
   Serial *serial;
 
+  /*! CAN Bus comms for status updates from VESCs and motor control. */
+  CAN *can;
+
   /*! Serial connection to ESP8266 */
   Serial *esp_serial;
   DigitalIn *esp_ready_pin;
@@ -86,11 +89,17 @@ typedef struct {
 
   /**
    * Drive and weapon ESCS.
+   * Defines the ESCs to be controlled.
+   * Can be configured as CAN or PWM device.
    */
+  union {
   struct {
     comms_esc_t drive[3];
     comms_esc_t weapon[3];
+  };
+  comms_esc_t arr[6];
   } escs;
+
 
   orientation_t orientation_detected;
   orientation_t orientation_override;

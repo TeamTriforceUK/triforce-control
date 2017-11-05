@@ -118,10 +118,13 @@ int main() {
   // Set up ready line, so the ESP8266 can tell when it's ready.
   targs->esp_ready_pin = new DigitalIn(ESP8266_READY_PIN);
 
-
   //Set baud rate for USB serial
   targs->serial = serial;
   serial_ptr = serial;
+
+  //Set up CAN comms
+  targs->can = new CAN(CANBUS_RX, CANBUS_TX);
+  targs->can->frequency(500000); //500k baud (same as VESCs)
 
   //For memory debugging
   // print_all_thread_info();
@@ -339,6 +342,7 @@ int main() {
   delete(targs->esp_ready_pin);
   delete(command_queue);
   delete(serial);
+  delete(targs->can);
 
   free(targs);
 }

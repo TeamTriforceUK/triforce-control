@@ -35,6 +35,7 @@
 #include "tele_params.h"
 #include "utils.h"
 #include "task_utils.h"
+#include "comms_vesc_can.h"
 
 void task_start(thread_args_t *targs, unsigned task_id) {
   targs->serial->printf("started task %d (%s)\tstack [alloc: %d, used: %d, free: %d]\r\n", task_id, tasks[task_id].name, targs->threads[task_id].stack_size(), targs->threads[task_id].used_stack(), targs->threads[task_id].free_stack());
@@ -394,8 +395,40 @@ void task_collect_telemetry(const void *targs) {
 
   euler_t e;
   unsigned i;
+  CANMessage msg;
   while (args->active) {
     if (args->tasks[TASK_COLLECT_TELEMETRY_ID].active) {
+      if(args->can->read(msg)) {
+        //Split ID into upper and lower 8-bit chunks
+        uint8_t id = msg.id & 0xFF;
+        uint8_t cmd = msg.id >> 8;
+
+        // SW Filter (mbed can.filter() is broken)
+        int i;
+        for(i = 0; i < sizeof(args->escs.arr)/sizeof(args->escs.arr[0]); i++){
+          if(args->escs.arr[i].id == id && (cmd == CAN_PACKET_STATUS)){
+              printf(" id: %d\r\n", id);
+              printf("cmd str: %s\r\n", can_vesc_command_to_string(cmd));
+
+              // Construct parameters from 8-byte buffer from CAn message
+              int32_t rpm = (msg.data[0] << 24) | (msg.data[1] << 16) | (msg.data[2] << 8) | (msg.data[3]);
+              int16_t current = ((msg.data[4] << 8) | msg.data[5]);
+              int16_t duty_cycle = ((msg.data[6] << 8) | msg.data[7]);
+
+              // Convert parameters into more suitable type and store
+              args->escs.arr[i].params.rpm = rpm; //Units are RPM
+              args->escs.arr[i].params.current = (float) current / 10.0f;
+              args->escs.arr[i].params.duty_cycle = (float) duty_cycle / 1000.0f;
+
+
+              printf("rpm:: %d RPM\r\n", args->escs.arr[i].params.rpm);
+              printf("cur:: %.0f mA\r\n", args->escs.arr[i].params.current);
+              printf("dut:: %.0f\r\n", args->escs.arr[i].params.duty_cycle);
+          }
+        }
+      }
+
+      //Update shared parameter values
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].id) {
           case CID_RING_RPM:
