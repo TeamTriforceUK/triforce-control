@@ -53,6 +53,7 @@
 #include "drive_modes.h"
 #include "comms_pwm.h"
 #include "comms_vesc_can.h"
+#include "interrupts.h"
 
 /* Make available the ESC comms implementations */
 extern comms_impl_t comms_impl_pwm;
@@ -125,6 +126,7 @@ int main() {
   //Set up CAN comms
   targs->can = new CAN(CANBUS_RX, CANBUS_TX);
   targs->can->frequency(500000); //500k baud (same as VESCs)
+  targs->can->attach(callback(handler_can, (void *) targs), CAN::RxIrq);
 
   //For memory debugging
   // print_all_thread_info();
