@@ -114,6 +114,7 @@ typedef struct {
     Mutex *pc_serial;
     Mutex *controls;
     Mutex *outputs;
+    Mutex *telemetry;
   } mutex;
 
 

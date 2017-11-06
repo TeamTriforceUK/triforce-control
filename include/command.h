@@ -59,7 +59,7 @@ typedef struct {
    */
   union {
     float f;
-    int i;
+    int32_t i;
     char c;
     bool b;
     const char *s;

@@ -267,6 +267,7 @@ int main() {
   targs->mutex.pc_serial = new Mutex();
   targs->mutex.controls = new Mutex();
   targs->mutex.outputs = new Mutex();
+  targs->mutex.telemetry = new Mutex();
 
   targs->serial->printf("init(): Starting %d Tasks\r\n", NUM_TASKS);
 
@@ -340,6 +341,7 @@ int main() {
   delete(targs->mutex.pc_serial);
   delete(targs->mutex.controls);
   delete(targs->mutex.outputs);
+  delete(targs->mutex.telemetry);
 
   delete(targs->esp_ready_pin);
   delete(command_queue);

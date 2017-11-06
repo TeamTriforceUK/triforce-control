@@ -39,15 +39,19 @@ void handler_can(void *targs) {
     int i;
     for(i = 0; i < sizeof(args->escs.arr)/sizeof(args->escs.arr[0]); i++){
       if(args->escs.arr[i].id == id && (cmd == CAN_PACKET_STATUS)){
+
           // Construct parameters from 8-byte buffer from CAn message
           int32_t rpm = (msg.data[0] << 24) | (msg.data[1] << 16) | (msg.data[2] << 8) | (msg.data[3]);
           int16_t current = ((msg.data[4] << 8) | msg.data[5]);
           int16_t duty_cycle = ((msg.data[6] << 8) | msg.data[7]);
+          printf("works id: %d, rpm: %d\r\n", id, rpm);
 
           // Convert parameters into more suitable type and store
+          args->mutex.telemetry->lock();
           args->escs.arr[i].params.rpm = rpm; //Units are RPM
           args->escs.arr[i].params.current = (float) current / 10.0f;
           args->escs.arr[i].params.duty_cycle = (float) duty_cycle / 1000.0f;
+          args->mutex.telemetry->unlock();
       }
     }
   }

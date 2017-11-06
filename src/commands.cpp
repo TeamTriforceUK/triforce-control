@@ -94,7 +94,7 @@ int command_generate(command_t *command, char *buffer) {
       if (command->id == SET_PARAM) {
         char *end;
         switch (command->tele_param->type) {
-            case CT_INT:
+            case CT_INT32:
               command->value.i = strtol(param_part[1], &end, 10);
               if (end == param_part[1]) {
                 printf("Conversion error\r\n");
@@ -237,9 +237,17 @@ int command_status(command_t *command, thread_args_t *targs) {
 int command_get_param(command_t *command, thread_args_t *targs) {
   LOG("Getting param\r\n");
   switch (command->tele_param->id) {
-    case CID_RING_RPM:
-    case CID_CON_1_RPM:
-    case CID_CON_2_RPM:
+    case CID_DRIVE_1_RPM:
+    case CID_DRIVE_2_RPM:
+    case CID_DRIVE_3_RPM:
+    case CID_WEAPON_1_RPM:
+    case CID_WEAPON_2_RPM:
+    case CID_WEAPON_3_RPM:
+    printf(
+      "%s %d\r\n",
+      tele_commands[command->tele_param->id].name,
+      tele_commands[command->tele_param->id].param.i);
+      break;
     case CID_ACCEL_X:
     case CID_ACCEL_Y:
     case CID_ACCEL_Z:
@@ -267,9 +275,14 @@ int command_get_param(command_t *command, thread_args_t *targs) {
 int command_set_param(command_t *command, thread_args_t *targs) {
   LOG("Setting param\r\n");
   switch (command->tele_param->id) {
-    case CID_RING_RPM:
-    case CID_CON_1_RPM:
-    case CID_CON_2_RPM:
+    case CID_DRIVE_1_RPM:
+    case CID_DRIVE_2_RPM:
+    case CID_DRIVE_3_RPM:
+    case CID_WEAPON_1_RPM:
+    case CID_WEAPON_2_RPM:
+    case CID_WEAPON_3_RPM:
+      tele_commands[command->tele_param->id].param.i = command->value.i;
+      break;
     case CID_ACCEL_X:
     case CID_ACCEL_Y:
     case CID_ACCEL_Z:

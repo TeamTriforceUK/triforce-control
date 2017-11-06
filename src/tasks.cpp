@@ -400,17 +400,35 @@ void task_collect_telemetry(const void *targs) {
       //Update shared parameter values
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].id) {
-          case CID_RING_RPM:
-            // TODO(camieac): Add support for RPM sensing
-            tele_commands[i].param.f = 0.00f;
+          case CID_DRIVE_1_RPM:
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.i = args->escs.drive[0].params.rpm;
+            args->mutex.telemetry->unlock();
             break;
-          case CID_CON_1_RPM:
-            // TODO(camieac): Add support for RPM sensing
-            tele_commands[i].param.f = 0.00f;
+          case CID_DRIVE_2_RPM:
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.i = args->escs.drive[1].params.rpm;
+            args->mutex.telemetry->unlock();
             break;
-          case CID_CON_2_RPM:
-            // TODO(camieac): Add support for RPM sensing
-            tele_commands[i].param.f = 0.00f;
+          case CID_DRIVE_3_RPM:
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.i = args->escs.drive[2].params.rpm;
+            args->mutex.telemetry->unlock();
+            break;
+          case CID_WEAPON_1_RPM:
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.i = args->escs.weapon[0].params.rpm;
+            args->mutex.telemetry->unlock();
+            break;
+          case CID_WEAPON_2_RPM:
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.i = args->escs.weapon[1].params.rpm;
+            args->mutex.telemetry->unlock();
+            break;
+          case CID_WEAPON_3_RPM:
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.i = args->escs.weapon[2].params.rpm;
+            args->mutex.telemetry->unlock();
             break;
           case CID_ACCEL_X:
           case CID_ACCEL_Y:
@@ -475,7 +493,7 @@ void task_stream_telemetry(const void *targs) {
               tele_commands[i].name,
               tele_commands[i].param.f);
           break;
-          case CT_INT:
+          case CT_INT32:
             args->esp_serial->printf(
               "%s %d\r",
               tele_commands[i].name,
