@@ -47,7 +47,7 @@ typedef struct {
   comms_esc_id_t id;
   const char *str;
 
-  /*! Parameters received from motor controller */
+  /** Parameters received from motor controller */
   struct {
     int32_t rpm;
     float current;
@@ -79,7 +79,6 @@ typedef struct {
 /**
 * @brief This should be the same for each impl, so defined here.
 */
-
 void comms_init_esc(comms_esc_t *esc, comms_esc_id_t id);
 
 #endif //TC_COMMS_PWM_H

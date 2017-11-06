@@ -80,6 +80,9 @@ void comms_impl_vesc_can_get_speed(const void *args);
 */
 void comms_impl_vesc_can_stop(comms_esc_t *esc);
 
+/**
+* @brief Return a string describing the VESC command with ID id.
+*/
 const char * can_vesc_command_to_string(uint8_t id);
 
 

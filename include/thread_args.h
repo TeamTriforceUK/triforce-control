@@ -93,11 +93,14 @@ typedef struct {
    * Can be configured as CAN or PWM device.
    */
   union {
-  struct {
-    comms_esc_t drive[3];
-    comms_esc_t weapon[3];
-  };
-  comms_esc_t arr[6];
+    /** @brief: Seperate ESCS by function */
+    struct {
+      comms_esc_t drive[3];
+      comms_esc_t weapon[3];
+    };
+
+    /*! Allow array indexing. */
+    comms_esc_t arr[6];
   } escs;
 
 

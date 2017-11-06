@@ -22,4 +22,8 @@
  * @brief Interrupt handler functions.
  */
 
+ /**
+ * @brief Called when CAN frame is received.
+ * @param [in/out] targs Access to shared variables.
+ */
 void handler_can(void * targs);

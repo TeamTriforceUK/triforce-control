@@ -26,7 +26,10 @@
 #include "thread_args.h"
 #include "comms_vesc_can.h"
 
-
+/**
+* @brief Called when CAN frame is received.
+* @param [in/out] targs Access to shared variables.
+*/
 void handler_can(void *targs) {
   thread_args_t *args = (thread_args_t*) targs;
   CANMessage msg;
