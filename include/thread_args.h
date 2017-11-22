@@ -102,9 +102,22 @@ typedef struct {
   These mutexes protect accesses to the fields within thread_args_t.
   */
   struct {
+    /**
+     * Mutual exclusion of serial port.
+     */
     Mutex *pc_serial;
+    /**
+     * Protects accesses to controller values.
+     */
     Mutex *controls;
+    /**
+     * Protects access to ESC outputs.
+     */
     Mutex *outputs;
+    /**
+     * Protects accesses to telemetry parameters.
+    */
+    Mutex *telemetry;
   } mutex;
 
 

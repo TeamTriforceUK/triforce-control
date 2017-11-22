@@ -25,6 +25,8 @@
 #ifndef INCLUDE_TELE_PARAM_H_
 #define INCLUDE_TELE_PARAM_H_
 
+#include "stdint.h"
+
 /* TODO(camieac): I want to refactor the commands to make it easy to add new
    ones. I'll probably add a function for each command that updates the
    telemetry value. And a pointer to this function stored in tele_command_t.
@@ -41,6 +43,16 @@ typedef enum {
   CT_NONE
 } tele_command_type_t;
 
+static const char* tele_command_type_str[] = {
+  "int32",
+  "float",
+  "string",
+  "bool",
+  ""
+};
+
+const char* tele_command_type_to_string(tele_command_type_t tctid);
+
 /**
  * Supported units that can be associated with a telemetry parameter.
  */
@@ -53,6 +65,18 @@ typedef enum {
   CU_DEGREES,
   CU_NONE
 } tele_command_unit_t;
+
+static const char* tele_command_unit_str[] = {
+  "RPM",
+  "RPS",
+  "m/s/s",
+  "celcius",
+  "V",
+  "degrees",
+  ""
+};
+
+const char* tele_command_unit_to_string(tele_command_unit_t tcid);
 
 /**
  * Defines all telemetry parameters.
