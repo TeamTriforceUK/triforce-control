@@ -84,19 +84,25 @@ const char* tele_command_unit_to_string(tele_command_unit_t tcid);
  * position within the tele_commands array (tele_params.h).
  */
 typedef enum tele_command_id_t {
-  CID_RING_RPM = 0,
-  CID_CON_1_RPM,
-  CID_CON_2_RPM,
+  CID_DRIVE_RPM_1 = 0,
+  CID_DRIVE_RPM_2,
+  CID_DRIVE_RPM_3,
+  CID_WEAPON_RPM_1,
+  CID_WEAPON_RPM_2,
+  CID_WEAPON_RPM_3,
   CID_ACCEL_X,
   CID_ACCEL_Y,
   CID_ACCEL_Z,
   CID_PITCH,
   CID_ROLL,
   CID_YAW,
-  CID_WEAPON_VOLTAGE,
-  CID_DRIVE_VOLTAGE,
+  CID_WEAPON_VOLTAGE_1,
+  CID_WEAPON_VOLTAGE_2,
+  CID_WEAPON_VOLTAGE_3,
+  CID_DRIVE_VOLTAGE_1,
+  CID_DRIVE_VOLTAGE_2,
+  CID_DRIVE_VOLTAGE_3,
   CID_AMBIENT_TEMP,
-  CID_ESP_LED,
   CID_ARM_STATUS,
 };
 

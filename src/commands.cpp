@@ -237,24 +237,25 @@ int command_status(command_t *command, thread_args_t *targs) {
 int command_get_param(command_t *command, thread_args_t *targs) {
   LOG("Getting param\r\n");
   switch (command->tele_param->id) {
-    case CID_RING_RPM:
-    case CID_CON_1_RPM:
-    case CID_CON_2_RPM:
+    case CID_DRIVE_RPM_1:
+    case CID_DRIVE_RPM_2:
+    case CID_DRIVE_RPM_3:
+    case CID_WEAPON_RPM_1:
+    case CID_WEAPON_RPM_2:
+    case CID_WEAPON_RPM_3:
     case CID_ACCEL_X:
     case CID_ACCEL_Y:
     case CID_ACCEL_Z:
     case CID_PITCH:
     case CID_ROLL:
     case CID_YAW:
-    case CID_WEAPON_VOLTAGE:
-    case CID_DRIVE_VOLTAGE:
+    case CID_WEAPON_VOLTAGE_1:
+    case CID_WEAPON_VOLTAGE_2:
+    case CID_WEAPON_VOLTAGE_3:
+    case CID_DRIVE_VOLTAGE_1:
+    case CID_DRIVE_VOLTAGE_2:
+    case CID_DRIVE_VOLTAGE_3:
     case CID_AMBIENT_TEMP:
-    case CID_ESP_LED:
-      printf(
-        "%s %.2f\r\n",
-        tele_commands[command->tele_param->id].name,
-        tele_commands[command->tele_param->id].param.f);
-      break;
     case CID_ARM_STATUS:
       printf(
         "%s %s\r\n",
@@ -267,19 +268,25 @@ int command_get_param(command_t *command, thread_args_t *targs) {
 int command_set_param(command_t *command, thread_args_t *targs) {
   LOG("Setting param\r\n");
   switch (command->tele_param->id) {
-    case CID_RING_RPM:
-    case CID_CON_1_RPM:
-    case CID_CON_2_RPM:
+    case CID_DRIVE_RPM_1:
+    case CID_DRIVE_RPM_2:
+    case CID_DRIVE_RPM_3:
+    case CID_WEAPON_RPM_1:
+    case CID_WEAPON_RPM_2:
+    case CID_WEAPON_RPM_3:
     case CID_ACCEL_X:
     case CID_ACCEL_Y:
     case CID_ACCEL_Z:
     case CID_PITCH:
     case CID_ROLL:
     case CID_YAW:
-    case CID_WEAPON_VOLTAGE:
-    case CID_DRIVE_VOLTAGE:
+    case CID_WEAPON_VOLTAGE_1:
+    case CID_WEAPON_VOLTAGE_2:
+    case CID_WEAPON_VOLTAGE_3:
+    case CID_DRIVE_VOLTAGE_1:
+    case CID_DRIVE_VOLTAGE_2:
+    case CID_DRIVE_VOLTAGE_3:
     case CID_AMBIENT_TEMP:
-    case CID_ESP_LED:
       tele_commands[command->tele_param->id].param.f = command->value.f;
       break;
     case CID_ARM_STATUS:

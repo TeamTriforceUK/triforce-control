@@ -399,19 +399,37 @@ void task_collect_telemetry(const void *targs) {
     if (args->tasks[TASK_COLLECT_TELEMETRY_ID].active) {
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].id) {
-          case CID_RING_RPM:
+          case CID_DRIVE_RPM_1:
             // TODO(camieac): Add support for RPM sensing
             args->mutex.telemetry->lock();
             tele_commands[i].param.f = 0.00f;
             args->mutex.telemetry->unlock();
             break;
-          case CID_CON_1_RPM:
+          case CID_DRIVE_RPM_2:
             // TODO(camieac): Add support for RPM sensing
             args->mutex.telemetry->lock();
             tele_commands[i].param.f = 0.00f;
             args->mutex.telemetry->unlock();
             break;
-          case CID_CON_2_RPM:
+          case CID_DRIVE_RPM_3:
+            // TODO(camieac): Add support for RPM sensing
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.f = 0.00f;
+            args->mutex.telemetry->unlock();
+            break;
+          case CID_WEAPON_RPM_1:
+            // TODO(camieac): Add support for RPM sensing
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.f = 0.00f;
+            args->mutex.telemetry->unlock();
+            break;
+          case CID_WEAPON_RPM_2:
+            // TODO(camieac): Add support for RPM sensing
+            args->mutex.telemetry->lock();
+            tele_commands[i].param.f = 0.00f;
+            args->mutex.telemetry->unlock();
+            break;
+          case CID_WEAPON_RPM_3:
             // TODO(camieac): Add support for RPM sensing
             args->mutex.telemetry->lock();
             tele_commands[i].param.f = 0.00f;
@@ -449,17 +467,18 @@ void task_collect_telemetry(const void *targs) {
               i+=2;
             }
             break;
-          case CID_WEAPON_VOLTAGE:
-          case CID_DRIVE_VOLTAGE:
+          case CID_WEAPON_VOLTAGE_1:
+          case CID_WEAPON_VOLTAGE_2:
+          case CID_WEAPON_VOLTAGE_3:
+          case CID_DRIVE_VOLTAGE_1:
+          case CID_DRIVE_VOLTAGE_2:
+          case CID_DRIVE_VOLTAGE_3:
             break;
           case CID_AMBIENT_TEMP:
             args->mutex.telemetry->lock();
             tmp_int = bno055_read_temp();
             args->mutex.telemetry->unlock();
             tele_commands[i].param.i = tmp_int;
-            break;
-          case CID_ESP_LED:
-            //tele_commands[i].param.i = vi;
             break;
           case CID_ARM_STATUS:
             args->mutex.telemetry->lock();
