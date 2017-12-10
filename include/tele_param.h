@@ -51,6 +51,9 @@ static const char* tele_command_type_str[] = {
   ""
 };
 
+/**
+* @brief Return string representation of command type.
+*/
 const char* tele_command_type_to_string(tele_command_type_t tctid);
 
 /**
@@ -76,6 +79,9 @@ static const char* tele_command_unit_str[] = {
   ""
 };
 
+/**
+* @brief Return string representation of command unit.
+*/
 const char* tele_command_unit_to_string(tele_command_unit_t tcid);
 
 /**

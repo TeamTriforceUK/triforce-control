@@ -25,10 +25,16 @@
 #include "tele_param.h"
 #include "stdint.h"
 
+/**
+* @brief Return string representation of command type.
+*/
 const char* tele_command_type_to_string(tele_command_type_t tctid){
   return tele_command_type_str[tctid];
 }
 
+/**
+* @brief Return string representation of command unit.
+*/
 const char* tele_command_unit_to_string(tele_command_unit_t tcuid){
   return tele_command_unit_str[tcuid];
 }
