@@ -1,0 +1,323 @@
+mainmenu "Triforce Control Configuration"
+
+menu "Microcontroller"
+
+choice
+	prompt "Platform"
+	default LPC1768
+
+config LPC1768
+	prompt "LPC1768"
+	bool
+	help
+		Compile for LPC1768 platform.
+endchoice
+
+comment "RX (Drive) Pins"
+
+config DRV_RX_CHAN_1_PIN
+	int
+	range 5 30
+	default 18
+	prompt "Channel 1 Pin"
+	help
+		The pin connected to the channel 1 output of the drive system receiver.
+
+config DRV_RX_CHAN_2_PIN
+	int
+	range 5 30
+	default 17
+	prompt "Channel 2 Pin"
+	help
+		The pin connected to the channel 2 output of the drive system receiver.
+
+config DRV_RX_CHAN_3_PIN
+	int
+	range 5 30
+	default 16
+	prompt "Channel 3 Pin"
+	help
+		The pin connected to the channel 3 output of the drive system receiver.
+
+config DRV_RX_CHAN_4_PIN
+	int
+	range 5 30
+	default 15
+	prompt "Channel 4 Pin"
+	help
+		The pin connected to the channel 4 output of the drive system receiver.
+
+config DRV_RX_CHAN_5_PIN
+	int
+	range 5 30
+	default 14
+	prompt "Channel 5 Pin"
+	help
+		The pin connected to the channel 5 output of the drive system receiver.
+
+config DRV_RX_CHAN_6_PIN
+	int
+	range 5 30
+	default 13
+	prompt "Channel 6 Pin"
+	help
+		The pin connected to the channel 6 output of the drive system receiver.
+
+comment "RX (Weapon) Pins"
+
+config WPN_RX_CHAN_1_PIN
+	int
+	range 5 30
+	default 5
+	prompt "Channel 1 Pin"
+	help
+		The pin connected to the channel 1 output of the weapon system receiver.
+
+config WPN_RX_CHAN_2_PIN
+	int
+	range 5 30
+	default 6
+	prompt "Channel 2 Pin"
+	help
+		The pin connected to the channel 2 output of the weapon system receiver.
+
+config WPN_RX_CHAN_3_PIN
+	int
+	range 5 30
+	default 7
+	prompt "Channel 3 Pin"
+	help
+		The pin connected to the channel 3 output of the weapon system receiver.
+
+config WPN_RX_CHAN_4_PIN
+	int
+	range 5 30
+	default 8
+	prompt "Channel 4 Pin"
+	help
+		The pin connected to the channel 4 output of the weapon system receiver.
+
+config WPN_RX_CHAN_5_PIN
+	int
+	range 5 30
+	default 11
+	prompt "Channel 5 Pin"
+	help
+		The pin connected to the channel 5 output of the weapon system receiver.
+
+config WPN_RX_CHAN_6_PIN
+	int
+	range 5 30
+	default 12
+	prompt "Channel 6 Pin"
+	help
+		The pin connected to the channel 6 output of the weapon system receiver.
+
+comment "Communication Bus Pins"
+
+config ESP_UART_TX_PIN
+	int
+	range 5 30
+	default 28
+	prompt "ESP UART TX Pin"
+	help
+		The serial TX pin connected to ESP8266 RX pin.
+
+config ESP_UART_RX_PIN
+	int
+	range 5 30
+	default 27
+	prompt "ESP UART RX Pin"
+	help
+		The serial RX pin connected to ESP8266 TX pin.
+
+config CANBUS_RD_PIN
+	int
+	range 5 30
+	default 30
+	prompt "CAN Bus RD Pin"
+	help
+		The MBED CAN RD pin being used to connect to the CAN transeiver.
+
+config CANBUS_TD_PIN
+	int
+	range 5 30
+	default 29
+	prompt "CAN Bus TD Pin"
+	help
+		The MBED CAN RD pin being used to connect to the CAN transeiver.
+
+comment "Miscellaneous Pins"
+
+config ESP_READY_PIN
+	int
+	range 5 30
+	default 19
+	prompt "ESP Ready Pin"
+	help
+		This pin should be connected to the ESP8266 'ready' output pin.
+		The ESP sets this pin high when it is ready.
+		The mbed waits for this high signal before starting tasks.
+
+endmenu
+
+menu "Transmitter"
+
+menu "Drive"
+
+choice
+	prompt "Model"
+	default DRV_TX_SPEKTRUM_DX6
+
+config DRV_TX_TURNIGY_9X
+	prompt "Turnigy 9X"
+	bool
+	help
+		Use Turnigy 9X Transmitter for drive system.
+
+config DRV_TX_SPEKTRUM_DX6
+	prompt "Spektrum DX6"
+	bool
+	help
+		Use Spektrum DX6 Transmitter for drive system.
+
+endchoice
+
+
+endmenu
+
+menu "Weapon"
+
+choice
+	prompt "Transmitter Model"
+	default WPN_TX_TURNIGY_9X
+
+config WPN_TX_TURNIGY_9X
+	prompt "Turnigy 9X"
+	bool
+	help
+		Use Turnigy 9X Transmitter for weapon system.
+
+config WPN_TX_SPEKTRUM_DX6
+	prompt "Spektrum DX6"
+	bool
+	help
+		Use Spektrum DX6 Transmitter for weapon system.
+
+endchoice
+
+endmenu
+
+endmenu
+
+menu "Drive System"
+
+choice
+	prompt "Model"
+	default TURNIGY_9X
+
+config DRV_OMNI
+	prompt "Omni-drive"
+	bool
+	help
+		Select this option if a three wheel omni
+		drive system is used on the robot.
+
+config DRV_HOLONOMIC
+	prompt "Holonomic drive"
+	bool
+	help
+		Select this option if the robot has two wheels side by side.
+
+endchoice
+
+
+endmenu
+
+menu "Tasks"
+
+config TASK_READ_SERIAL
+	prompt "Serial command task"
+	default n
+	bool
+	help
+		Enable the task that reads from the serial console and parses input
+		to commands.
+
+config TASK_PROCESS_COMMANDS
+	prompt "Command processing task"
+	default n
+	bool
+	help
+		Enable the task that processes commands from the serial console.
+
+config TASK_LED_STATE
+	prompt "LED State task"
+	default y
+	bool
+	help
+		Enable the task that displays system state with LED codes.
+
+config TASK_MOTOR_DRIVE
+	prompt "Motor drive task"
+	default y
+	bool
+	help
+		Enable the task that outputs to the ESCS based on values from RX.
+
+config TASK_ARMING
+	prompt "Arming task"
+	default y
+	bool
+	help
+		Enable the task that arms and disarms TX/RX when the appropriate
+		conditions are met.
+
+config TASK_FAILSAFE
+	prompt "Failsafe task"
+	default y
+	bool
+	help
+		Enable the task that will stop a motor if receiver signal is lost.
+
+config TASK_CALC_ORIENTATION
+	prompt "Orientation calculation task"
+	default y
+	bool
+	help
+		Enable the task that keeps track of the orientation of the robot.
+
+config TASK_COLLECT_TELEMETRY
+	prompt "Telemetry collection task"
+	default y
+	bool
+	help
+		Enable the task that reads sensor values to be sent to the ESP8266.
+
+config TASK_STREAM_TELEMETRY
+	prompt "Telemetry streaming task"
+	default y
+	bool
+	help
+		Enable the task that sends telemetry to the ESP8266 for display on the
+		web interface.
+
+config TASK_CALIBRATE_CHANNELS
+	prompt "Transmitter calibration task"
+	default y
+	bool
+	help
+		Allow the calibration task to be enabled.
+		The calibration task measures the maximum and minimum values from the
+		receivers. This calibration process can be started using a serial
+		command.
+
+config TASK_DEBUG
+	prompt "Debugging task"
+	default n
+	bool
+	help
+		Enable the debugging task, this prints addional log messages containing
+		potentially useful information.
+
+endmenu
