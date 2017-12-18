@@ -393,6 +393,7 @@ void task_collect_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_COLLECT_TELEMETRY_ID);
 
+  uint32_t tmp_int;
   euler_t e;
   unsigned i;
   while (args->active) {
@@ -400,71 +401,85 @@ void task_collect_telemetry(const void *targs) {
       //Update shared parameter values
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].id) {
-          case CID_DRIVE_1_RPM:
+          case CID_DRIVE_RPM_1:
             args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->escs.drive[0].params.rpm;
             args->mutex.telemetry->unlock();
             break;
-          case CID_DRIVE_2_RPM:
+          case CID_DRIVE_RPM_2:
             args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->escs.drive[1].params.rpm;
             args->mutex.telemetry->unlock();
             break;
-          case CID_DRIVE_3_RPM:
+          case CID_DRIVE_RPM_3:
             args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->escs.drive[2].params.rpm;
             args->mutex.telemetry->unlock();
             break;
-          case CID_WEAPON_1_RPM:
+          case CID_WEAPON_RPM_1:
             args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->escs.weapon[0].params.rpm;
             args->mutex.telemetry->unlock();
             break;
-          case CID_WEAPON_2_RPM:
+          case CID_WEAPON_RPM_2:
             args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->escs.weapon[1].params.rpm;
             args->mutex.telemetry->unlock();
             break;
-          case CID_WEAPON_3_RPM:
+          case CID_WEAPON_RPM_3:
             args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->escs.weapon[2].params.rpm;
             args->mutex.telemetry->unlock();
             break;
+
+          /* Accelerations are captured in one function */
           case CID_ACCEL_X:
           case CID_ACCEL_Y:
           case CID_ACCEL_Z:
             e = bno055_read_accel();
+            args->mutex.telemetry->lock();
             tele_commands[CID_ACCEL_X].param.f = e.x;
             tele_commands[CID_ACCEL_Y].param.f = e.y;
             tele_commands[CID_ACCEL_Z].param.f = e.z;
+            args->mutex.telemetry->unlock();
             // We do x, y and z in one op, so skip 2 once done
             if (i == CID_ACCEL_X) {
               i+=2;
             }
             break;
+
+          /* Pitch, roll and yaw are captured in one function. */
           case CID_PITCH:
           case CID_ROLL:
           case CID_YAW:
             e = bno055_read_euler_angles();
+            args->mutex.telemetry->lock();
             tele_commands[CID_PITCH].param.f = e.pitch;
             tele_commands[CID_ROLL].param.f = e.roll;
             tele_commands[CID_YAW].param.f = e.heading;
+            args->mutex.telemetry->unlock();
             // We do x, y and z in one op, so skip 2 once done
             if (i == CID_PITCH) {
               i+=2;
             }
             break;
-          case CID_WEAPON_VOLTAGE:
-          case CID_DRIVE_VOLTAGE:
+          case CID_WEAPON_VOLTAGE_1:
+          case CID_WEAPON_VOLTAGE_2:
+          case CID_WEAPON_VOLTAGE_3:
+          case CID_DRIVE_VOLTAGE_1:
+          case CID_DRIVE_VOLTAGE_2:
+          case CID_DRIVE_VOLTAGE_3:
             break;
           case CID_AMBIENT_TEMP:
-            tele_commands[i].param.i = bno055_read_temp();
-            break;
-          case CID_ESP_LED:
-            //tele_commands[i].param.i = vi;
+            args->mutex.telemetry->lock();
+            tmp_int = bno055_read_temp();
+            args->mutex.telemetry->unlock();
+            tele_commands[i].param.i = tmp_int;
             break;
           case CID_ARM_STATUS:
+            args->mutex.telemetry->lock();
             tele_commands[i].param.i = args->state;
+            args->mutex.telemetry->unlock();
             break;
           default:
             args->serial->puts("UNSUPPORTED TELE COMMAND\r\n");
@@ -481,6 +496,11 @@ void task_stream_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_STREAM_TELEMETRY_ID);
 
+  /* Temp values */
+  float tmp_f;
+  uint32_t tmp_i;
+  bool tmp_b;
+
   unsigned i = 0;
   while (args->active) {
     /* The ESP looks for a carriage return character to delimit a command. */
@@ -488,22 +508,44 @@ void task_stream_telemetry(const void *targs) {
       for (i = 0; i < NUM_TELE_COMMANDS; i++) {
         switch (tele_commands[i].type) {
           case CT_FLOAT:
+            args->mutex.telemetry->lock();
+            tmp_f = tele_commands[i].param.f;
+            args->mutex.telemetry->unlock();
+
             args->esp_serial->printf(
-              "%s %.2f\r",
+              "{\"id\": \"%d\", \"name\": \"%s\", \"type\": \"%s\", \"unit\": \"%s\", \"value\": \"%.2f\"}\r",
+              tele_commands[i].id,
               tele_commands[i].name,
-              tele_commands[i].param.f);
+              tele_command_type_to_string(tele_commands[i].type),
+              tele_command_unit_to_string(tele_commands[i].unit),
+              tmp_f);
           break;
+
           case CT_INT32:
+            args->mutex.telemetry->lock();
+            tmp_i = tele_commands[i].param.i;
+            args->mutex.telemetry->unlock();
+
             args->esp_serial->printf(
-              "%s %d\r",
+              "{\"id\": \"%d\", \"name\": \"%s\", \"type\": \"%s\", \"unit\": \"%s\", \"value\": \"%d\"}\r",
+              tele_commands[i].id,
               tele_commands[i].name,
-              tele_commands[i].param.i);
+              tele_command_type_to_string(tele_commands[i].type),
+              tele_command_unit_to_string(tele_commands[i].unit),
+              tmp_i);
             break;
           case CT_BOOLEAN:
+            args->mutex.telemetry->lock();
+            tmp_b = tele_commands[i].param.b;
+            args->mutex.telemetry->unlock();
+
             args->esp_serial->printf(
-              "%s %s\r",
+              "{\"id\": \"%d\", \"name\": \"%s\", \"type\": \"%s\", \"unit\": \"%s\", \"value\": \"%s\"}\r",
+              tele_commands[i].id,
               tele_commands[i].name,
-              tele_commands[i].param.b ? "ON" : "OFF");
+              tele_command_type_to_string(tele_commands[i].type),
+              tele_command_unit_to_string(tele_commands[i].unit),
+              tmp_b ? "ON" : "OFF");
             break;
           case CT_NONE:
           default:

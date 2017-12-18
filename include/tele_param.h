@@ -25,6 +25,8 @@
 #ifndef INCLUDE_TELE_PARAM_H_
 #define INCLUDE_TELE_PARAM_H_
 
+#include "stdint.h"
+
 /* TODO(camieac): I want to refactor the commands to make it easy to add new
    ones. I'll probably add a function for each command that updates the
    telemetry value. And a pointer to this function stored in tele_command_t.
@@ -41,6 +43,19 @@ typedef enum {
   CT_NONE
 } tele_command_type_t;
 
+static const char* tele_command_type_str[] = {
+  "int32",
+  "float",
+  "string",
+  "bool",
+  ""
+};
+
+/**
+* @brief Return string representation of command type.
+*/
+const char* tele_command_type_to_string(tele_command_type_t tctid);
+
 /**
  * Supported units that can be associated with a telemetry parameter.
  */
@@ -56,28 +71,46 @@ typedef enum {
   CU_NONE
 } tele_command_unit_t;
 
+static const char* tele_command_unit_str[] = {
+  "RPM",
+  "RPS",
+  "m/s/s",
+  "celcius",
+  "V",
+  "degrees",
+  ""
+};
+
+/**
+* @brief Return string representation of command unit.
+*/
+const char* tele_command_unit_to_string(tele_command_unit_t tcid);
+
 /**
  * Defines all telemetry parameters.
  * Note: For ease of access, the command ID (CID) value should correspond with its
  * position within the tele_commands array (tele_params.h).
  */
 typedef enum tele_command_id_t {
-  CID_DRIVE_1_RPM = 0,
-  CID_DRIVE_2_RPM,
-  CID_DRIVE_3_RPM,
-  CID_WEAPON_1_RPM,
-  CID_WEAPON_2_RPM,
-  CID_WEAPON_3_RPM,
+  CID_DRIVE_RPM_1 = 0,
+  CID_DRIVE_RPM_2,
+  CID_DRIVE_RPM_3,
+  CID_WEAPON_RPM_1,
+  CID_WEAPON_RPM_2,
+  CID_WEAPON_RPM_3,
   CID_ACCEL_X,
   CID_ACCEL_Y,
   CID_ACCEL_Z,
   CID_PITCH,
   CID_ROLL,
   CID_YAW,
-  CID_WEAPON_VOLTAGE,
-  CID_DRIVE_VOLTAGE,
+  CID_WEAPON_VOLTAGE_1,
+  CID_WEAPON_VOLTAGE_2,
+  CID_WEAPON_VOLTAGE_3,
+  CID_DRIVE_VOLTAGE_1,
+  CID_DRIVE_VOLTAGE_2,
+  CID_DRIVE_VOLTAGE_3,
   CID_AMBIENT_TEMP,
-  CID_ESP_LED,
   CID_ARM_STATUS,
 };
 
