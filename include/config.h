@@ -118,23 +118,23 @@
 #define RC_0_CHAN_6_MAX   1857.0f
 
 // Default channel limits (RC1/Drive)
-#define RC_1_CHAN_1_MIN   1202.0f
-#define RC_1_CHAN_1_MAX   1896.0f
+#define RC_1_CHAN_1_MIN   1000.0f
+#define RC_1_CHAN_1_MAX   2000.0f
 
-#define RC_1_CHAN_2_MIN   1092.0f
-#define RC_1_CHAN_2_MAX   1896.0f
+#define RC_1_CHAN_2_MIN   1000.0f
+#define RC_1_CHAN_2_MAX   2000.0f
 
-#define RC_1_CHAN_3_MIN   1092.0f
-#define RC_1_CHAN_3_MAX   1895.0f
+#define RC_1_CHAN_3_MIN   1000.0f
+#define RC_1_CHAN_3_MAX   2000.0f
 
-#define RC_1_CHAN_4_MIN   1093.0f
-#define RC_1_CHAN_4_MAX   1896.0f
+#define RC_1_CHAN_4_MIN   1000.0f
+#define RC_1_CHAN_4_MAX   2000.0f
 
-#define RC_1_CHAN_5_MIN   1092.0f
-#define RC_1_CHAN_5_MAX   1892.0f
+#define RC_1_CHAN_5_MIN   1000.0f
+#define RC_1_CHAN_5_MAX   2000.0f
 
-#define RC_1_CHAN_6_MIN   1092.0f
-#define RC_1_CHAN_6_MAX   1894.0f
+#define RC_1_CHAN_6_MIN   1000.0f
+#define RC_1_CHAN_6_MAX   2000.0f
 
 //Define purpose of each channel for readability
 
