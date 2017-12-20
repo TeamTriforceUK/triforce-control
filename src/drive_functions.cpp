@@ -101,7 +101,7 @@ void drive_2_wheel_differential(const void * targs) {
   /* Channel values are between 0 and 100. */
   throttle = args->controls[1].channel[RC_1_ELEVATION] - 50.0f;//args->controls[1].channel[RC_1_ELEVATION];
   /* Get steering value between -50 (full left) and +50 (full right). */
-  steering = args->controls[1].channel[RC_1_AILERON] - 50.0f;
+  steering = args->controls[1].channel[RC_1_RUDDER] - 50.0f;
   args->mutex.controls->unlock();
 
   /* Spin on the spot when throttle is ~zero */
@@ -131,6 +131,13 @@ void drive_2_wheel_differential(const void * targs) {
   args->outputs.wheel_1 = left_wheel;
   args->outputs.wheel_2 = right_wheel;
   args->mutex.outputs->unlock();
+  static int count = 0;
+  count++;
+  if (count == 1000) {
+	  printf("left wheel: %.2f\r\n", left_wheel);
+	  printf("right wheel: %.2f\r\n", right_wheel);
+	  count = 0;
+  }
 }
 
 void weapon_manual_throttle(const void * targs) {
