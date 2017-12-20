@@ -249,16 +249,22 @@ void task_arming(const void *targs) {
       args->mutex.controls->unlock();
 
       args->mutex.controls->lock();
-      drive_arm = drive_switch && !drive_stalled &&
-        BETWEEN(args->controls[1].channel[RC_1_THROTTLE], 0, 2) &&
-        BETWEEN(args->controls[1].channel[RC_1_ELEVATION], 45, 55) &&
-        BETWEEN(args->controls[1].channel[RC_1_RUDDER], 45, 55) &&
-        BETWEEN(args->controls[1].channel[RC_1_AILERON], 45, 55);
+      drive_arm = drive_switch ;//&& !drive_stalled &&
+        // BETWEEN(args->controls[1].channel[RC_1_THROTTLE], 0, 2) &&
+        // BETWEEN(args->controls[1].channel[RC_1_ELEVATION], 45, 55) &&
+        // BETWEEN(args->controls[1].channel[RC_1_RUDDER], 45, 55) &&
+        // BETWEEN(args->controls[1].channel[RC_1_AILERON], 45, 55);
       args->mutex.controls->unlock();
 
       //Debug: Print RX values
       // args->serial->printf("drive_switch : %.0f (%s)\r\n", args->controls[0].channel[RC_0_ARM_SWITCH], drive_switch ? "On" : "Off");
       // args->serial->printf("weapon_switch: %.0f (%s)\r\n", args->controls[1].channel[RC_1_ARM_SWITCH], weapon_switch ? "On" : "Off");
+
+	  args->serial->printf("throttle: %.0f\r\n", args->controls[1].channel[RC_1_THROTTLE]);
+	  args->serial->printf("aileron: %.0f\r\n", args->controls[1].channel[RC_1_AILERON]);
+	  args->serial->printf("elevation: %.0f\r\n", args->controls[1].channel[RC_1_ELEVATION]);
+	  args->serial->printf("rudder: %.0f\r\n", args->controls[1].channel[RC_1_RUDDER]);
+	  args->serial->printf("\r\n\r\n");
 
       switch (args->state) {
         /* From the fully armed state we can only decrease the arm state,
