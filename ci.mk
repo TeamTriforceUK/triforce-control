@@ -25,3 +25,8 @@ check_style:
 check_static:
 	@echo "Starting static analysis...\r\n"
 	$(STATIC_CHECK_PATH) $(STATIC_CHECK_SRC_DIR) -I $(STATIC_CHECK_INC_DIR) 2> $(STATIC_CHECK_REPORT_DIR) --error-exitcode=1
+
+help:
+	@echo "check_style:\tRun style checker"
+	@echo "check_static:\tRun static analysis"
+	@echo "ci:\t\tRun style checker and static analysis"
