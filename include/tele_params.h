@@ -34,19 +34,21 @@ static tele_command_t tele_commands[] = {
   {.id = CID_WEAPON_RPM_1, .name = "weapon_rpm_1", .unit = CU_RPM, .type = CT_FLOAT},
   {.id = CID_WEAPON_RPM_2, .name = "weapon_rpm_2", .unit = CU_RPM, .type = CT_FLOAT},
   {.id = CID_WEAPON_RPM_3, .name = "weapon_rpm_3", .unit = CU_RPM, .type = CT_FLOAT},
+#ifdef DEVICE_BNO055
   {.id = CID_ACCEL_X, .name = "accel_x", .unit = CU_MPSPS, .type = CT_FLOAT},
   {.id = CID_ACCEL_Y, .name = "accel_y", .unit = CU_MPSPS, .type = CT_FLOAT},
   {.id = CID_ACCEL_Z, .name = "accel_z", .unit = CU_MPSPS, .type = CT_FLOAT},
   {.id = CID_PITCH, .name = "pitch", .unit = CU_DEGREES, .type = CT_FLOAT},
   {.id = CID_ROLL, .name = "roll", .unit = CU_DEGREES, .type = CT_FLOAT},
   {.id = CID_YAW, .name = "yaw", .unit = CU_DEGREES, .type = CT_FLOAT},
+  {.id = CID_AMBIENT_TEMP, .name = "temp", .unit = CU_CELCIUS, .type = CT_INT},
+#endif
   {.id = CID_WEAPON_VOLTAGE_1, .name = "weapon_voltage_1", .unit = CU_VOLTS, .type = CT_FLOAT},
   {.id = CID_WEAPON_VOLTAGE_2, .name = "weapon_voltage_2", .unit = CU_VOLTS, .type = CT_FLOAT},
   {.id = CID_WEAPON_VOLTAGE_3, .name = "weapon_voltage_3", .unit = CU_VOLTS, .type = CT_FLOAT},
   {.id = CID_DRIVE_VOLTAGE_1, .name = "drive_voltage_1", .unit = CU_VOLTS, .type = CT_FLOAT},
   {.id = CID_DRIVE_VOLTAGE_2, .name = "drive_voltage_2", .unit = CU_VOLTS, .type = CT_FLOAT},
   {.id = CID_DRIVE_VOLTAGE_3, .name = "drive_voltage_3", .unit = CU_VOLTS, .type = CT_FLOAT},
-  {.id = CID_AMBIENT_TEMP, .name = "temp", .unit = CU_CELCIUS, .type = CT_INT},
   {.id = CID_ARM_STATUS, .name = "arm_status", .unit = CU_NONE, .type = CT_INT},
 };
 

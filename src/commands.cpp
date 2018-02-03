@@ -243,19 +243,21 @@ int command_get_param(command_t *command, thread_args_t *targs) {
     case CID_WEAPON_RPM_1:
     case CID_WEAPON_RPM_2:
     case CID_WEAPON_RPM_3:
+#ifdef DEVICE_BNO055
     case CID_ACCEL_X:
     case CID_ACCEL_Y:
     case CID_ACCEL_Z:
     case CID_PITCH:
     case CID_ROLL:
     case CID_YAW:
+    case CID_AMBIENT_TEMP:
+#endif
     case CID_WEAPON_VOLTAGE_1:
     case CID_WEAPON_VOLTAGE_2:
     case CID_WEAPON_VOLTAGE_3:
     case CID_DRIVE_VOLTAGE_1:
     case CID_DRIVE_VOLTAGE_2:
     case CID_DRIVE_VOLTAGE_3:
-    case CID_AMBIENT_TEMP:
     case CID_ARM_STATUS:
       printf(
         "%s %s\r\n",
@@ -274,21 +276,23 @@ int command_set_param(command_t *command, thread_args_t *targs) {
     case CID_WEAPON_RPM_1:
     case CID_WEAPON_RPM_2:
     case CID_WEAPON_RPM_3:
+#ifdef DEVICE_BNO055
     case CID_ACCEL_X:
     case CID_ACCEL_Y:
     case CID_ACCEL_Z:
     case CID_PITCH:
     case CID_ROLL:
     case CID_YAW:
+    case CID_AMBIENT_TEMP:
+      tele_commands[command->tele_param->id].param.f = command->value.f;
+      break;
+#endif
     case CID_WEAPON_VOLTAGE_1:
     case CID_WEAPON_VOLTAGE_2:
     case CID_WEAPON_VOLTAGE_3:
     case CID_DRIVE_VOLTAGE_1:
     case CID_DRIVE_VOLTAGE_2:
     case CID_DRIVE_VOLTAGE_3:
-    case CID_AMBIENT_TEMP:
-      tele_commands[command->tele_param->id].param.f = command->value.f;
-      break;
     case CID_ARM_STATUS:
       printf("Use arming commands to set arm_state!\r\n");
       return RET_ERROR;

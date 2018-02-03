@@ -61,7 +61,7 @@ static const unsigned TASK_ARMING_ID = __COUNTER__;
 static const unsigned TASK_FAILSAFE_ID = __COUNTER__;
 #endif
 
-#ifdef TASK_CALC_ORIENTATION
+#if defined(TASK_CALC_ORIENTATION) && defined(DEVICE_BNO055)
 static const unsigned TASK_CALC_ORIENTATION_ID = __COUNTER__;
 #endif
 
@@ -69,7 +69,7 @@ static const unsigned TASK_CALC_ORIENTATION_ID = __COUNTER__;
 static const unsigned TASK_COLLECT_TELEMETRY_ID = __COUNTER__;
 #endif
 
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
 static const unsigned TASK_STREAM_TELEMETRY_ID = __COUNTER__;
 #endif
 
@@ -112,7 +112,7 @@ void task_arming(const void *targs);
 void task_failsafe(const void *targs);
 #endif
 
-#ifdef TASK_CALC_ORIENTATION
+#if defined(TASK_CALC_ORIENTATION) && defined(DEVICE_BNO055)
 // void task_calc_escs(const void *targs);
 void task_calc_orientation(const void *targs);
 #endif
@@ -121,7 +121,7 @@ void task_calc_orientation(const void *targs);
 void task_collect_telemetry(const void *targs);
 #endif
 
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
 void task_stream_telemetry(const void *targs);
 #endif
 
@@ -155,13 +155,13 @@ static volatile task_t tasks[] = {
 #ifdef TASK_FAILSAFE
   {.id = TASK_FAILSAFE_ID,           .name = "Failsafe" ,          .func = task_failsafe,           .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
-#ifdef TASK_CALC_ORIENTATION
+#if defined(TASK_CALC_ORIENTATION) && defined(DEVICE_BNO055)
   {.id = TASK_CALC_ORIENTATION_ID,   .name = "Calc Orientation",   .func = task_calc_orientation,   .args = NULL, .priority = osPriorityNormal, .stack_size = 2048,  .active = false},
 #endif
 #ifdef TASK_COLLECT_TELEMETRY
   {.id = TASK_COLLECT_TELEMETRY_ID,  .name = "Collect Telemetry",  .func = task_collect_telemetry,  .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
   {.id = TASK_STREAM_TELEMETRY_ID,   .name = "Stream Telemetry",   .func = task_stream_telemetry,   .args = NULL, .priority = osPriorityNormal, .stack_size = 1024,  .active = true},
 #endif
 #ifdef TASK_CALIBRATE_CHANNELS

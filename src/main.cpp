@@ -72,7 +72,7 @@ int esp8266_wait_until_ready(thread_args_t *args) {
     esp8266_init_attempts++;
     if(esp8266_init_attempts > 5) {
       // Disable tasks that require the BNO055
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
       args->tasks[TASK_STREAM_TELEMETRY_ID].active = false;
 #endif
       return RET_ERROR;
@@ -309,13 +309,13 @@ int main() {
 #ifdef TASK_FAILSAFE
     {tasks[TASK_FAILSAFE_ID].priority, tasks[TASK_FAILSAFE_ID].stack_size},
 #endif
-#ifdef TASK_CALC_ORIENTATION
+#if defined(TASK_CALC_ORIENTATION) && defined(DEVICE_BNO055)
     {tasks[TASK_CALC_ORIENTATION_ID].priority, tasks[TASK_CALC_ORIENTATION_ID].stack_size},
 #endif
 #ifdef TASK_COLLECT_TELEMETRY
     {tasks[TASK_COLLECT_TELEMETRY_ID].priority, tasks[TASK_COLLECT_TELEMETRY_ID].stack_size},
 #endif
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
     {tasks[TASK_STREAM_TELEMETRY_ID].priority, tasks[TASK_STREAM_TELEMETRY_ID].stack_size},
 #endif
 #ifdef TASK_CALIBRATE_CHANNELS

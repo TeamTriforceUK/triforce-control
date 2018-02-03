@@ -39,5 +39,5 @@ void Watchdog::kick(void) {
 }
 
 bool Watchdog::is_wdt_reset(void) {
-  return ((LPC_WDT->WDMOD >> 2) & 1);
+  return (LPC_WDT->WDMOD >> 2) & 1;
 }
