@@ -26,7 +26,7 @@
 #define TC_WATCHDOG_H
 
 #include "mbed.h"
-/*! @class Watchdog
+/** @class Watchdog
     @brief Provides kick and test functions for the LPC1786 watchdog timer(wdt).
 */
 class Watchdog {
