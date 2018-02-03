@@ -26,14 +26,26 @@
 #define TC_WATCHDOG_H
 
 #include "mbed.h"
-
+/*! @class Watchdog
+    @brief Provides kick and test functions for the LPC1786 watchdog timer(wdt).
+*/
 class Watchdog {
   public:
-    void kick(float s);
+  /**
+  * @brief Set watchdog timeout and kick.
+  * @param [in] s Timeout time (seconds)
+  */
+  void kick(float s);
 
-    void kick(void);
+  /**
+  * @brief Kick the watchdog timer.
+  */
+  void kick(void);
 
-    bool is_wdt_reset(void);
+  /**
+  * @return True if reset was triggered by watchdog, false otherwise.
+  */
+  bool is_wdt_reset(void);
 };
 
 #endif //TC_WATCHDOG_H
