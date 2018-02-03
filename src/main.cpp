@@ -111,9 +111,8 @@ int main() {
   memset(targs, 0x00, sizeof(thread_args_t));
   thread_args_init(targs);
 
-  //Set a one second watchdog timer
+  // Create watchdog timer
   targs->wdt = new Watchdog();
-  targs->wdt->kick(1.0);
 
   /* TODO: If recovering from a hang, we will want to restore arming state.
      This means that if we hang during a fight, there should be minimal
@@ -123,9 +122,11 @@ int main() {
 	necessary, but if we ever change arming mechanism to stick positions, then
 	we'll need to be clever here and store arming state somewhere non-volatile.
   */
-  // if(targs->wdt->is_wdt_reset()) {
-  //
-  // }
+  if(targs->wdt->is_wdt_reset()) {
+    serial->puts("System recovering from watchdog reset.\r\n");
+  } else {
+    serial->puts("System booting normally.\r\n");
+  }
 
   // Configure serial connection to ESP8266
   targs->esp_serial = new Serial(ESP_TX, ESP_RX);
@@ -148,15 +149,19 @@ int main() {
   targs->serial->puts(VERSION);
   targs->serial->puts("\r\n");
 
+#ifdef DEVICE_BNO055
   targs->serial->printf("init(): BNO055\r\n");
   if (!bno055_wait_until_ready(targs)){
     targs->serial->printf("\tBNO055 not in use.\r\n");
   };
+#endif
 
+#ifdef DEVICE_ESP8266
   targs->serial->printf("init(): ESP8266\r\n");
   if (!esp8266_wait_until_ready(targs)) {
     targs->serial->printf("\tESP8266 not in use.\r\n");
   }
+#endif
 
   targs->serial->puts("init(): PWM inputs\r\n");
 
@@ -325,6 +330,9 @@ int main() {
   for (t = 0; t < NUM_TASKS; t++) {
     targs->serial->printf("\rinit(): Task %d (%s) active: %s, stack: %d\r\n", tasks[t].id, tasks[t].name, tasks[t].active ? "Yes" : "No", tasks[t].stack_size);
   }
+
+  //Start watchdog timer before we start the tasks
+  targs->wdt->kick(WATCHDOG_TIME_SECONDS);
 
   // Start all tasks
   for (t = 0; t < NUM_TASKS; t++) {

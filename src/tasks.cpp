@@ -363,7 +363,7 @@ void task_failsafe(const void *targs) {
 void task_calc_orientation(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_CALC_ORIENTATION_ID);
-
+#ifdef DEVICE_BNO055
   while (args->active) {
     if (args->tasks[TASK_CALC_ORIENTATION_ID].active) {
       /* If there is an error then we maintain the same
@@ -387,6 +387,7 @@ void task_calc_orientation(const void *targs) {
       }
     }
   }
+ #endif
 }
 #endif
 
@@ -509,6 +510,7 @@ void task_stream_telemetry(const void *targs) {
   bool tmp_b;
 
   unsigned i = 0;
+#ifdef DEVICE_ESP8266
   while (args->active) {
     /* The ESP looks for a carriage return character to delimit a command. */
     if (args->tasks[TASK_STREAM_TELEMETRY_ID].active) {
@@ -562,6 +564,7 @@ void task_stream_telemetry(const void *targs) {
       wait(1);
     }
   }
+#endif
 }
 #endif
 

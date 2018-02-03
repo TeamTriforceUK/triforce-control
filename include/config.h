@@ -42,6 +42,9 @@
 #define TASK_CALIBRATE_CHANNELS
 //#define TASK_DEBUG
 
+// #define DEVICE_BNO055
+// #define DEVICE_ESP8266
+
 /* Pin Assignments */
 #define RECV_D_CHAN_1_PIN p18
 #define RECV_D_CHAN_2_PIN p17
@@ -77,6 +80,7 @@
 
 // 150ms increments
 #define NO_SIGNAL_TIMEOUT 70
+#define WATCHDOG_TIME_SECONDS 1.0
 
 #define RC_ARM_CHANNEL_1 90
 #define RC_ARM_CHANNEL_2 90
