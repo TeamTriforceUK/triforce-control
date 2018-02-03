@@ -35,6 +35,7 @@
 #include "tele_params.h"
 #include "utils.h"
 #include "task_utils.h"
+#include "watchdog.h"
 
 void task_start(thread_args_t *targs, unsigned task_id) {
   targs->serial->printf("started task %d (%s)\tstack [alloc: %d, used: %d, free: %d]\r\n", task_id, tasks[task_id].name, targs->threads[task_id].stack_size(), targs->threads[task_id].used_stack(), targs->threads[task_id].free_stack());
@@ -212,6 +213,8 @@ void task_motor_drive(const void *targs) {
       // Set PWM outputs to ESCs
       set_output_escs(args);
     }
+    // Kick watchdog
+    args->wdt->kick();
   }
 }
 #endif

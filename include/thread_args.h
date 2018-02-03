@@ -36,6 +36,7 @@
 #include "task.h"
 #include "drive_mode.h"
 #include "comms.h"
+#include "watchdog.h"
 
 /**
  * Shared variables between tasks, made availbale through the first and only
@@ -128,6 +129,8 @@ typedef struct {
   float heading_lock; // heading to rotate to
   int heading_lock_speed; // percentage
   int heading_lock_deadband; // degrees / 2
+
+  Watchdog *wdt;
 
 } thread_args_t;
 

@@ -111,6 +111,22 @@ int main() {
   memset(targs, 0x00, sizeof(thread_args_t));
   thread_args_init(targs);
 
+  //Set a one second watchdog timer
+  targs->wdt = new Watchdog();
+  targs->wdt->kick(1.0);
+
+  /* TODO: If recovering from a hang, we will want to restore arming state.
+     This means that if we hang during a fight, there should be minimal
+     interruption to control.
+
+    Currently we arm using a switch on each controller so this isn't strictly
+	necessary, but if we ever change arming mechanism to stick positions, then
+	we'll need to be clever here and store arming state somewhere non-volatile.
+  */
+  // if(targs->wdt->is_wdt_reset()) {
+  //
+  // }
+
   // Configure serial connection to ESP8266
   targs->esp_serial = new Serial(ESP_TX, ESP_RX);
   targs->esp_serial->baud(115200);
@@ -339,6 +355,7 @@ int main() {
   delete(targs->mutex.telemetry);
 
   delete(targs->esp_ready_pin);
+  delete(targs->wdt);
   delete(command_queue);
   delete(serial);
 
