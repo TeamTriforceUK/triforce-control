@@ -36,9 +36,9 @@
 #define COMMS_OUTPUT_WEAPON_3 5U
 
 /**
- * Allow up to 2^32 ESCS!
+ * Allow up to 255 ESCS!
  */
-typedef uint32_t comms_esc_id_t;
+typedef uint8_t comms_esc_id_t;
 
 /**
  * Allows representation of many ESCs.
@@ -68,7 +68,7 @@ typedef struct {
   comms_impl_id_t impl_id;
   const char *str;
 
-  void (*init_comms)(void);
+  void (*init_comms)();
   void (*init_esc)(comms_esc_t *esc, comms_esc_id_t);
   void (*set_speed)(comms_esc_t *esc, uint32_t speed);
   void (*get_speed)(const void*);

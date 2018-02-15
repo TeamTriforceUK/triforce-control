@@ -39,7 +39,7 @@ void handler_can(void *targs) {
     uint8_t cmd = msg.id >> 8;
 
     // SW Filter (mbed can.filter() is broken)
-    int i;
+    uint8_t i;
     for(i = 0; i < sizeof(args->escs.arr)/sizeof(args->escs.arr[0]); i++){
       if(args->escs.arr[i].id == id && (cmd == CAN_PACKET_STATUS)){
 
@@ -47,7 +47,7 @@ void handler_can(void *targs) {
           int32_t rpm = (msg.data[0] << 24) | (msg.data[1] << 16) | (msg.data[2] << 8) | (msg.data[3]);
           int16_t current = ((msg.data[4] << 8) | msg.data[5]);
           int16_t duty_cycle = ((msg.data[6] << 8) | msg.data[7]);
-          printf("works id: %d, rpm: %d\r\n", id, rpm);
+          printf("works id: %d, rpm: %lu\r\n", id, rpm);
 
           // Convert parameters into more suitable type and store
           args->mutex.telemetry->lock();

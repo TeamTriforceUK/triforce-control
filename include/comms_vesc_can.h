@@ -26,9 +26,11 @@
 #define TC_COMMS_VESC_CAN_H
 
 #include "comms.h"
+#include "thread_args.h"
 
 //Make sure that IDs are unique when adding new comms implememnations!
 #define COMMS_IMPL_VESC_CAN 0
+#define CAN_SPEED_DATA_LEN  8
 
 typedef enum {
     CAN_PACKET_SET_DUTY = 0,

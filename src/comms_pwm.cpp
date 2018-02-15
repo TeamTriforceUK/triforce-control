@@ -47,7 +47,7 @@ volatile comms_impl_t comms_impl_pwm = {
 /**
 * @brief Initialise static vector array of ESCs, one for each motor.
 */
-void comms_impl_pwm_init_comms(void) {
+void comms_impl_pwm_init_comms() {
   pwm_esc_array.push_back(ESC(DRIVE_ESC_OUT_1_PIN, 20, 1500));
   pwm_esc_array.push_back(ESC(DRIVE_ESC_OUT_2_PIN, 20, 1500));
   pwm_esc_array.push_back(ESC(DRIVE_ESC_OUT_3_PIN, 20, 1500));

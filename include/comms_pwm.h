@@ -33,7 +33,7 @@
 /**
 * @brief Initialise classes required for use of PWM comms mode.
 */
-void comms_impl_pwm_init_comms(void);
+void comms_impl_pwm_init_comms();
 
 /**
 * @brief Set speed of ESC.

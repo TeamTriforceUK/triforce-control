@@ -28,6 +28,9 @@
 #include "comms.h"
 #include "comms_vesc_can.h"
 #include "config.h"
+#include "thread_args.h"
+
+static CAN *can;
 
 /* The various drive configurations are available in docs/drive_modes. */
 volatile comms_impl_t comms_impl_vesc_can = {
@@ -42,7 +45,8 @@ volatile comms_impl_t comms_impl_vesc_can = {
 };
 
 
-void comms_impl_vesc_can_init_comms() {
+void comms_impl_vesc_can_init_comms(CAN *c) {
+  can = c;
 }
 
 void comms_impl_vesc_can_init_esc(comms_esc_t *esc, comms_esc_id_t id){
@@ -50,7 +54,17 @@ void comms_impl_vesc_can_init_esc(comms_esc_t *esc, comms_esc_id_t id){
 }
 
 void comms_impl_vesc_can_set_speed(comms_esc_t *esc, uint32_t speed) {
+  CANMessage msg;
+  msg.format = CANExtended;
+  msg.type = CANData;
+  msg.len =  CAN_SPEED_DATA_LEN;
+  msg.id = esc->id  | ((uint32_t)CAN_PACKET_SET_DUTY << 8);
+  msg.data[0] = speed >> 24;
+  msg.data[1] = speed >> 16;
+  msg.data[2] = speed >> 24;
+  msg.data[3] = speed;
 
+  can->write(msg);
 }
 
 void comms_impl_vesc_can_get_speed(const void *args) {
