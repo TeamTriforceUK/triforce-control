@@ -36,6 +36,7 @@
 #include "utils.h"
 #include "task_utils.h"
 #include "comms_vesc_can.h"
+#include "watchdog.h"
 
 void task_start(thread_args_t *targs, unsigned task_id) {
   targs->serial->printf("started task %d (%s)\tstack [alloc: %d, used: %d, free: %d]\r\n", task_id, tasks[task_id].name, targs->threads[task_id].stack_size(), targs->threads[task_id].used_stack(), targs->threads[task_id].free_stack());
@@ -213,6 +214,8 @@ void task_motor_drive(const void *targs) {
       // Set PWM outputs to ESCs
       set_output_escs(args);
     }
+    // Kick watchdog
+    args->wdt->kick();
   }
 }
 #endif
@@ -357,7 +360,7 @@ void task_failsafe(const void *targs) {
 #endif
 
 
-#ifdef TASK_CALC_ORIENTATION
+#if defined (TASK_CALC_ORIENTATION) && defined(DEVICE_BNO055)
 void task_calc_orientation(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_CALC_ORIENTATION_ID);
@@ -431,7 +434,7 @@ void task_collect_telemetry(const void *targs) {
             tele_commands[i].param.i = args->escs.weapon[2].params.rpm;
             args->mutex.telemetry->unlock();
             break;
-
+#ifdef DEVICE_BNO055
           /* Accelerations are captured in one function */
           case CID_ACCEL_X:
           case CID_ACCEL_Y:
@@ -463,18 +466,19 @@ void task_collect_telemetry(const void *targs) {
               i+=2;
             }
             break;
+          case CID_AMBIENT_TEMP:
+            args->mutex.telemetry->lock();
+            tmp_int = bno055_read_temp();
+            args->mutex.telemetry->unlock();
+            tele_commands[i].param.i = tmp_int;
+            break;
+#endif
           case CID_WEAPON_VOLTAGE_1:
           case CID_WEAPON_VOLTAGE_2:
           case CID_WEAPON_VOLTAGE_3:
           case CID_DRIVE_VOLTAGE_1:
           case CID_DRIVE_VOLTAGE_2:
           case CID_DRIVE_VOLTAGE_3:
-            break;
-          case CID_AMBIENT_TEMP:
-            args->mutex.telemetry->lock();
-            tmp_int = bno055_read_temp();
-            args->mutex.telemetry->unlock();
-            tele_commands[i].param.i = tmp_int;
             break;
           case CID_ARM_STATUS:
             args->mutex.telemetry->lock();
@@ -491,7 +495,7 @@ void task_collect_telemetry(const void *targs) {
 }
 #endif
 
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
 void task_stream_telemetry(const void *targs) {
   thread_args_t * args = (thread_args_t *) targs;
   task_start(args, TASK_STREAM_TELEMETRY_ID);

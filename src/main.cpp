@@ -73,7 +73,7 @@ int esp8266_wait_until_ready(thread_args_t *args) {
     esp8266_init_attempts++;
     if(esp8266_init_attempts > 5) {
       // Disable tasks that require the BNO055
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
       args->tasks[TASK_STREAM_TELEMETRY_ID].active = false;
 #endif
       return RET_ERROR;
@@ -112,6 +112,23 @@ int main() {
   memset(targs, 0x00, sizeof(thread_args_t));
   thread_args_init(targs);
 
+  // Create watchdog timer
+  targs->wdt = new Watchdog();
+
+  /* TODO: If recovering from a hang, we will want to restore arming state.
+     This means that if we hang during a fight, there should be minimal
+     interruption to control.
+
+    Currently we arm using a switch on each controller so this isn't strictly
+	necessary, but if we ever change arming mechanism to stick positions, then
+	we'll need to be clever here and store arming state somewhere non-volatile.
+  */
+  if(targs->wdt->is_wdt_reset()) {
+    serial->puts("System recovering from watchdog reset.\r\n");
+  } else {
+    serial->puts("System booting normally.\r\n");
+  }
+
   // Configure serial connection to ESP8266
   targs->esp_serial = new Serial(ESP_TX, ESP_RX);
   targs->esp_serial->baud(115200);
@@ -137,15 +154,19 @@ int main() {
   targs->serial->puts(VERSION);
   targs->serial->puts("\r\n");
 
+#ifdef DEVICE_BNO055
   targs->serial->printf("init(): BNO055\r\n");
   if (!bno055_wait_until_ready(targs)){
     targs->serial->printf("\tBNO055 not in use.\r\n");
   };
+#endif
 
+#ifdef DEVICE_ESP8266
   targs->serial->printf("init(): ESP8266\r\n");
   if (!esp8266_wait_until_ready(targs)) {
     targs->serial->printf("\tESP8266 not in use.\r\n");
   }
+#endif
 
   targs->serial->puts("init(): PWM inputs\r\n");
 
@@ -293,13 +314,13 @@ int main() {
 #ifdef TASK_FAILSAFE
     {tasks[TASK_FAILSAFE_ID].priority, tasks[TASK_FAILSAFE_ID].stack_size},
 #endif
-#ifdef TASK_CALC_ORIENTATION
+#if defined(TASK_CALC_ORIENTATION) && defined(DEVICE_BNO055)
     {tasks[TASK_CALC_ORIENTATION_ID].priority, tasks[TASK_CALC_ORIENTATION_ID].stack_size},
 #endif
 #ifdef TASK_COLLECT_TELEMETRY
     {tasks[TASK_COLLECT_TELEMETRY_ID].priority, tasks[TASK_COLLECT_TELEMETRY_ID].stack_size},
 #endif
-#ifdef TASK_STREAM_TELEMETRY
+#if defined(TASK_STREAM_TELEMETRY) && defined(DEVICE_ESP8266)
     {tasks[TASK_STREAM_TELEMETRY_ID].priority, tasks[TASK_STREAM_TELEMETRY_ID].stack_size},
 #endif
 #ifdef TASK_CALIBRATE_CHANNELS
@@ -314,6 +335,9 @@ int main() {
   for (t = 0; t < NUM_TASKS; t++) {
     targs->serial->printf("\rinit(): Task %d (%s) active: %s, stack: %d\r\n", tasks[t].id, tasks[t].name, tasks[t].active ? "Yes" : "No", tasks[t].stack_size);
   }
+
+  //Start watchdog timer before we start the tasks
+  targs->wdt->kick(WATCHDOG_TIME_SECONDS);
 
   // Start all tasks
   for (t = 0; t < NUM_TASKS; t++) {
@@ -344,6 +368,7 @@ int main() {
   delete(targs->mutex.telemetry);
 
   delete(targs->esp_ready_pin);
+  delete(targs->wdt);
   delete(command_queue);
   delete(serial);
   delete(targs->can);
