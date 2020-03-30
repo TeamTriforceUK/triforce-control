@@ -170,6 +170,17 @@ euler_t bno055_read_accel() {
     return e;
 }
 
+int16_t bno055_read_z_angular_velocity(){
+	char buf[16];
+
+    // Read in the Z angular velocity
+    buf[0] = BNO055_GYR_Z_LSB_ADDR;
+    i2c.write(bno055_addr, buf, 1, false);
+    i2c.read(bno055_addr, buf, 2, false);
+
+    return x = buf[0] + (buf[1] << 8);
+}
+
 uint8_t bno055_read_temp() {
   return (uint8_t) bno055_read_reg(BNO055_TEMP_ADDR);
 }

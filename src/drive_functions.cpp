@@ -132,6 +132,50 @@ void drive_2_wheel_differential(const void * targs) {
   args->outputs.wheel_2 = right_wheel;
   args->mutex.outputs->unlock();
 }
+/**
+* @brief Melty brain!
+* @details Melty brain (or translational drift) is a method of moving
+* around the arena whilst spinning very fast. We measure the angular
+* velocity as often as we can (to maintain accuracy) and split each revolution
+* into 2 segments, each representing half a revolution. The direction point where
+* the two segments meet is the direction the robot will travel.
+*
+* Say we have segment A (LHS of circle) and segment B (RHS of circle) and we're
+* spinning anti-clockwise. If we spin the motors faster in segment A than B,
+* the robot will drift forwads. This is because the x (left-right) velocity
+* components cancel each other (add up to zero) so there is theoretically no
+* left-right drift.
+*
+* We can move in any direction by chnaging the position of the segment boundaries.
+*/
+
+void drive_2_wheel_translational_drift(const void * targs) {
+  thread_args_t *args = (thread_args_t*) targs;
+
+  // These names don't mean much when your spinning at 100's of RPM...
+  float left_wheel, right_wheel;
+
+  // Read rotational velocity from BNO055
+  args->
+
+  // Calculate initial ESC speeds based on throttle value
+
+  // Calculate desired direction of travel based on left stick
+
+  // Calculate the 180 segment positions
+
+  // Calculate current anglular position
+
+  // If we are in segment ON segment, go faster (if possible)
+
+  // If we are in segment OFF segment, go slower
+
+  // Set ESC outputs based on calculated values
+  args->mutex.outputs->lock();
+  args->outputs.wheel_1 = left_wheel;
+  args->outputs.wheel_2 = right_wheel;
+  args->mutex.outputs->unlock();
+}
 
 void weapon_manual_throttle(const void * targs) {
   thread_args_t *args = (thread_args_t*) targs;

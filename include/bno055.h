@@ -48,6 +48,8 @@ const int BNO055_SYS_STAT_ADDR                                    = 0x39;
 const int BNO055_SYS_ERR_ADDR                                     = 0x3A;
 const int BNO055_AXIS_MAP_CONFIG_ADDR                             = 0x41;
 const int BNO055_SYS_TRIGGER_ADDR                                 = 0x3F;
+const int BNO055_GYR_Z_LSB_ADDR                                   = 0x18;
+const int BNO055_GYR_Z_MSB_ADDR                                   = 0x19;
 
 typedef struct
 {
